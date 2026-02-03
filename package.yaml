@@ -37,6 +37,7 @@ ghc-options:
 
 library:
   source-dirs: src
+  default-extensions: ViewPatterns
 
 executables:
   C2TranslationValidation-exe:
