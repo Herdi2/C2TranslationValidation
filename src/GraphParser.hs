@@ -1,93 +1,66 @@
-{-# LANGUAGE Arrows #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
+module GraphParser (parseGraph) where
 
-module GraphParser where
-
-import Data.Char
+import Data.Char (isSpace)
 import qualified Data.Map as M
-import Text.XML.HXT.Core
-import Text.XML.HXT.DOM.XmlNode (NTree)
-import Verify
+import Graph
+import Text.XML.Light
 
--- | (NodeId, Name, dump_spec)
-type RawNode = (Int, String, String)
-
--- | Intermediate graph structure, after parsing but before fully constructing it.
--- May contain unsupported nodes.
-data RawGraph = RawGraph
-  { -- | (NodeId, Name, dump_spec)
-    rawNodes :: [RawNode],
-    -- | Edges and their toIndex (ordered input)
-    -- (to, from, toIndex)
-    rawEdges :: [(Int, Int, Int)]
-  }
-  deriving (Show)
-
-normalize :: String -> String
-normalize = map toLower . dropWhile isSpace
-
--- | Parse the given graph GRAPH_NAME into a raw format containing nodes with id and dump_spec,
--- and edges with input index.
---
--- Parses the following format:
--- <graph name=GRAPH_NAME >
---  <nodes>
---    <node>
---    <node id=X>
---    </node>
---    <\node>
---  </nodes>
---  <edges>
---    <edge from=x to=y index=z/>
---  </edges>
--- </graph>
-parseGraph :: String -> String -> IO RawGraph
+parseGraph :: String -> String -> Either String RawGraph
 parseGraph graphName xml = do
-  let graph =
-        readString [withValidate no] xml
-          >>> deep (hasName "graph")
-          -- NOTE: Removes initial whitespace since XML file has newline at start, e.g. "\nAfter Parsing"
-          >>> hasAttrValue "name" ((==) graphName . dropWhile isSpace)
-          >>> getChildren
-  edges <-
-    runX $
-      graph
-        >>> deep (hasName "edges")
-        >>> deep (hasName "edge")
-        >>> proc edge -> do
-          from <- getAttrValue "from" -< edge
-          to <- getAttrValue "to" -< edge
-          toIndex <- withDefault (getAttrValue "index") "0" -< edge
-          returnA
-            -<
-              ( read from :: Int,
-                read to :: Int,
-                read toIndex :: Int
-              )
-  nodes <-
-    runX $
-      graph
-        >>> deep (hasName "nodes")
-        >>> deep (hasName "node")
-        >>> parseNode edges
-  return $ RawGraph nodes edges
+  root <- maybe (Left "Failed to parse XML") Right $ parseXMLDoc xml
+  graph <-
+    maybe (Left $ "Graph not found: " <> graphName) Right $
+      findGraphElement graphName root
+  let edges = parseEdges graph
+      nodes = parseNodes graph
+  Right $ RawGraph nodes edges
 
-parseNode :: (ArrowChoice t, ArrowXml t) => [(Int, Int, Int)] -> t (NTree XNode) (Int, String, String)
-parseNode edges =
-  proc node -> do
-    nodeName <- nodeProp "name" -< node
-    nodeId <- getAttrValue "id" -< node
-    case (normalize nodeName) of
-      "root" -> none -< (1, "", "")
-      _ ->
-        do
-          dumpSpec <- nodeProp "dump_spec" -< node
-          returnA -< (read nodeId :: Int, normalize nodeName, normalize dumpSpec)
+-- | Find graph element given the name of the graph, e.g. "After Parsing"
+findGraphElement :: String -> Element -> Maybe Element
+findGraphElement graphName root =
+  filterElement
+    ( \el ->
+        qName (elName el) == "graph"
+          && findAttr (unqual "name") el == Just (dropWhile isSpace graphName)
+    )
+    root
+
+-- | Given a <Graph> element, parses edges into list of (from, to, index)
+parseEdges :: Element -> [(NodeId, NodeId, NodeId)]
+parseEdges graph =
+  [ (read from, read to, read mIndex)
+  | edges <- findChildren (unqual "edges") graph,
+    edge <- findChildren (unqual "edge") edges,
+    Just from <- [findAttr (unqual "from") edge],
+    Just to <- [findAttr (unqual "to") edge],
+    Just mIndex <- [findAttr (unqual "index") edge]
+  ]
+
+-- | Given a <Graph> element, parses the nodes
+parseNodes :: Element -> [RawNode]
+parseNodes graph =
+  [ parseRawNode nod
+  | nodes <- findChildren (unqual "nodes") graph,
+    nod <- findChildren (unqual "node") nodes
+  ]
+
+-- | Translate a <node> element given in <nodes> to an equivalent data structure in Haskell,
+-- with all properties.
+parseRawNode :: Element -> RawNode
+parseRawNode el =
+  RawNode
+    { rawNodeId = trim $ maybe "" id $ findAttr (unqual "id") el,
+      rawNodeName = trim $ maybe "" id $ M.lookup "name" props,
+      rawNodeProps = props
+    }
   where
-    nodeProp prop =
-      deep (hasName "properties")
-        >>> deep (hasName "p")
-        >>> hasAttrValue "name" (== prop)
-        >>> getChildren
-        >>> getText
+    props =
+      M.fromList
+        [ (trim name, trim $ strContent p)
+        | propsEl <- findChildren (unqual "properties") el,
+          p <- findChildren (unqual "p") propsEl,
+          Just name <- [findAttr (unqual "name") p]
+        ]
+
+trim :: String -> String
+trim = dropWhile isSpace
