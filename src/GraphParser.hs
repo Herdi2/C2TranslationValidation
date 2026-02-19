@@ -1,10 +1,11 @@
 module GraphParser (parseGraph) where
 
-import Data.Char (isSpace)
+import Data.Char (isSpace, toLower)
 import qualified Data.Map as M
 import Graph
 import Text.XML.Light
 
+-- | Parses the graph with `graphName` from the given XML file into a @RawGraph@
 parseGraph :: String -> String -> Either String RawGraph
 parseGraph graphName xml = do
   root <- maybe (Left "Failed to parse XML") Right $ parseXMLDoc xml
@@ -15,13 +16,17 @@ parseGraph graphName xml = do
       nodes = parseNodes graph
   Right $ RawGraph nodes edges
 
+normalize :: String -> String
+normalize = filter (not . isSpace) . map toLower
+
 -- | Find graph element given the name of the graph, e.g. "After Parsing"
+-- NOTE: The two names are normalized before comparison by using @normalize@
 findGraphElement :: String -> Element -> Maybe Element
 findGraphElement graphName root =
   filterElement
     ( \el ->
         qName (elName el) == "graph"
-          && findAttr (unqual "name") el == Just (dropWhile isSpace graphName)
+          && (normalize <$> (findAttr (unqual "name") el)) == Just (normalize graphName)
     )
     root
 

@@ -14,6 +14,11 @@ type ParamMap = M.Map NodeId SValue
 
 type NodeInfo = M.Map NodeId Node
 
+data ControlSucc
+  = Next NodeId
+  | IfNext NodeId NodeId
+  deriving (Show, Eq)
+
 type ControlSuccessors = M.Map NodeId [NodeId]
 
 data Comp
@@ -99,8 +104,8 @@ data Node
     IfTrue NodeId
   | -- | IfTrue projection
     IfFalse NodeId
-  | -- | Return <dataflow predecessor node id>
-    Return NodeId
+  | -- | Return <nodeId> <dataflow predecessor node id>
+    Return NodeId NodeId
   | -- | Static calls with own Id data flow predecessor (?)
     CallStatic NodeId NodeId
   deriving (Show, Eq)

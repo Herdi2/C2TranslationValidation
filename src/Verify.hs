@@ -97,7 +97,7 @@ evalControlNode graph (ParmCtrl nid) =
    in evalControlNode
         (updateRegionPredecessors succNode nid graph)
         succNode
-evalControlNode graph@(nodeInfo -> nodes) (Return dataId) =
+evalControlNode graph@(nodeInfo -> nodes) (Return nid dataId) =
   do
     retVal <- evalDataNode graph (nodes M.! dataId)
     return $ (0, retVal)
@@ -107,7 +107,7 @@ evalControlNode graph@(nodeInfo -> nodes) (CallStatic nid dataId) =
     return $ (literal nid, retVal)
 evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
   do
-    let [ifNode, elseNode] = (controlSuccessors graph) M.! nid
+    let [elseNode, ifNode] = (controlSuccessors graph) M.! nid
     -- NOTE: Boolean guards require predecessor to be either 0 (false) or 1 (true)
     boolGuard <- ((.== 1) . getInt) <$> evalDataNode graph (nodes M.! boolGuardId)
     ifBranch <- evalControlNode graph $ nodes M.! ifNode

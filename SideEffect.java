@@ -1,6 +1,6 @@
 public class SideEffect {
   public static void main(String[] args) {
-    int x = method(-3, -4);
+    int x = method(1, 4);
     System.out.println(x);
   }
 

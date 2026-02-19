@@ -29,6 +29,7 @@ library
       GraphBuilder
       GraphParser
       Lib
+      OldParser
       Verify
   other-modules:
       Paths_C2TranslationValidation
