@@ -1,7 +1,7 @@
 -- |
 -- - Module: Graph
 -- - Exports RawGraph (Used in XML parsing in `GraphParser`) and Graph (SoN graph, used in `Verify` and `GraphBuilder`)
-module Graph where
+module Verifier.Graph where
 
 import Data.List (findIndex)
 import qualified Data.Map as M
@@ -34,8 +34,8 @@ data Node
   | -- | Constant nodes
     ConI Int32
   | ConL Int64
-  | ConF FPSingle
-  | ConD FPDouble
+  | ConF Float
+  | ConD Double
   | -- | Addition
     AddI NodeId NodeId
   | AddL NodeId NodeId
@@ -71,18 +71,18 @@ data Node
     RShiftI NodeId NodeId
   | RShiftL NodeId NodeId
   | -- | Conversion between int, long, float, double
-    ConvD2F NodeId NodeId
-  | ConvD2I NodeId NodeId
-  | ConvD2L NodeId NodeId
-  | ConvF2D NodeId NodeId
-  | ConvF2I NodeId NodeId
-  | ConvF2L NodeId NodeId
-  | ConvI2D NodeId NodeId
-  | ConvI2F NodeId NodeId
-  | ConvI2L NodeId NodeId
-  | ConvL2D NodeId NodeId
-  | ConvL2F NodeId NodeId
-  | ConvL2I NodeId NodeId
+    ConvD2F NodeId
+  | ConvD2I NodeId
+  | ConvD2L NodeId
+  | ConvF2D NodeId
+  | ConvF2I NodeId
+  | ConvF2L NodeId
+  | ConvI2D NodeId
+  | ConvI2F NodeId
+  | ConvI2L NodeId
+  | ConvL2D NodeId
+  | ConvL2F NodeId
+  | ConvL2I NodeId
   | -- | Comparisons
     CmpI NodeId NodeId
   | CmpL NodeId NodeId
@@ -139,7 +139,7 @@ data Graph
     -- Both to be reused within the graph and unify between the graphs.
     params :: ParamMap
   }
-  deriving (Show)
+  deriving (Show, Eq)
 
 defaultGraph :: Graph
 defaultGraph = Graph M.empty M.empty M.empty M.empty
@@ -149,9 +149,9 @@ data SValue
   = JInt SInt32
   | JLong SInt64
   | -- | FP 8 24
-    JFloat SFPSingle
+    JFloat SFloat
   | -- | FP 11 53
-    JDouble SFPDouble
+    JDouble SDouble
   deriving (Show, Eq)
 
 mkGraph :: [(NodeId, Node)] -> [(NodeId, [NodeId])] -> Graph

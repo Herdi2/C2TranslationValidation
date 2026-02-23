@@ -1,13 +1,15 @@
 {-# LANGUAGE TupleSections #-}
 
-module GraphBuilder (buildGraph) where
+module Verifier.GraphBuilder (buildGraph) where
 
 import Control.Monad (unless)
 import Control.Monad.State.Lazy
-import Data.List (sortOn)
+import Data.Char (isDigit)
+import Data.List (isPrefixOf, sortOn)
 import qualified Data.Map as M
 import Debug.Trace
-import Graph
+import Verifier.Graph
+import Text.Read (readMaybe)
 
 data ParseResult a
   = -- | Recognized values that are not needed
@@ -47,24 +49,50 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
     "Root" -> Ignored
     "Con" -> Ignored
     "Parm" ->
-      case (M.lookup "type" nodeProps) of
-        Just "int:" -> Parsed (nodeId, ParmI nodeId)
-        Just "long:" -> Parsed (nodeId, ParmL nodeId)
-        Just "float:" -> Parsed (nodeId, ParmF nodeId)
-        Just "double:" -> Parsed (nodeId, ParmD nodeId)
-        Just "control" -> Parsed (nodeId, ParmCtrl nodeId)
-        Just "abIO" -> Ignored
-        Just "rawptr:" -> Ignored
-        Just "return_address" -> Ignored
-        Just "memory" -> Ignored
-        Just t -> Unsupported $ "Unsupported param of type: " <> t
-        Nothing -> Unsupported $ "buildNode: Internal error, node property didn't contain \"type\""
+      let matchType typ
+            | "int" `isPrefixOf` typ = Parsed (nodeId, ParmI nodeId)
+            | "long" `isPrefixOf` typ = Parsed (nodeId, ParmL nodeId)
+            | "float" `isPrefixOf` typ = Parsed (nodeId, ParmF nodeId)
+            | "double" `isPrefixOf` typ = Parsed (nodeId, ParmD nodeId)
+            | "control" `isPrefixOf` typ = Parsed (nodeId, ParmCtrl nodeId)
+            | "abIO" `isPrefixOf` typ = Ignored
+            | "rawptr" `isPrefixOf` typ = Ignored
+            | "return_address" `isPrefixOf` typ = Ignored
+            | "memory" `isPrefixOf` typ = Ignored
+            | otherwise = Unsupported $ "Unsupported param of type: " <> typ
+       in case (M.lookup "type" nodeProps) of
+            Nothing -> Unsupported $ "buildNode: Internal error, node property didn't contain \"type\""
+            Just typ -> matchType typ
     -- Constants
-    "ConI" -> Parsed (nodeId, ConI $ read (drop (length "int:") $ nodeProps M.! "bottom_type"))
-    "ConL" -> Parsed (nodeId, ConL $ read (drop (length "long:") $ nodeProps M.! "short_name"))
-    -- NOTE: Float and Double is assumed to be given in binary format
-    "ConF" -> Parsed (nodeId, ConF $ fromInteger $ read (drop (length "float:") $ nodeProps M.! "short_name"))
-    "ConD" -> Parsed (nodeId, ConD $ fromInteger $ read (drop (length "double:") $ nodeProps M.! "short_name"))
+    "ConI" ->
+      case (M.lookup "bottom_type" nodeProps) of
+        Nothing -> Unsupported $ "buildNode: Internal error, ConI didn't contain \"bottom_type\""
+        Just value ->
+          case (readMaybe (drop (length "int:") value)) of
+            Nothing -> Unsupported $ "buildNode: Internal error, ConI, couldn't read value from " <> show value
+            Just readRes -> Parsed (nodeId, ConI readRes)
+    "ConL" ->
+      case (M.lookup "bottom_type" nodeProps) of
+        Nothing -> Unsupported $ "buildNode: Internal error, ConL didn't contain \"bottom_type\""
+        Just value ->
+          case (readMaybe (drop (length "long:") value)) of
+            Nothing -> Unsupported $ "buildNode: Internal error, ConI, couldn't read value from " <> show value
+            Just readRes -> Parsed (nodeId, ConL readRes)
+    -- NOTE: ConF and ConD are assumed to be given in a binary format
+    "ConF" ->
+      case (M.lookup "bottom_type" nodeProps) of
+        Nothing -> Unsupported $ "buildNode: Internal error, ConF didn't contain \"bottom_type\""
+        Just value ->
+          case (readMaybe (drop (length "ftcon:") value)) of
+            Nothing -> Unsupported $ "buildNode: Internal error, ConF, couldn't read value from " <> show value
+            Just readRes -> Parsed (nodeId, ConF $ fromInteger readRes)
+    "ConD" ->
+      case (M.lookup "bottom_type" nodeProps) of
+        Nothing -> Unsupported $ "buildNode: Internal error, ConD didn't contain \"bottom_type\""
+        Just value ->
+          case (readMaybe (drop (length "dblcon:") value)) of
+            Nothing -> Unsupported $ "buildNode: Internal error, ConD, couldn't read value from " <> show value
+            Just readRes -> Parsed (nodeId, ConD $ fromInteger readRes)
     -- Addition
     "AddI" -> arithmeticNode AddI nodeId rEdges
     "AddL" -> arithmeticNode AddL nodeId rEdges
@@ -99,18 +127,18 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
     "RShiftI" -> arithmeticNode RShiftI nodeId rEdges
     "RShiftL" -> arithmeticNode RShiftL nodeId rEdges
     -- Conversions
-    "ConvD2F" -> arithmeticNode ConvD2F nodeId rEdges
-    "ConvD2I" -> arithmeticNode ConvD2I nodeId rEdges
-    "ConvD2L" -> arithmeticNode ConvD2L nodeId rEdges
-    "ConvF2D" -> arithmeticNode ConvF2D nodeId rEdges
-    "ConvF2I" -> arithmeticNode ConvF2I nodeId rEdges
-    "ConvF2L" -> arithmeticNode ConvF2L nodeId rEdges
-    "ConvI2D" -> arithmeticNode ConvI2D nodeId rEdges
-    "ConvI2F" -> arithmeticNode ConvI2F nodeId rEdges
-    "ConvI2L" -> arithmeticNode ConvI2L nodeId rEdges
-    "ConvL2D" -> arithmeticNode ConvL2D nodeId rEdges
-    "ConvL2F" -> arithmeticNode ConvL2F nodeId rEdges
-    "ConvL2I" -> arithmeticNode ConvL2I nodeId rEdges
+    "ConvD2F" -> convNode ConvD2F nodeId rEdges
+    "ConvD2I" -> convNode ConvD2I nodeId rEdges
+    "ConvD2L" -> convNode ConvD2L nodeId rEdges
+    "ConvF2D" -> convNode ConvF2D nodeId rEdges
+    "ConvF2I" -> convNode ConvF2I nodeId rEdges
+    "ConvF2L" -> convNode ConvF2L nodeId rEdges
+    "ConvI2D" -> convNode ConvI2D nodeId rEdges
+    "ConvI2F" -> convNode ConvI2F nodeId rEdges
+    "ConvI2L" -> convNode ConvI2L nodeId rEdges
+    "ConvL2D" -> convNode ConvL2D nodeId rEdges
+    "ConvL2F" -> convNode ConvL2F nodeId rEdges
+    "ConvL2I" -> convNode ConvL2I nodeId rEdges
     -- Comparisons
     "CmpI" -> arithmeticNode CmpI nodeId rEdges
     "CmpL" -> arithmeticNode CmpL nodeId rEdges
@@ -198,6 +226,13 @@ arithmeticNode constr nodeId rEdges =
   case findNodePred nodeId rEdges of
     [x, y] -> Parsed (nodeId, constr x y)
     neighbors -> Unsupported $ "Arithmetic node: Expected two preds but got: " <> show (length neighbors)
+
+
+convNode :: (NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
+convNode constr nodeId rEdges =
+  case findNodePred nodeId rEdges of
+    [x] -> Parsed (nodeId, constr x)
+    neighbors -> Unsupported $ "Conversion node: Expected one pred but got: " <> show (length neighbors)
 
 -- | Given a NodeId and a list of raw edges, find the predecessors of the node
 -- and return them in an _ordered_ list.

@@ -6,24 +6,7 @@ static jint AndNeg.method(jint, jint)</p>
 <p name='static'>
 true</p>
 <p name='compilationId'>
-101</p>
-<p name='arguments'>
--Xcomp -Xbatch -XX:-TieredCompilation -XX:CompileCommand=compileonly,AndNeg::method -XX:PrintIdealGraphLevel=1 -XX:PrintIdealGraphFile=AndNeg.xml --add-modules=ALL-DEFAULT </p>
-<p name='machine'>
-Host: herdi-macbook, Intel(R) Core(TM) i5-4308U CPU @ 2.80GHz, 4 cores, 15G, Ubuntu 24.04.3 LTS
-</p>
-<p name='cpuFeatures'>
-cx8, cmov, fxsr, ht, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, fma, vzeroupper, clflush, rdtscp, f16c</p>
-<p name='vm'>
-OpenJDK Runtime Environment (27.0) (fastdebug build 27-internal-adhoc.herdi.jdk)
-</p>
-<p name='dateTime'>
-Time: Thu Feb 19 17:47:17 2026 CET elapsed time: 1.758948 seconds (0d 0h 0m 1s)
-</p>
-<p name='processId'>
-397877</p>
-<p name='threadId'>
-397894</p>
+88</p>
 </properties>
 <method name='static jint AndNeg.method(jint, jint)' shortName=' AndNeg::method' bci='-1'>
 <bytecodes>
@@ -38,12 +21,6 @@ Time: Thu Feb 19 17:47:17 2026 CET elapsed time: 1.758948 seconds (0d 0h 0m 1s)
 </bytecodes>
 </method>
 <graph name='After Parsing'>
-<properties>
-<p name='frame 0:'>
-Compile::Optimize() (compile.hpp:815)</p>
-<p name='frame 1:'>
-Compile::Compile(ciEnv*, ciMethod*, int, Options, DirectiveSet*) (compile.cpp:862)</p>
-</properties>
 <nodes>
 <node id='0'>
 <properties>
@@ -175,8 +152,6 @@ tuple:</p>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
 <p name='phase_type'>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 mixed</p>
 <p name='dump_spec'>
@@ -333,8 +308,6 @@ Parm</p>
 7</p>
 <p name='type'>
 memory</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 memory</p>
 <p name='jvms'>
@@ -344,7 +317,7 @@ true</p>
 <p name='con'>
 2</p>
 <p name='dump_spec'>
-Memory  Memory: @ptr:BotPTR+bot, idx=Bot;</p>
+Memory  Memory: @BotPTR *+bot, idx=Bot;</p>
 <p name='alias_index'>
 2</p>
 <p name='alias_is_rewritable'>
@@ -464,15 +437,7 @@ true</p>
 <edge from='0' to='1' index='0'/>
 </edges>
 </graph>
-<graph name='Before Matching'>
-<properties>
-<p name='frame 0:'>
-Matcher::match() (matcher.cpp:307)</p>
-<p name='frame 1:'>
-Compile::Code_Gen() (compile.cpp:3038)</p>
-<p name='frame 2:'>
-Compile::Compile(ciEnv*, ciMethod*, int, Options, DirectiveSet*) (compile.cpp:895)</p>
-</properties>
+<graph name='Before matching'>
 <nodes>
 <node id='0'>
 <properties>
@@ -544,32 +509,6 @@ false</p>
 8 </p>
 </properties>
 </node>
-<node id='25'>
-<properties>
-<p name='name'>
-SubI</p>
-<p name='idx'>
-25</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='category'>
-data</p>
-<p name='jvms'>
- AndNeg::method @ bci:3 (line 8)</p>
-<p name='is_shared'>
-false</p>
-<p name='is_dontcare'>
-false</p>
-<p name='dump_spec'>
-</p>
-<p name='bci'>
-3 </p>
-<p name='line'>
-8 </p>
-</properties>
-</node>
 <node id='11'>
 <properties>
 <p name='name'>
@@ -612,8 +551,6 @@ Start</p>
 tuple:</p>
 <p name='bottom_type'>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 mixed</p>
 <p name='is_shared'>
@@ -660,56 +597,6 @@ P0</p>
 -1 </p>
 <p name='line'>
 _ </p>
-</properties>
-</node>
-<node id='24'>
-<properties>
-<p name='name'>
-SubI</p>
-<p name='idx'>
-24</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='category'>
-data</p>
-<p name='jvms'>
- AndNeg::method @ bci:1 (line 8)</p>
-<p name='is_shared'>
-false</p>
-<p name='is_dontcare'>
-false</p>
-<p name='dump_spec'>
-</p>
-<p name='bci'>
-1 </p>
-<p name='line'>
-8 </p>
-</properties>
-</node>
-<node id='23'>
-<properties>
-<p name='name'>
-ConI</p>
-<p name='idx'>
-23</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int:0</p>
-<p name='category'>
-data</p>
-<p name='is_con'>
-true</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-false</p>
-<p name='dump_spec'>
- #int:0</p>
-<p name='short_name'>
-0</p>
 </properties>
 </node>
 <node id='9'>
@@ -784,8 +671,6 @@ Parm</p>
 7</p>
 <p name='type'>
 memory</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 memory</p>
 <p name='jvms'>
@@ -799,7 +684,7 @@ true</p>
 <p name='con'>
 2</p>
 <p name='dump_spec'>
-Memory  Memory: @ptr:BotPTR+bot, idx=Bot;</p>
+Memory  Memory: @BotPTR *+bot, idx=Bot;</p>
 <p name='alias_index'>
 2</p>
 <p name='alias_is_rewritable'>
@@ -908,17 +793,12 @@ true</p>
 <edge from='8' to='27' index='3'/>
 <edge from='9' to='27' index='4'/>
 <edge from='26' to='27' index='5'/>
-<edge from='24' to='26' index='1'/>
-<edge from='25' to='26' index='2'/>
-<edge from='23' to='25' index='1'/>
-<edge from='11' to='25' index='2'/>
+<edge from='10' to='26' index='1'/>
+<edge from='11' to='26' index='2'/>
 <edge from='3' to='11' index='0'/>
 <edge from='3' to='3' index='0'/>
 <edge from='0' to='3' index='1'/>
 <edge from='3' to='10' index='0'/>
-<edge from='23' to='24' index='1'/>
-<edge from='10' to='24' index='2'/>
-<edge from='0' to='23' index='0'/>
 <edge from='3' to='9' index='0'/>
 <edge from='3' to='8' index='0'/>
 <edge from='3' to='7' index='0'/>
@@ -928,12 +808,6 @@ true</p>
 </edges>
 </graph>
 <graph name='Final Code'>
-<properties>
-<p name='frame 0:'>
-Compile::Code_Gen() (compile.hpp:815)</p>
-<p name='frame 1:'>
-Compile::Compile(ciEnv*, ciMethod*, int, Options, DirectiveSet*) (compile.cpp:895)</p>
-</properties>
 <nodes>
 <node id='27'>
 <properties>
@@ -945,14 +819,10 @@ Ret</p>
 bottom</p>
 <p name='bottom_type'>
 bottom</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='block'>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-17</p>
 <p name='category'>
 other</p>
 <p name='is_shared'>
@@ -991,8 +861,6 @@ int</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-14</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
@@ -1014,13 +882,13 @@ AndI</p>
 <p name='reg'>
 RAX</p>
 <p name='lrg'>
-9</p>
+5</p>
 </properties>
 </node>
-<node id='25'>
+<node id='11'>
 <properties>
 <p name='name'>
-negI_rReg</p>
+MachProj</p>
 <p name='idx'>
 12</p>
 <p name='type'>
@@ -1031,42 +899,6 @@ int</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-11</p>
-<p name='category'>
-data</p>
-<p name='is_shared'>
-false</p>
-<p name='is_dontcare'>
-false</p>
-<p name='old_node_idx'>
-25</p>
-<p name='idealOpcode'>
-SubI</p>
-<p name='dump_spec'>
-#0/0x00000000</p>
-<p name='reg'>
-RDX</p>
-<p name='lrg'>
-4</p>
-</properties>
-</node>
-<node id='11'>
-<properties>
-<p name='name'>
-MachProj</p>
-<p name='idx'>
-16</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-7</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
@@ -1103,8 +935,6 @@ Start</p>
 tuple:</p>
 <p name='bottom_type'>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='block'>
 0</p>
 <p name='category'>
@@ -1189,8 +1019,6 @@ top</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-8</p>
 <p name='category'>
 other</p>
 <p name='is_con'>
@@ -1216,7 +1044,7 @@ true</p>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-15</p>
+11</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
@@ -1225,8 +1053,6 @@ int</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-6</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
@@ -1234,9 +1060,9 @@ data</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
-false</p>
+true</p>
 <p name='is_dontcare'>
-false</p>
+true</p>
 <p name='old_node_idx'>
 10</p>
 <p name='con'>
@@ -1253,46 +1079,12 @@ RSI</p>
 3</p>
 </properties>
 </node>
-<node id='24'>
-<properties>
-<p name='name'>
-negI_rReg</p>
-<p name='idx'>
-10</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-9</p>
-<p name='category'>
-data</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-true</p>
-<p name='old_node_idx'>
-24</p>
-<p name='idealOpcode'>
-SubI</p>
-<p name='dump_spec'>
-#0/0x00000000</p>
-<p name='reg'>
-RSI</p>
-<p name='lrg'>
-3</p>
-</properties>
-</node>
-<node id='50'>
+<node id='46'>
 <properties>
 <p name='name'>
 TwoAddressSpillCopy</p>
 <p name='idx'>
-21</p>
+17</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
@@ -1301,8 +1093,6 @@ int</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-13</p>
 <p name='category'>
 data</p>
 <p name='is_copy'>
@@ -1318,41 +1108,7 @@ Node</p>
 <p name='reg'>
 RAX</p>
 <p name='lrg'>
-9</p>
-</properties>
-</node>
-<node id='40'>
-<properties>
-<p name='name'>
-MachProj</p>
-<p name='idx'>
-11</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-10</p>
-<p name='category'>
-data</p>
-<p name='is_dead_loop_safe'>
-true</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-true</p>
-<p name='con'>
-1</p>
-<p name='dump_spec'>
-#1</p>
-<p name='reg'>
-RFLAGS</p>
-<p name='lrg'>
-6</p>
+5</p>
 </properties>
 </node>
 <node id='9'>
@@ -1369,8 +1125,6 @@ return_address</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-5</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
@@ -1413,8 +1167,6 @@ rawptr:BotPTR</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-4</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
@@ -1451,14 +1203,10 @@ MachProj</p>
 6</p>
 <p name='type'>
 memory</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='block'>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-3</p>
 <p name='category'>
 memory</p>
 <p name='jvms'>
@@ -1474,7 +1222,7 @@ true</p>
 <p name='con'>
 2</p>
 <p name='dump_spec'>
-#2/unmatched  Memory: @ptr:BotPTR+bot, idx=Bot;</p>
+#2/unmatched  Memory: @BotPTR *+bot, idx=Bot;</p>
 <p name='alias_index'>
 2</p>
 <p name='alias_is_rewritable'>
@@ -1505,8 +1253,6 @@ abIO</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-2</p>
 <p name='category'>
 other</p>
 <p name='jvms'>
@@ -1547,8 +1293,6 @@ control</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-1</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
@@ -1577,92 +1321,54 @@ _ </p>
 0</p>
 </properties>
 </node>
-<node id='42'>
+<node id='39'>
 <properties>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-13</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-12</p>
-<p name='category'>
-data</p>
-<p name='is_dead_loop_safe'>
-true</p>
-<p name='is_shared'>
-false</p>
-<p name='is_dontcare'>
-false</p>
-<p name='con'>
-1</p>
-<p name='dump_spec'>
-#1</p>
-<p name='reg'>
-RFLAGS</p>
-<p name='lrg'>
-8</p>
-</properties>
-</node>
-<node id='43'>
-<properties>
-<p name='name'>
-MachProj</p>
-<p name='idx'>
-14</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-15</p>
-<p name='category'>
-data</p>
-<p name='is_dead_loop_safe'>
-true</p>
-<p name='is_shared'>
-false</p>
-<p name='is_dontcare'>
-false</p>
-<p name='con'>
-1</p>
-<p name='dump_spec'>
-#1</p>
-<p name='reg'>
-RFLAGS</p>
-<p name='lrg'>
 10</p>
+<p name='type'>
+int:</p>
+<p name='bottom_type'>
+int:-1..1</p>
+<p name='block'>
+1</p>
+<p name='frequency'>
+1.00000000</p>
+<p name='category'>
+data</p>
+<p name='is_dead_loop_safe'>
+true</p>
+<p name='is_shared'>
+true</p>
+<p name='is_dontcare'>
+true</p>
+<p name='con'>
+1</p>
+<p name='dump_spec'>
+#1</p>
+<p name='reg'>
+RFLAGS</p>
+<p name='lrg'>
+6</p>
 </properties>
 </node>
-<node id='52'>
+<node id='48'>
 <properties>
 <p name='name'>
 Epilog</p>
 <p name='idx'>
-23</p>
+19</p>
 <p name='type'>
 control</p>
 <p name='block'>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-16</p>
 <p name='category'>
 control</p>
 <p name='is_shared'>
-true</p>
+false</p>
 <p name='is_dontcare'>
 false</p>
 <p name='idealOpcode'>
@@ -1675,12 +1381,12 @@ Node</p>
 0</p>
 </properties>
 </node>
-<node id='51'>
+<node id='47'>
 <properties>
 <p name='name'>
 Prolog</p>
 <p name='idx'>
-22</p>
+18</p>
 <p name='type'>
 control</p>
 <p name='block'>
@@ -1691,8 +1397,6 @@ control</p>
 2</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-0</p>
 <p name='category'>
 control</p>
 <p name='is_shared'>
@@ -1717,9 +1421,8 @@ Node</p>
 <edge from='8' to='27' index='3'/>
 <edge from='9' to='27' index='4'/>
 <edge from='26' to='27' index='5'/>
-<edge from='50' to='26' index='1'/>
-<edge from='25' to='26' index='2'/>
-<edge from='11' to='25' index='1'/>
+<edge from='46' to='26' index='1'/>
+<edge from='11' to='26' index='2'/>
 <edge from='3' to='11' index='0'/>
 <edge from='3' to='3' index='0'/>
 <edge from='0' to='3' index='1'/>
@@ -1727,16 +1430,13 @@ Node</p>
 <edge from='27' to='0' index='1'/>
 <edge from='3' to='1' index='0'/>
 <edge from='3' to='10' index='0'/>
-<edge from='10' to='24' index='1'/>
-<edge from='24' to='50' index='1'/>
-<edge from='24' to='40' index='0'/>
+<edge from='10' to='46' index='1'/>
 <edge from='3' to='9' index='0'/>
 <edge from='3' to='8' index='0'/>
 <edge from='3' to='7' index='0'/>
 <edge from='3' to='6' index='0'/>
 <edge from='3' to='5' index='0'/>
-<edge from='25' to='42' index='0'/>
-<edge from='26' to='43' index='0'/>
+<edge from='26' to='39' index='0'/>
 </edges>
 <controlFlow>
 <block name='0'>
@@ -1751,7 +1451,7 @@ Node</p>
 <successor name='0'/>
 </successors>
 <nodes>
-<node id='51'/>
+<node id='47'/>
 <node id='5'/>
 <node id='6'/>
 <node id='7'/>
@@ -1760,14 +1460,10 @@ Node</p>
 <node id='10'/>
 <node id='11'/>
 <node id='1'/>
-<node id='24'/>
-<node id='40'/>
-<node id='25'/>
-<node id='42'/>
-<node id='50'/>
+<node id='46'/>
 <node id='26'/>
-<node id='43'/>
-<node id='52'/>
+<node id='39'/>
+<node id='48'/>
 <node id='27'/>
 </nodes>
 </block>

@@ -6,24 +6,7 @@ static jint SideEffect.method(jint, jint)</p>
 <p name='static'>
 true</p>
 <p name='compilationId'>
-102</p>
-<p name='arguments'>
--Xcomp -XX:CompileCommand=compileonly,SideEffect::method -XX:PrintIdealGraphLevel=1 -XX:PrintIdealGraphFile=SideEffect.xml --add-modules=ALL-DEFAULT </p>
-<p name='machine'>
-Host: herdi-macbook, Intel(R) Core(TM) i5-4308U CPU @ 2.80GHz, 4 cores, 15G, Ubuntu 24.04.3 LTS
-</p>
-<p name='cpuFeatures'>
-cx8, cmov, fxsr, ht, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, fma, vzeroupper, clflush, rdtscp, f16c</p>
-<p name='vm'>
-OpenJDK Runtime Environment (27.0) (fastdebug build 27-internal-adhoc.herdi.jdk)
-</p>
-<p name='dateTime'>
-Time: Fri Feb 13 14:31:44 2026 CET elapsed time: 1.839215 seconds (0d 0h 0m 1s)
-</p>
-<p name='processId'>
-17255</p>
-<p name='threadId'>
-17272</p>
+88</p>
 </properties>
 <method name='static jint SideEffect.method(jint, jint)' shortName=' SideEffect::method' bci='-1'>
 <bytecodes>
@@ -33,7 +16,7 @@ Time: Fri Feb 13 14:31:44 2026 CET elapsed time: 1.839215 seconds (0d 0h 0m 1s)
    2 iload_1
    3 ineg
    4 iand
-   5 bipush -2
+   5 bipush -4
    7 if_icmpne 14
   0    bci: 7    BranchData         taken(0) displacement(32)
                                     not taken(0)
@@ -45,12 +28,6 @@ Time: Fri Feb 13 14:31:44 2026 CET elapsed time: 1.839215 seconds (0d 0h 0m 1s)
 </bytecodes>
 </method>
 <graph name='After Parsing'>
-<properties>
-<p name='frame 0:'>
-Compile::Optimize() (compile.hpp:815)</p>
-<p name='frame 1:'>
-Compile::Compile(ciEnv*, ciMethod*, int, Options, DirectiveSet*) (compile.cpp:862)</p>
-</properties>
 <nodes>
 <node id='0'>
 <properties>
@@ -129,7 +106,7 @@ true</p>
 <p name='dump_spec'>
  #int:120</p>
 <p name='short_name'>
-120</p>
+I</p>
 </properties>
 </node>
 <node id='36'>
@@ -151,7 +128,7 @@ true</p>
 <p name='dump_spec'>
  #int:140</p>
 <p name='short_name'>
-140</p>
+I</p>
 </properties>
 </node>
 <node id='14'>
@@ -181,7 +158,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -195,7 +172,7 @@ T</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='30'>
@@ -209,13 +186,13 @@ tuple:</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='dump_spec'>
 P=0.900000, C=-1.000000</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='29'>
@@ -233,13 +210,13 @@ bool</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='dump_spec'>
 [ne]</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='28'>
@@ -251,19 +228,19 @@ CmpI</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
+int:-1..1</p>
 <p name='phase_type'>
-int:-1..1, 0u..maxuint</p>
+int:-1..1</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='dump_spec'>
 </p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='27'>
@@ -275,17 +252,17 @@ ConI</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
-int:-2</p>
+int:-4</p>
 <p name='phase_type'>
-int:-2</p>
+int:-4</p>
 <p name='category'>
 data</p>
 <p name='is_con'>
 true</p>
 <p name='dump_spec'>
- #int:-2</p>
+ #int:-4</p>
 <p name='short_name'>
--2</p>
+-4</p>
 </properties>
 </node>
 <node id='26'>
@@ -303,13 +280,13 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:4 (line 12)</p>
+ SideEffect::method @ bci:4 (line 9)</p>
 <p name='dump_spec'>
 </p>
 <p name='bci'>
 4 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='25'>
@@ -327,13 +304,13 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:3 (line 12)</p>
+ SideEffect::method @ bci:3 (line 9)</p>
 <p name='dump_spec'>
 </p>
 <p name='bci'>
 3 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='11'>
@@ -351,7 +328,7 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -378,8 +355,6 @@ tuple:</p>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
 <p name='phase_type'>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 mixed</p>
 <p name='dump_spec'>
@@ -407,7 +382,7 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -437,13 +412,13 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:1 (line 12)</p>
+ SideEffect::method @ bci:1 (line 9)</p>
 <p name='dump_spec'>
 </p>
 <p name='bci'>
 1 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='23'>
@@ -483,7 +458,7 @@ return_address</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -513,7 +488,7 @@ rawptr:BotPTR</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -536,18 +511,16 @@ Parm</p>
 7</p>
 <p name='type'>
 memory</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 memory</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
 2</p>
 <p name='dump_spec'>
-Memory  Memory: @ptr:BotPTR+bot, idx=Bot;</p>
+Memory  Memory: @BotPTR *+bot, idx=Bot;</p>
 <p name='alias_index'>
 2</p>
 <p name='alias_is_rewritable'>
@@ -575,7 +548,7 @@ abIO</p>
 <p name='category'>
 other</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -601,7 +574,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -627,7 +600,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='con'>
@@ -641,7 +614,7 @@ F</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='1'>
@@ -711,15 +684,7 @@ true</p>
 <edge from='0' to='1' index='0'/>
 </edges>
 </graph>
-<graph name='Before Matching'>
-<properties>
-<p name='frame 0:'>
-Matcher::match() (matcher.cpp:307)</p>
-<p name='frame 1:'>
-Compile::Code_Gen() (compile.cpp:3038)</p>
-<p name='frame 2:'>
-Compile::Compile(ciEnv*, ciMethod*, int, Options, DirectiveSet*) (compile.cpp:895)</p>
-</properties>
+<graph name='Before matching'>
 <nodes>
 <node id='0'>
 <properties>
@@ -806,7 +771,7 @@ false</p>
 <p name='dump_spec'>
  #int:120</p>
 <p name='short_name'>
-120</p>
+I</p>
 </properties>
 </node>
 <node id='36'>
@@ -830,7 +795,7 @@ false</p>
 <p name='dump_spec'>
  #int:140</p>
 <p name='short_name'>
-140</p>
+I</p>
 </properties>
 </node>
 <node id='14'>
@@ -864,7 +829,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -882,7 +847,7 @@ T</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='30'>
@@ -896,7 +861,7 @@ tuple:</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_shared'>
 true</p>
 <p name='is_dontcare'>
@@ -906,7 +871,7 @@ P=0.900000, C=-1.000000</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='28'>
@@ -918,11 +883,11 @@ CmpI</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
+int:-1..1</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_shared'>
 false</p>
 <p name='is_dontcare'>
@@ -932,7 +897,7 @@ false</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='27'>
@@ -944,7 +909,7 @@ ConI</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
-int:-2</p>
+int:-4</p>
 <p name='category'>
 data</p>
 <p name='is_con'>
@@ -954,9 +919,9 @@ false</p>
 <p name='is_dontcare'>
 false</p>
 <p name='dump_spec'>
- #int:-2</p>
+ #int:-4</p>
 <p name='short_name'>
--2</p>
+-4</p>
 </properties>
 </node>
 <node id='26'>
@@ -972,7 +937,7 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:4 (line 12)</p>
+ SideEffect::method @ bci:4 (line 9)</p>
 <p name='is_shared'>
 false</p>
 <p name='is_dontcare'>
@@ -982,33 +947,7 @@ false</p>
 <p name='bci'>
 4 </p>
 <p name='line'>
-12 </p>
-</properties>
-</node>
-<node id='25'>
-<properties>
-<p name='name'>
-SubI</p>
-<p name='idx'>
-25</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='category'>
-data</p>
-<p name='jvms'>
- SideEffect::method @ bci:3 (line 12)</p>
-<p name='is_shared'>
-false</p>
-<p name='is_dontcare'>
-false</p>
-<p name='dump_spec'>
-</p>
-<p name='bci'>
-3 </p>
-<p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='11'>
@@ -1024,7 +963,7 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1053,8 +992,6 @@ Start</p>
 tuple:</p>
 <p name='bottom_type'>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 mixed</p>
 <p name='is_shared'>
@@ -1084,7 +1021,7 @@ int</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1103,56 +1040,6 @@ P0</p>
 _ </p>
 </properties>
 </node>
-<node id='24'>
-<properties>
-<p name='name'>
-SubI</p>
-<p name='idx'>
-24</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='category'>
-data</p>
-<p name='jvms'>
- SideEffect::method @ bci:1 (line 12)</p>
-<p name='is_shared'>
-false</p>
-<p name='is_dontcare'>
-false</p>
-<p name='dump_spec'>
-</p>
-<p name='bci'>
-1 </p>
-<p name='line'>
-12 </p>
-</properties>
-</node>
-<node id='23'>
-<properties>
-<p name='name'>
-ConI</p>
-<p name='idx'>
-23</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int:0</p>
-<p name='category'>
-data</p>
-<p name='is_con'>
-true</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-false</p>
-<p name='dump_spec'>
- #int:0</p>
-<p name='short_name'>
-0</p>
-</properties>
-</node>
 <node id='9'>
 <properties>
 <p name='name'>
@@ -1166,7 +1053,7 @@ return_address</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1198,7 +1085,7 @@ rawptr:BotPTR</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1225,12 +1112,10 @@ Parm</p>
 7</p>
 <p name='type'>
 memory</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='category'>
 memory</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1240,7 +1125,7 @@ true</p>
 <p name='con'>
 2</p>
 <p name='dump_spec'>
-Memory  Memory: @ptr:BotPTR+bot, idx=Bot;</p>
+Memory  Memory: @BotPTR *+bot, idx=Bot;</p>
 <p name='alias_index'>
 2</p>
 <p name='alias_is_rewritable'>
@@ -1266,7 +1151,7 @@ abIO</p>
 <p name='category'>
 other</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1296,7 +1181,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1328,7 +1213,7 @@ bool</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_shared'>
 false</p>
 <p name='is_dontcare'>
@@ -1338,7 +1223,7 @@ false</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='32'>
@@ -1352,7 +1237,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1370,7 +1255,7 @@ F</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 </properties>
 </node>
 <node id='1'>
@@ -1422,17 +1307,12 @@ true</p>
 <edge from='26' to='28' index='1'/>
 <edge from='27' to='28' index='2'/>
 <edge from='0' to='27' index='0'/>
-<edge from='24' to='26' index='1'/>
-<edge from='25' to='26' index='2'/>
-<edge from='23' to='25' index='1'/>
-<edge from='11' to='25' index='2'/>
+<edge from='10' to='26' index='1'/>
+<edge from='11' to='26' index='2'/>
 <edge from='3' to='11' index='0'/>
 <edge from='3' to='3' index='0'/>
 <edge from='0' to='3' index='1'/>
 <edge from='3' to='10' index='0'/>
-<edge from='23' to='24' index='1'/>
-<edge from='10' to='24' index='2'/>
-<edge from='0' to='23' index='0'/>
 <edge from='3' to='9' index='0'/>
 <edge from='3' to='8' index='0'/>
 <edge from='3' to='7' index='0'/>
@@ -1444,19 +1324,13 @@ true</p>
 </edges>
 </graph>
 <graph name='Final Code'>
-<properties>
-<p name='frame 0:'>
-Compile::Code_Gen() (compile.hpp:815)</p>
-<p name='frame 1:'>
-Compile::Compile(ciEnv*, ciMethod*, int, Options, DirectiveSet*) (compile.cpp:895)</p>
-</properties>
 <nodes>
-<node id='77'>
+<node id='73'>
 <properties>
 <p name='name'>
 jmpDir_short</p>
 <p name='idx'>
-30</p>
+26</p>
 <p name='type'>
 bottom</p>
 <p name='bottom_type'>
@@ -1465,12 +1339,10 @@ bottom</p>
 4</p>
 <p name='frequency'>
 0.10000002</p>
-<p name='block_index'>
-2</p>
 <p name='category'>
 other</p>
 <p name='is_shared'>
-true</p>
+false</p>
 <p name='is_dontcare'>
 false</p>
 <p name='idealOpcode'>
@@ -1485,12 +1357,12 @@ true</p>
 0</p>
 </properties>
 </node>
-<node id='71'>
+<node id='67'>
 <properties>
 <p name='name'>
 Region</p>
 <p name='idx'>
-31</p>
+27</p>
 <p name='type'>
 control</p>
 <p name='block'>
@@ -1501,14 +1373,12 @@ control</p>
 3</p>
 <p name='frequency'>
 0.10000002</p>
-<p name='block_index'>
-0</p>
 <p name='category'>
 control</p>
 <p name='is_shared'>
 false</p>
 <p name='is_dontcare'>
-true</p>
+false</p>
 <p name='dump_spec'>
 </p>
 <p name='is_block_start'>
@@ -1534,7 +1404,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1554,7 +1424,7 @@ F</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 <p name='debug_orig'>
 </p>
 <p name='reg'>
@@ -1563,7 +1433,7 @@ F</p>
 0</p>
 </properties>
 </node>
-<node id='76'>
+<node id='72'>
 <properties>
 <p name='name'>
 jmpCon_short</p>
@@ -1575,12 +1445,10 @@ tuple:</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-16</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_shared'>
 true</p>
 <p name='is_dontcare'>
@@ -1594,7 +1462,7 @@ P=0.100000, C=-1.000000</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 <p name='reg'>
 &lt;OptoReg::-1&gt;</p>
 <p name='lrg'>
@@ -1610,13 +1478,11 @@ compI_rReg_imm</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
+int:-1..1</p>
 <p name='block'>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-15</p>
 <p name='category'>
 data</p>
 <p name='is_shared'>
@@ -1628,11 +1494,11 @@ true</p>
 <p name='idealOpcode'>
 CmpI</p>
 <p name='dump_spec'>
-#-2/0xfffffffe</p>
+#-4/0xfffffffc</p>
 <p name='reg'>
 RFLAGS</p>
 <p name='lrg'>
-11</p>
+7</p>
 </properties>
 </node>
 <node id='26'>
@@ -1649,8 +1515,6 @@ int</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-13</p>
 <p name='category'>
 data</p>
 <p name='is_shared'>
@@ -1669,46 +1533,12 @@ RSI</p>
 1</p>
 </properties>
 </node>
-<node id='25'>
-<properties>
-<p name='name'>
-negI_rReg</p>
-<p name='idx'>
-10</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-11</p>
-<p name='category'>
-data</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-true</p>
-<p name='old_node_idx'>
-25</p>
-<p name='idealOpcode'>
-SubI</p>
-<p name='dump_spec'>
-#0/0x00000000</p>
-<p name='reg'>
-RDX</p>
-<p name='lrg'>
-2</p>
-</properties>
-</node>
 <node id='11'>
 <properties>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-16</p>
+12</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
@@ -1717,12 +1547,10 @@ int</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-3</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -1750,13 +1578,11 @@ RDX</p>
 <p name='name'>
 Start</p>
 <p name='idx'>
-14</p>
+10</p>
 <p name='type'>
 tuple:</p>
 <p name='bottom_type'>
 {0:control, 1:abIO, 2:memory, 3:rawptr:BotPTR, 4:return_address, 5:int, 6:int}</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='block'>
 0</p>
 <p name='category'>
@@ -1831,14 +1657,10 @@ Ret</p>
 bottom</p>
 <p name='bottom_type'>
 bottom</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='block'>
 3</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-3</p>
 <p name='category'>
 other</p>
 <p name='is_shared'>
@@ -1868,7 +1690,7 @@ true</p>
 <p name='name'>
 Phi</p>
 <p name='idx'>
-22</p>
+18</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
@@ -1877,30 +1699,22 @@ int:120..140</p>
 3</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-1</p>
 <p name='category'>
 data</p>
-<p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
 <p name='is_shared'>
-false</p>
+true</p>
 <p name='is_dontcare'>
-false</p>
+true</p>
 <p name='old_node_idx'>
 18</p>
 <p name='dump_spec'>
  #int:120..140</p>
-<p name='bci'>
--1 </p>
-<p name='line'>
-_ </p>
 <p name='debug_orig'>
 </p>
 <p name='reg'>
 RAX</p>
 <p name='lrg'>
-12</p>
+8</p>
 </properties>
 </node>
 <node id='37'>
@@ -1908,7 +1722,7 @@ RAX</p>
 <p name='name'>
 loadConI</p>
 <p name='idx'>
-24</p>
+20</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
@@ -1917,8 +1731,6 @@ int:120</p>
 2</p>
 <p name='frequency'>
 0.89999998</p>
-<p name='block_index'>
-1</p>
 <p name='category'>
 data</p>
 <p name='is_con'>
@@ -1936,7 +1748,7 @@ ConI</p>
 <p name='reg'>
 RAX</p>
 <p name='lrg'>
-12</p>
+8</p>
 </properties>
 </node>
 <node id='36'>
@@ -1944,7 +1756,7 @@ RAX</p>
 <p name='name'>
 loadConI</p>
 <p name='idx'>
-23</p>
+19</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
@@ -1953,14 +1765,12 @@ int:140</p>
 4</p>
 <p name='frequency'>
 0.10000002</p>
-<p name='block_index'>
-1</p>
 <p name='category'>
 data</p>
 <p name='is_con'>
 true</p>
 <p name='is_shared'>
-true</p>
+false</p>
 <p name='is_dontcare'>
 false</p>
 <p name='old_node_idx'>
@@ -1972,7 +1782,7 @@ ConI</p>
 <p name='reg'>
 RAX</p>
 <p name='lrg'>
-12</p>
+8</p>
 </properties>
 </node>
 <node id='14'>
@@ -1991,8 +1801,6 @@ control</p>
 3</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-0</p>
 <p name='category'>
 control</p>
 <p name='is_shared'>
@@ -2013,12 +1821,12 @@ true</p>
 0</p>
 </properties>
 </node>
-<node id='69'>
+<node id='65'>
 <properties>
 <p name='name'>
 jmpDir</p>
 <p name='idx'>
-29</p>
+25</p>
 <p name='type'>
 bottom</p>
 <p name='bottom_type'>
@@ -2042,19 +1850,19 @@ Goto</p>
 <p name='is_block_proj'>
 true</p>
 <p name='debug_orig'>
-28</p>
+24</p>
 <p name='reg'>
 &lt;OptoReg::-1&gt;</p>
 <p name='lrg'>
 0</p>
 </properties>
 </node>
-<node id='72'>
+<node id='68'>
 <properties>
 <p name='name'>
 Region</p>
 <p name='idx'>
-32</p>
+28</p>
 <p name='type'>
 control</p>
 <p name='block'>
@@ -2065,14 +1873,12 @@ control</p>
 3</p>
 <p name='frequency'>
 0.89999998</p>
-<p name='block_index'>
-0</p>
 <p name='category'>
 control</p>
 <p name='is_shared'>
 false</p>
 <p name='is_dontcare'>
-true</p>
+false</p>
 <p name='dump_spec'>
 </p>
 <p name='is_block_start'>
@@ -2088,7 +1894,7 @@ true</p>
 <p name='name'>
 IfTrue</p>
 <p name='idx'>
-17</p>
+13</p>
 <p name='type'>
 control</p>
 <p name='block'>
@@ -2098,7 +1904,7 @@ control</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:7 (line 12)</p>
+ SideEffect::method @ bci:7 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -2118,7 +1924,7 @@ T</p>
 <p name='bci'>
 7 </p>
 <p name='line'>
-12 </p>
+9 </p>
 <p name='debug_orig'>
 </p>
 <p name='reg'>
@@ -2132,7 +1938,7 @@ T</p>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-21</p>
+17</p>
 <p name='type'>
 return_address</p>
 <p name='bottom_type'>
@@ -2141,12 +1947,10 @@ return_address</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-7</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -2176,7 +1980,7 @@ rsp + #24</p>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-20</p>
+16</p>
 <p name='type'>
 rawptr:</p>
 <p name='bottom_type'>
@@ -2185,12 +1989,10 @@ rawptr:BotPTR</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-6</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -2220,21 +2022,17 @@ RSP</p>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-19</p>
+15</p>
 <p name='type'>
 memory</p>
-<p name='adr_type'>
-ptr:BotPTR+bot</p>
 <p name='block'>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-5</p>
 <p name='category'>
 memory</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -2246,7 +2044,7 @@ false</p>
 <p name='con'>
 2</p>
 <p name='dump_spec'>
-#2/unmatched  Memory: @ptr:BotPTR+bot, idx=Bot;</p>
+#2/unmatched  Memory: @BotPTR *+bot, idx=Bot;</p>
 <p name='alias_index'>
 2</p>
 <p name='alias_is_rewritable'>
@@ -2268,7 +2066,7 @@ _ </p>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-18</p>
+14</p>
 <p name='type'>
 abIO</p>
 <p name='bottom_type'>
@@ -2277,12 +2075,10 @@ abIO</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-4</p>
 <p name='category'>
 other</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
@@ -2321,8 +2117,6 @@ top</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-8</p>
 <p name='category'>
 other</p>
 <p name='is_con'>
@@ -2348,7 +2142,7 @@ true</p>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-15</p>
+11</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
@@ -2357,18 +2151,16 @@ int</p>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-2</p>
 <p name='category'>
 data</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
-false</p>
+true</p>
 <p name='is_dontcare'>
-false</p>
+true</p>
 <p name='old_node_idx'>
 10</p>
 <p name='con'>
@@ -2385,98 +2177,28 @@ RSI</p>
 1</p>
 </properties>
 </node>
-<node id='24'>
-<properties>
-<p name='name'>
-negI_rReg</p>
-<p name='idx'>
-8</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-9</p>
-<p name='category'>
-data</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-true</p>
-<p name='old_node_idx'>
-24</p>
-<p name='idealOpcode'>
-SubI</p>
-<p name='dump_spec'>
-#0/0x00000000</p>
-<p name='reg'>
-RSI</p>
-<p name='lrg'>
-1</p>
-</properties>
-</node>
-<node id='49'>
-<properties>
-<p name='name'>
-MachProj</p>
-<p name='idx'>
-9</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-10</p>
-<p name='category'>
-data</p>
-<p name='is_dead_loop_safe'>
-true</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-true</p>
-<p name='con'>
-1</p>
-<p name='dump_spec'>
-#1</p>
-<p name='reg'>
-RFLAGS</p>
-<p name='lrg'>
-6</p>
-</properties>
-</node>
 <node id='5'>
 <properties>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-13</p>
+9</p>
 <p name='type'>
 control</p>
 <p name='block'>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-1</p>
 <p name='category'>
 control</p>
 <p name='jvms'>
- SideEffect::method @ bci:-1 (line 12)</p>
+ SideEffect::method @ bci:-1 (line 9)</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
-false</p>
+true</p>
 <p name='is_dontcare'>
-false</p>
+true</p>
 <p name='old_node_idx'>
 5</p>
 <p name='con'>
@@ -2495,64 +2217,28 @@ _ </p>
 0</p>
 </properties>
 </node>
-<node id='51'>
+<node id='48'>
 <properties>
 <p name='name'>
 MachProj</p>
 <p name='idx'>
-11</p>
-<p name='type'>
-int:</p>
-<p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
-<p name='block'>
-1</p>
-<p name='frequency'>
-1.00000000</p>
-<p name='block_index'>
-12</p>
-<p name='category'>
-data</p>
-<p name='is_dead_loop_safe'>
-true</p>
-<p name='is_shared'>
-true</p>
-<p name='is_dontcare'>
-true</p>
-<p name='con'>
-1</p>
-<p name='dump_spec'>
-#1</p>
-<p name='reg'>
-RFLAGS</p>
-<p name='lrg'>
 8</p>
-</properties>
-</node>
-<node id='52'>
-<properties>
-<p name='name'>
-MachProj</p>
-<p name='idx'>
-12</p>
 <p name='type'>
 int:</p>
 <p name='bottom_type'>
-int:-1..1, 0u..maxuint</p>
+int:-1..1</p>
 <p name='block'>
 1</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-14</p>
 <p name='category'>
 data</p>
 <p name='is_dead_loop_safe'>
 true</p>
 <p name='is_shared'>
-false</p>
+true</p>
 <p name='is_dontcare'>
-false</p>
+true</p>
 <p name='con'>
 1</p>
 <p name='dump_spec'>
@@ -2560,27 +2246,25 @@ false</p>
 <p name='reg'>
 RFLAGS</p>
 <p name='lrg'>
-10</p>
+6</p>
 </properties>
 </node>
-<node id='74'>
+<node id='70'>
 <properties>
 <p name='name'>
 Epilog</p>
 <p name='idx'>
-34</p>
+30</p>
 <p name='type'>
 control</p>
 <p name='block'>
 3</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-2</p>
 <p name='category'>
 control</p>
 <p name='is_shared'>
-false</p>
+true</p>
 <p name='is_dontcare'>
 false</p>
 <p name='idealOpcode'>
@@ -2593,12 +2277,12 @@ Node</p>
 0</p>
 </properties>
 </node>
-<node id='73'>
+<node id='69'>
 <properties>
 <p name='name'>
 Prolog</p>
 <p name='idx'>
-33</p>
+29</p>
 <p name='type'>
 control</p>
 <p name='block'>
@@ -2609,8 +2293,6 @@ control</p>
 2</p>
 <p name='frequency'>
 1.00000000</p>
-<p name='block_index'>
-0</p>
 <p name='category'>
 control</p>
 <p name='is_shared'>
@@ -2629,16 +2311,15 @@ Node</p>
 </node>
 </nodes>
 <edges>
-<edge from='71' to='77' index='0'/>
-<edge from='71' to='71' index='0'/>
-<edge from='32' to='71' index='1'/>
-<edge from='76' to='32' index='0'/>
-<edge from='5' to='76' index='0'/>
-<edge from='28' to='76' index='1'/>
+<edge from='67' to='73' index='0'/>
+<edge from='67' to='67' index='0'/>
+<edge from='32' to='67' index='1'/>
+<edge from='72' to='32' index='0'/>
+<edge from='5' to='72' index='0'/>
+<edge from='28' to='72' index='1'/>
 <edge from='26' to='28' index='1'/>
-<edge from='24' to='26' index='1'/>
-<edge from='25' to='26' index='2'/>
-<edge from='11' to='25' index='1'/>
+<edge from='10' to='26' index='1'/>
+<edge from='11' to='26' index='2'/>
 <edge from='3' to='11' index='0'/>
 <edge from='3' to='3' index='0'/>
 <edge from='0' to='3' index='1'/>
@@ -2656,23 +2337,20 @@ Node</p>
 <edge from='0' to='37' index='0'/>
 <edge from='0' to='36' index='0'/>
 <edge from='14' to='14' index='0'/>
-<edge from='77' to='14' index='1'/>
-<edge from='69' to='14' index='2'/>
-<edge from='72' to='69' index='0'/>
-<edge from='72' to='72' index='0'/>
-<edge from='31' to='72' index='1'/>
-<edge from='76' to='31' index='0'/>
+<edge from='73' to='14' index='1'/>
+<edge from='65' to='14' index='2'/>
+<edge from='68' to='65' index='0'/>
+<edge from='68' to='68' index='0'/>
+<edge from='31' to='68' index='1'/>
+<edge from='72' to='31' index='0'/>
 <edge from='3' to='9' index='0'/>
 <edge from='3' to='8' index='0'/>
 <edge from='3' to='7' index='0'/>
 <edge from='3' to='6' index='0'/>
 <edge from='3' to='1' index='0'/>
 <edge from='3' to='10' index='0'/>
-<edge from='10' to='24' index='1'/>
-<edge from='24' to='49' index='0'/>
 <edge from='3' to='5' index='0'/>
-<edge from='25' to='51' index='0'/>
-<edge from='26' to='52' index='0'/>
+<edge from='26' to='48' index='0'/>
 </edges>
 <controlFlow>
 <block name='0'>
@@ -2688,7 +2366,7 @@ Node</p>
 <successor name='2'/>
 </successors>
 <nodes>
-<node id='73'/>
+<node id='69'/>
 <node id='5'/>
 <node id='10'/>
 <node id='11'/>
@@ -2697,14 +2375,10 @@ Node</p>
 <node id='8'/>
 <node id='9'/>
 <node id='1'/>
-<node id='24'/>
-<node id='49'/>
-<node id='25'/>
-<node id='51'/>
 <node id='26'/>
-<node id='52'/>
+<node id='48'/>
 <node id='28'/>
-<node id='76'/>
+<node id='72'/>
 </nodes>
 </block>
 <block name='2'>
@@ -2712,7 +2386,7 @@ Node</p>
 <successor name='3'/>
 </successors>
 <nodes>
-<node id='72'/>
+<node id='68'/>
 <node id='37'/>
 </nodes>
 </block>
@@ -2723,7 +2397,7 @@ Node</p>
 <nodes>
 <node id='14'/>
 <node id='18'/>
-<node id='74'/>
+<node id='70'/>
 <node id='38'/>
 </nodes>
 </block>
@@ -2732,9 +2406,9 @@ Node</p>
 <successor name='3'/>
 </successors>
 <nodes>
-<node id='71'/>
+<node id='67'/>
 <node id='36'/>
-<node id='77'/>
+<node id='73'/>
 </nodes>
 </block>
 </controlFlow>

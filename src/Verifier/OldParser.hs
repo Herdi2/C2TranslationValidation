@@ -2,12 +2,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
-module OldParser () where
+module Verifier.OldParser () where
 
 import Data.Char (isSpace, toLower)
 import qualified Data.Map as M
 import Data.SBV (Word32)
-import Graph
+import Verifier.Graph
 import Text.XML.HXT.Core
 import Text.XML.HXT.DOM.XmlNode (NTree)
 

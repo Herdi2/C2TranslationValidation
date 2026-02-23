@@ -1,13 +1,13 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeApplications #-}
 
-module Verify where
+module Verifier.Verify where
 
 import Data.List (findIndex)
 import qualified Data.Map as M
 import Data.Proxy
 import Data.SBV
-import Graph
+import Verifier.Graph
 
 -- | Partial accessor functions, to help indicate any type errors during symbolic execution
 getInt :: SValue -> SInt32
@@ -18,11 +18,11 @@ getLong :: SValue -> SInt64
 getLong (JLong v) = v
 getLong sval = error $ "getLong: Got " <> show sval
 
-getFloat :: SValue -> SFPSingle
+getFloat :: SValue -> SFloat
 getFloat (JFloat v) = v
 getFloat sval = error $ "getFloat: Got " <> show sval
 
-getDouble :: SValue -> SFPDouble
+getDouble :: SValue -> SDouble
 getDouble (JDouble v) = v
 getDouble sval = error $ "getDouble: Got " <> show sval
 
@@ -224,7 +224,7 @@ evalDataNode graph@(nodeInfo -> nodes) (MulHiL n1 n2) =
     signExtend64To128 :: SInt64 -> SInt 128
     signExtend64To128 = signExtend . toSized
     extractUpper64Bits :: SInt 128 -> SInt 64
-    extractUpper64Bits = bvDrop (Proxy @64)
+    extractUpper64Bits = bvExtract (Proxy @127) (Proxy @64)
 evalDataNode graph@(nodeInfo -> nodes) (DivI n1 n2) =
   do
     v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
@@ -331,6 +331,68 @@ evalDataNode graph (Phi rid preds) =
   let dataIdx = (regionPredecessor graph) M.! rid
       chosenDataNode = (nodeInfo graph) M.! (preds !! fromIntegral dataIdx)
    in return =<< evalDataNode graph chosenDataNode
+-- The floating-point conversions are taken from https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html#jvms-2.8
+-- Conversion to an integer value uses IEEE 754 roundTowardZero
+-- Any other conversion uses IEEE 754 roundTiesToEven
+-- Conversions to integer values, IEEE 754 roundTowardsZero:
+evalDataNode graph@(nodeInfo -> nodes) (ConvD2I nid) =
+  do
+    v <- getDouble <$> evalDataNode graph (nodes M.! nid)
+    return $ JInt $ fromSDouble sRoundTowardZero v
+evalDataNode graph@(nodeInfo -> nodes) (ConvD2L nid) =
+  do
+    v <- getDouble <$> evalDataNode graph (nodes M.! nid)
+    return $ JLong $ fromSDouble sRoundTowardZero v
+evalDataNode graph@(nodeInfo -> nodes) (ConvF2I nid) =
+  do
+    v <- getFloat <$> evalDataNode graph (nodes M.! nid)
+    return $ JInt $ fromSFloat sRoundTowardZero v
+evalDataNode graph@(nodeInfo -> nodes) (ConvF2L nid) =
+  do
+    v <- getFloat <$> evalDataNode graph (nodes M.! nid)
+    return $ JLong $ fromSFloat sRoundTowardZero v
+-- Other conversions, IEEE 754 roundTiesToEven:
+evalDataNode graph@(nodeInfo -> nodes) (ConvF2D nid) =
+  do
+    v <- getFloat <$> evalDataNode graph (nodes M.! nid)
+    return $ JDouble $ fromSFloat sRoundNearestTiesToEven v
+evalDataNode graph@(nodeInfo -> nodes) (ConvD2F nid) =
+  do
+    v <- getDouble <$> evalDataNode graph (nodes M.! nid)
+    return $ JFloat $ fromSDouble sRoundNearestTiesToEven v
+evalDataNode graph@(nodeInfo -> nodes) (ConvI2D nid) =
+  do
+    v <- getInt <$> evalDataNode graph (nodes M.! nid)
+    return $ JDouble $ toSDouble sRoundNearestTiesToEven v
+evalDataNode graph@(nodeInfo -> nodes) (ConvI2F nid) =
+  do
+    v <- getInt <$> evalDataNode graph (nodes M.! nid)
+    return $ JFloat $ toSFloat sRoundNearestTiesToEven v
+evalDataNode graph@(nodeInfo -> nodes) (ConvL2D nid) =
+  do
+    v <- getLong <$> evalDataNode graph (nodes M.! nid)
+    return $ JDouble $ toSDouble sRoundNearestTiesToEven v
+evalDataNode graph@(nodeInfo -> nodes) (ConvL2F nid) =
+  do
+    v <- getLong <$> evalDataNode graph (nodes M.! nid)
+    return $ JFloat $ toSFloat sRoundNearestTiesToEven v
+-- Conversion between integer and long https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html#jvms-2.11.4
+-- Widening operation, simple sign extension
+evalDataNode graph@(nodeInfo -> nodes) (ConvI2L nid) =
+  do
+    v <- getInt <$> evalDataNode graph (nodes M.! nid)
+    return $ JLong $ signExtend32To64 v
+  where
+    signExtend32To64 :: SInt32 -> SInt64
+    signExtend32To64 = fromSized . (signExtend :: SInt 32 -> SInt 64) . toSized
+-- Narrowing operation, discard all but the lower 32 bits
+evalDataNode graph@(nodeInfo -> nodes) (ConvL2I nid) =
+  do
+    v <- getLong <$> evalDataNode graph (nodes M.! nid)
+    return $ JInt $ dropUpper32 v
+  where
+    dropUpper32 :: SInt64 -> SInt32
+    dropUpper32 = fromSized . (bvDrop (Proxy @32) :: SInt 64 -> SInt 32) . toSized
 evalDataNode _ n = error $ "Not a data node:" <> show n
 
 -- | Creates a symbolic value for each parameter node.
@@ -351,11 +413,11 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
             go (M.insert nid param paramMap) rest
         ParmF nid ->
           do
-            param <- JFloat <$> sFPSingle ("parm" <> show nid)
+            param <- JFloat <$> sFloat ("parm" <> show nid)
             go (M.insert nid param paramMap) rest
         ParmD nid ->
           do
-            param <- JDouble <$> sFPDouble ("parm" <> show nid)
+            param <- JDouble <$> sDouble ("parm" <> show nid)
             go (M.insert nid param paramMap) rest
         _ -> go paramMap rest
 

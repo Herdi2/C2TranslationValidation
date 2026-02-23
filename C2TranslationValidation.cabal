@@ -25,12 +25,15 @@ source-repository head
 
 library
   exposed-modules:
-      Graph
-      GraphBuilder
-      GraphParser
-      Lib
-      OldParser
-      Verify
+      Fuzzer.Gen
+      Fuzzer.Grammar
+      Fuzzer.RNG
+      Verifier.Graph
+      Verifier.GraphBuilder
+      Verifier.GraphParser
+      Verifier.OldParser
+      Verifier.Utils
+      Verifier.Verify
   other-modules:
       Paths_C2TranslationValidation
   autogen-modules:
@@ -43,9 +46,14 @@ library
   build-depends:
       base >=4.7 && <5
     , containers >=0.7
+    , directory >=1.3
+    , effectful-core >=2.6.1.0
+    , hspec >=2.11
     , hxt >=9.3.1.22
     , mtl >=2.3.1
+    , prettyprinter >=1.7.1
     , process >=1.6
+    , random >=1.3.1
     , sbv >=13.5
     , text >=2.1.3
     , xml >=1.3.14
@@ -64,9 +72,14 @@ executable C2TranslationValidation-exe
       C2TranslationValidation
     , base >=4.7 && <5
     , containers >=0.7
+    , directory >=1.3
+    , effectful-core >=2.6.1.0
+    , hspec >=2.11
     , hxt >=9.3.1.22
     , mtl >=2.3.1
+    , prettyprinter >=1.7.1
     , process >=1.6
+    , random >=1.3.1
     , sbv >=13.5
     , text >=2.1.3
     , xml >=1.3.14
@@ -76,6 +89,7 @@ test-suite C2TranslationValidation-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      GraphParserSpec
       Paths_C2TranslationValidation
   autogen-modules:
       Paths_C2TranslationValidation
@@ -86,10 +100,16 @@ test-suite C2TranslationValidation-test
       C2TranslationValidation
     , base >=4.7 && <5
     , containers >=0.7
+    , directory >=1.3
+    , effectful-core >=2.6.1.0
+    , hspec ==2.*
     , hxt >=9.3.1.22
     , mtl >=2.3.1
+    , prettyprinter >=1.7.1
     , process >=1.6
+    , random >=1.3.1
     , sbv >=13.5
     , text >=2.1.3
     , xml >=1.3.14
   default-language: Haskell2010
+  build-tool-depends: hspec-discover:hspec-discover == 2.*

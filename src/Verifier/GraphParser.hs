@@ -1,8 +1,8 @@
-module GraphParser (parseGraph) where
+module Verifier.GraphParser (parseGraph) where
 
 import Data.Char (isSpace, toLower)
 import qualified Data.Map as M
-import Graph
+import Verifier.Graph
 import Text.XML.Light
 
 -- | Parses the graph with `graphName` from the given XML file into a @RawGraph@
