@@ -28,11 +28,11 @@ library
       Fuzzer.Gen
       Fuzzer.Grammar
       Fuzzer.RNG
+      Utils
       Verifier.Graph
       Verifier.GraphBuilder
       Verifier.GraphParser
       Verifier.OldParser
-      Verifier.Utils
       Verifier.Verify
   other-modules:
       Paths_C2TranslationValidation

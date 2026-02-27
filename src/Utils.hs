@@ -1,14 +1,19 @@
-module Verifier.Utils where
+{-# LANGUAGE LambdaCase #-}
+
+module Utils where
 
 import Control.Monad
 import Data.List
 import Data.SBV
 import Debug.Trace
+import Fuzzer.Gen
+import Prettyprinter (pretty)
+import System.Exit
+import System.Process
+import qualified System.Random as System
 import Verifier.Graph
 import Verifier.GraphBuilder
 import Verifier.GraphParser
-import System.Exit
-import System.Process
 import Verifier.Verify
 
 -- | Given a Java class name and a method within, return the output of the compiler and the interpreter
@@ -131,3 +136,18 @@ compileJavaProgram javaFile methodName outputPath =
         if exitCode /= ExitSuccess
           then return $ Left $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
           else return $ Right $ javaClass ++ ".xml"
+
+-- | Generates a program and writes to the output path, returning the name of the written file
+-- on success, or the seed on failure.
+fuzzProgram :: String -> IO (Either String String)
+fuzzProgram outPath =
+  do
+    seed <- System.randomIO
+    let className = "Klass" <> show seed
+    case program seed className "method" of
+      Left _ -> return $ Left $ "Fuzzer: Failed to generate program with seed: " <> show seed
+      Right prog ->
+        do
+          let fileName = outPath ++ className ++ ".java"
+          writeFile fileName (show $ pretty prog)
+          return $ Right fileName

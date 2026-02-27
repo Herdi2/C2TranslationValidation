@@ -3,25 +3,21 @@
 
 module Main (main) where
 
-import Verifier.Utils
+import Utils
 
 main :: IO ()
 main =
   do
-    let javaFile = "AndNeg.java"
-        methodName = "method"
-        path = "/home/herdi/Desktop/master-work/C2TranslationValidation/java-examples/old-data-bugs/"
-    compileJavaProgram javaFile methodName path
+    let outPath = "/home/herdi/Desktop/master-work/C2TranslationValidation/output/"
+    fuzzProgram outPath
       >>= \case
         Left err -> putStrLn err
-        Right xml ->
-          verifyXML xml
+        Right javaFile ->
+          compileJavaProgram javaFile "method" outPath
             >>= \case
               Left err -> putStrLn err
-              Right res ->
-                do
-                  print res
-                  compareOutput "AndNeg" methodName
-                    >>= \case
-                      Left err -> putStrLn err
-                      Right res -> print res
+              Right xml ->
+                verifyXML (outPath ++ xml)
+                  >>= \case
+                    Left err -> putStrLn err
+                    Right res -> print res >> print javaFile

@@ -1,5 +1,6 @@
 module Fuzzer.Grammar where
 
+import Data.Word
 import Prettyprinter
 
 -- https://docs.oracle.com/javase/specs/jls/se25/html/jls-19.html
@@ -12,7 +13,7 @@ data JType
   | JDouble
   | JBool
   -- JVar, "var" keyword, think C++ auto
-  deriving (Show, Eq)
+  deriving (Show, Ord, Eq)
 
 instance Pretty JType where
   pretty JInt = pretty "int"
@@ -21,16 +22,71 @@ instance Pretty JType where
   pretty JDouble = pretty "double"
   pretty JBool = pretty "bool"
 
--- Method <methodName> <retType> <parameters> <body>
-data JMethod = JMethod String JType [(JType, String)] [JStmt] deriving (Show, Eq)
+-- | Program <className> <compiled method>
+data JProgram = JProgram Word64 String JMethod deriving (Show)
+
+instance Pretty JProgram where
+  pretty (JProgram seed className method@(JMethod methodName methodType params _ _)) =
+    pretty "// Generated with seed"
+      <+> pretty seed
+      <> line
+      <> pretty "class"
+      <+> pretty className
+      <+> lbrace
+      <> line
+      <> indent
+        4
+        ( pretty "public static void main(String[] args)"
+            <+> lbrace
+            <> line
+            <> indent
+              4
+              ( pretty methodType
+                  <+> pretty "checksum"
+                  <+> equals
+                  <+> pretty methodName
+                  <> encloseSep
+                    lparen
+                    rparen
+                    (comma <> space)
+                    ( ( \(_, varType) ->
+                          pretty $
+                            case varType of
+                              JInt -> IntLit 0
+                              JLong -> LongLit 0
+                              JFloat -> FloatLit 0
+                              JDouble -> DoubleLit 0
+                      )
+                        <$> params
+                    )
+                  <> semi
+                  <> line
+                  <> pretty "System.out.println(checksum)"
+                  <> semi
+              )
+            <> line
+            <> rbrace
+        )
+      <> line
+      <> line
+      <> indent 4 (pretty method)
+      <> line
+      <> rbrace
+
+-- | Method <methodName> <retType> <parameters> <body> <return expr>
+data JMethod = JMethod String JType [(String, JType)] [JStmt] JExpr deriving (Show, Eq)
 
 instance Pretty JMethod where
-  pretty (JMethod methodName retType params body) =
-    pretty retType <+> pretty methodName
-      <> encloseSep lparen rparen (comma <> space) ((\(varTyp, varName) -> pretty varTyp <+> pretty varName) <$> params)
-        <+> lbrace
+  pretty (JMethod methodName retType params body ret) =
+    pretty "static"
+      <+> pretty retType
+      <+> pretty methodName
+      <> encloseSep lparen rparen (comma <> space) ((\(varName, varType) -> pretty varType <+> pretty varName) <$> params)
+      <+> lbrace
       <> line
       <> indent 4 (align (vsep $ pretty <$> body))
+      <> line
+      <> indent 4 (align $ pretty "return" <+> pretty ret <> semi)
       <> line
       <> rbrace
 
@@ -76,19 +132,19 @@ instance Pretty JExpr where
   pretty (JVariable _varTyp varName) = pretty varName
   pretty (JConv varTyp expr) = parens (pretty varTyp) <+> pretty expr
   pretty (JConst _litTyp literal) = pretty literal
-  pretty (JBin binop expr1 expr2) = pretty expr1 <+> pretty binop <+> pretty expr2
+  pretty (JBin binop expr1 expr2) = parens (pretty expr1) <+> pretty binop <+> parens (pretty expr2)
 
 data Lit
   = IntLit Integer
   | LongLit Integer
-  | FloatLit Integer
-  | DoubleLit Integer
+  | FloatLit Float
+  | DoubleLit Double
   deriving (Show, Eq)
 
 instance Pretty Lit where
   pretty (IntLit i) = pretty i
-  pretty (LongLit l) = pretty l
-  pretty (FloatLit f) = pretty f
+  pretty (LongLit l) = pretty l <> pretty "l"
+  pretty (FloatLit f) = pretty f <> pretty "f"
   pretty (DoubleLit d) = pretty d
 
 data BOp

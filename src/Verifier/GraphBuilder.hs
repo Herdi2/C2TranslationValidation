@@ -8,8 +8,8 @@ import Data.Char (isDigit)
 import Data.List (isPrefixOf, sortOn)
 import qualified Data.Map as M
 import Debug.Trace
-import Verifier.Graph
 import Text.Read (readMaybe)
+import Verifier.Graph
 
 data ParseResult a
   = -- | Recognized values that are not needed
@@ -110,10 +110,10 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
     "MulD" -> arithmeticNode MulD nodeId rEdges
     "MulHiL" -> arithmeticNode MulHiL nodeId rEdges
     -- Division
-    "DivI" -> arithmeticNode DivI nodeId rEdges
-    "DivL" -> arithmeticNode DivL nodeId rEdges
-    "DivF" -> arithmeticNode DivF nodeId rEdges
-    "DivD" -> arithmeticNode DivD nodeId rEdges
+    "DivI" -> pinnedArithmeticNode DivL nodeId rEdges
+    "DivL" -> pinnedArithmeticNode DivL nodeId rEdges
+    "DivF" -> pinnedArithmeticNode DivF nodeId rEdges
+    "DivD" -> pinnedArithmeticNode DivD nodeId rEdges
     -- Bitwise and
     "AndI" -> arithmeticNode AndI nodeId rEdges
     "AndL" -> arithmeticNode AndL nodeId rEdges
@@ -227,6 +227,15 @@ arithmeticNode constr nodeId rEdges =
     [x, y] -> Parsed (nodeId, constr x y)
     neighbors -> Unsupported $ "Arithmetic node: Expected two preds but got: " <> show (length neighbors)
 
+-- | Similar to @arithmeticNode@, except it allows for the node to get pinned by control flow.
+-- This can happen for division.
+pinnedArithmeticNode :: (NodeId -> NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
+pinnedArithmeticNode constr nodeId rEdges =
+  -- \| NOTE: Unlike other arithmetic nodes, Div can get pinned by control flow
+  case findNodePred nodeId rEdges of
+    [x, y] -> Parsed (nodeId, constr x y)
+    [_ctrl, x, y] -> Parsed (nodeId, constr x y)
+    neighbors -> Unsupported $ "Arithmetic node: Expected two preds but got: " <> show (length neighbors)
 
 convNode :: (NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
 convNode constr nodeId rEdges =
