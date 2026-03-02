@@ -8,6 +8,8 @@ import Data.Char (isDigit)
 import Data.List (isPrefixOf, sortOn)
 import qualified Data.Map as M
 import Debug.Trace
+import GHC.Float (castWord32ToFloat, castWord64ToDouble)
+import Numeric (readBin)
 import Text.Read (readMaybe)
 import Verifier.Graph
 
@@ -78,20 +80,24 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
           case (readMaybe (drop (length "long:") value)) of
             Nothing -> Unsupported $ "buildNode: Internal error, ConI, couldn't read value from " <> show value
             Just readRes -> Parsed (nodeId, ConL readRes)
+    -- NOTE: Assuming floats and doubles are given in binary format,
+    -- to avoid floating-point precision loss.
     "ConF" ->
       case (M.lookup "bottom_type" nodeProps) of
         Nothing -> Unsupported $ "buildNode: Internal error, ConF didn't contain \"bottom_type\""
         Just value ->
-          case (readMaybe (drop (length "ftcon:") value)) of
-            Nothing -> Unsupported $ "buildNode: Internal error, ConF, couldn't read value from " <> show value
-            Just readRes -> Parsed (nodeId, ConF readRes)
+          let floatBin = drop (length "ftcon:") value
+           in Parsed (nodeId, ConF $ bitsToFloat floatBin)
+      where
+        bitsToFloat = castWord32ToFloat . fst . head . readBin
     "ConD" ->
       case (M.lookup "bottom_type" nodeProps) of
         Nothing -> Unsupported $ "buildNode: Internal error, ConD didn't contain \"bottom_type\""
         Just value ->
-          case (readMaybe (drop (length "dblcon:") value)) of
-            Nothing -> Unsupported $ "buildNode: Internal error, ConD, couldn't read value from " <> show value
-            Just readRes -> Parsed (nodeId, ConD readRes)
+          let doubleBin = drop (length "dblcon:") value
+           in Parsed (nodeId, ConD $ bitsToDouble doubleBin)
+      where
+        bitsToDouble = castWord64ToDouble . fst . head . readBin
     -- Addition
     "AddI" -> arithmeticNode AddI nodeId rEdges
     "AddL" -> arithmeticNode AddL nodeId rEdges
@@ -109,7 +115,7 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
     "MulD" -> arithmeticNode MulD nodeId rEdges
     "MulHiL" -> arithmeticNode MulHiL nodeId rEdges
     -- Division
-    "DivI" -> pinnedArithmeticNode DivL nodeId rEdges
+    "DivI" -> pinnedArithmeticNode DivI nodeId rEdges
     "DivL" -> pinnedArithmeticNode DivL nodeId rEdges
     "DivF" -> pinnedArithmeticNode DivF nodeId rEdges
     "DivD" -> pinnedArithmeticNode DivD nodeId rEdges
