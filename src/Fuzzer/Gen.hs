@@ -112,16 +112,16 @@ program seed className methodName =
 method :: String -> Gen JMethod
 method methodName =
   do
-    paramCount <- randR (0, 3)
+    paramCount <- randR (1, 2)
     params <-
       sequence $
         replicate paramCount $
           do
             varName <- freshVar
-            varType <- choose $ [JInt, JLong, JFloat, JDouble]
+            varType <- genArithmeticType
             return (varName, varType)
     mapM_ (uncurry declareVar) params
-    stmtCount <- randR (5, 10)
+    stmtCount <- randR (2, 3)
     methodBody <- sequence $ replicate stmtCount stmt
     -- Initial design choice: Calculate checksum of all variables?
     let retType = JDouble
@@ -157,11 +157,21 @@ stmt =
       (assign, 0.3)
     ]
 
+-- | Weighted choise of arithmetic types (Int, Long, Float, Double)
+genArithmeticType :: Gen JType
+genArithmeticType =
+  weighted
+    [ (JInt, 0.40),
+      (JLong, 0.35),
+      (JFloat, 0.3),
+      (JDouble, 0.3)
+    ]
+
 declare :: Gen JStmt
 declare =
   do
     varName <- freshVar
-    varTyp <- choose [JInt, JLong, JFloat, JDouble]
+    varTyp <- genArithmeticType
     varExpr <- withType varTyp $ expr
     declareVar varName varTyp
     return $ JDecl varTyp varName varExpr
@@ -222,6 +232,7 @@ constExpr =
           -- Floating point values are generated in binary representation
           lit <- DoubleLit <$> randR (-100.0, 100.0)
           return $ JConst JDouble lit
+      Just JBool -> empty -- constExpr does not generate booleans
       Nothing -> error "constExpr: Tried to generate a constant without specified type"
 
 arithmeticExpr :: Gen JExpr

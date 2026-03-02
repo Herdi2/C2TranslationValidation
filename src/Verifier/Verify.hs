@@ -35,6 +35,16 @@ instance EqSymbolic SValue where
       (JDouble v1, JDouble v2) -> v1 .== v2
       (_, _) -> sFalse
 
+  -- NOTE: Important to also implement (.===) to get equality between NaNs
+  -- Otherwise we get many false-positives.
+  (.===) a b =
+    case (a, b) of
+      (JInt v1, JInt v2) -> v1 .=== v2
+      (JLong v1, JLong v2) -> v1 .=== v2
+      (JFloat v1, JFloat v2) -> v1 .=== v2
+      (JDouble v1, JDouble v2) -> v1 .=== v2
+      (_, _) -> sFalse
+
 instance Mergeable SValue where
   symbolicMerge force test left right = case (left, right) of
     (JInt x, JInt y) -> JInt $ symbolicMerge force test x y

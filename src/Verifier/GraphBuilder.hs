@@ -78,21 +78,20 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
           case (readMaybe (drop (length "long:") value)) of
             Nothing -> Unsupported $ "buildNode: Internal error, ConI, couldn't read value from " <> show value
             Just readRes -> Parsed (nodeId, ConL readRes)
-    -- NOTE: ConF and ConD are assumed to be given in a binary format
     "ConF" ->
       case (M.lookup "bottom_type" nodeProps) of
         Nothing -> Unsupported $ "buildNode: Internal error, ConF didn't contain \"bottom_type\""
         Just value ->
           case (readMaybe (drop (length "ftcon:") value)) of
             Nothing -> Unsupported $ "buildNode: Internal error, ConF, couldn't read value from " <> show value
-            Just readRes -> Parsed (nodeId, ConF $ fromInteger readRes)
+            Just readRes -> Parsed (nodeId, ConF readRes)
     "ConD" ->
       case (M.lookup "bottom_type" nodeProps) of
         Nothing -> Unsupported $ "buildNode: Internal error, ConD didn't contain \"bottom_type\""
         Just value ->
           case (readMaybe (drop (length "dblcon:") value)) of
             Nothing -> Unsupported $ "buildNode: Internal error, ConD, couldn't read value from " <> show value
-            Just readRes -> Parsed (nodeId, ConD $ fromInteger readRes)
+            Just readRes -> Parsed (nodeId, ConD readRes)
     -- Addition
     "AddI" -> arithmeticNode AddI nodeId rEdges
     "AddL" -> arithmeticNode AddL nodeId rEdges
