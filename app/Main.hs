@@ -7,32 +7,68 @@ import CommandLine
 import Control.Monad
 import Data.Maybe
 import Options.Applicative
+import System.Directory
+import System.Exit
 import Utils
 
+-- Main
+
 main :: IO ()
-main = parseOptions =<< execParser optionsParser
+main = do
+  cmd <- execParser (info (commandParser <**> helper) fullDesc)
+  case cmd of
+    Verify opts -> verify opts
+    Fuzz opts -> fuzz opts
 
-parseOptions :: Commands -> IO ()
-parseOptions cmds =
-  do
-    forM_ (verify cmds) $ \program ->
-      (verifyProgram program (methodName cmds) >>= printOut)
-
-printOut :: Either String String -> IO ()
-printOut (Left err) = putStrLn $ red ("Error: ") <> err
-printOut (Right res) = putStrLn res
-
-bold :: String -> String
-bold str = "\ESC[1m" ++ str ++ "\ESC[0m"
-
-green :: String -> String
-green str = "\ESC[32m" ++ str ++ "\ESC[0m"
+verify :: VerifyOpts -> IO ()
+verify opts =
+  runErrorM (verifyProgram (verifyFile opts) (verifyMethod opts))
+    >>= \case
+      Left err -> putStrLn (red ("Error: \n") <> err) >> exitFailure
+      Right res ->
+        case verifyOutput opts of
+          Just fileName -> writeFile fileName res
+          Nothing -> putStrLn res
 
 red :: String -> String
 red str = "\ESC[31m" ++ str ++ "\ESC[0m"
 
-cyan :: String -> String
-cyan str = "\ESC[96m" ++ str ++ "\ESC[0m"
+fuzz :: FuzzOpts -> IO ()
+fuzz opts =
+  do
+    dir <- makeAbsolute $ fuzzOutput opts
+    createDirectoryIfMissing True dir
+    setCurrentDirectory dir
+    undefined
+
+-- main :: IO ()
+-- main = parseOptions =<< execParser optionsParser
+--
+-- parseOptions :: Commands -> IO ()
+-- parseOptions cmds =
+--   do
+--     forM_ (verifyCMD cmds) $ \program ->
+--       (verifyProgram program (methodCMD cmds) >>= printOut)
+--     forM_ (xmlCMD cmds) $ \xmlFile ->
+--       do
+--         contents <- readFile xmlFile
+--         res <- verifyXML contents
+--         printOut res
+--     putStrLn "Hello"
+--
+-- printOut :: Either String String -> IO ()
+-- printOut (Left err) = putStrLn (red ("Error:\n") <> err) >> exitFailure
+-- printOut (Right res) = putStrLn res >> exitSuccess
+--
+-- bold :: String -> String
+-- bold str = "\ESC[1m" ++ str ++ "\ESC[0m"
+--
+-- green :: String -> String
+-- green str = "\ESC[32m" ++ str ++ "\ESC[0m"
+--
+--
+-- cyan :: String -> String
+-- cyan str = "\ESC[96m" ++ str ++ "\ESC[0m"
 
 -- do
 --   let outPath = "/home/herdi/Desktop/master-work/C2TranslationValidation/output/"
@@ -53,4 +89,4 @@ cyan str = "\ESC[96m" ++ str ++ "\ESC[0m"
 --                       print javaFile
 --
 -- out <- compareOutput javaFile "method"
--- print out
+-- print out

@@ -1,11 +1,19 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Utils where
 
 import Control.Monad
+import Control.Monad.Except
 import Data.List
 import Data.SBV
 import Debug.Trace
+import Effectful
+import Effectful.Fail (Fail, runFail)
 import Fuzzer.Gen
 import Prettyprinter (Pretty, pretty)
 import System.Directory (getCurrentDirectory, removeFile)
@@ -16,6 +24,11 @@ import Verifier.Graph
 import Verifier.GraphBuilder
 import Verifier.GraphParser
 import Verifier.Verify
+
+type ErrorM = Eff '[Fail, IOE]
+
+runErrorM :: ErrorM a -> IO (Either String a)
+runErrorM = runEff . runFail
 
 -- | Given a Java file and a method within, return the output of the compiler and the interpreter
 -- NOTE: We assume the class who's method we'll compile shared the name with the Java file
@@ -82,11 +95,12 @@ parseGraphs xmlContent =
     return (before, after)
 
 -- | Verifies the given XML file
-verifyXML :: String -> IO (Either String SatResult)
+verifyXML :: String -> ErrorM String
 verifyXML xmlContent =
   case (parseGraphs xmlContent) of
-    Left err -> return $ Left err
-    Right (before, after) -> Right <$> runVerification False before after
+    Left err -> fail err
+    Right (before, after) ->
+      show <$> (liftIO $ runVerification False before after)
 
 -- | Given a path to a Java file, e.g. /hello/this/path/Klass.java
 -- returns the Java class name and path: (/hello/this/path, Klass)
@@ -104,13 +118,11 @@ extractClassName fullPath =
     splitPath' ('/' : rest) acc = acc : splitPath' rest ""
     splitPath' (x : xs) acc = splitPath' xs (x : acc)
 
--- | Given a Java file (with absolute path), a method name within the class, and an output path,
--- generates an XML file corresponding to the C2 IR when compiling the given method within the class.
--- Returns the generated XML file on success, and the error code on failure.
-compileJavaProgram :: String -> String -> String -> IO (Either String String)
-compileJavaProgram javaFile methodName outputPath =
+-- | Given a Java program, the method within to be compiled, and an output path
+compileJavaProgram :: String -> String -> ErrorM String
+compileJavaProgram javaFile methodName =
   case extractClassName javaFile of
-    Nothing -> return $ Left $ "Invalid Java file " <> javaFile
+    Nothing -> fail $ "Invalid Java file " <> javaFile
     Just (_path, javaClass) ->
       do
         let compileCommands =
@@ -128,45 +140,37 @@ compileJavaProgram javaFile methodName outputPath =
                 "-XX:PrintIdealGraphFile=" ++ javaClass ++ ".xml",
                 javaFile
               ]
+        outputPath <- liftIO getCurrentDirectory
         (exitCode, _, stdErr) <-
-          readCreateProcessWithExitCode
-            ( (proc "java" compileCommands)
-                { cwd = Just outputPath,
-                  std_out = CreatePipe
-                }
-            )
-            ""
+          liftIO $
+            readCreateProcessWithExitCode
+              ( (proc "java" compileCommands)
+                  { cwd = Just outputPath,
+                    std_out = CreatePipe
+                  }
+              )
+              ""
         if exitCode /= ExitSuccess
-          then return $ Left $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
+          then fail $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
           else do
-            contents <- readFile (javaClass ++ ".xml")
-            removeFile (javaClass ++ ".xml")
-            return $ Right $ contents
+            contents <- liftIO $ readFile (javaClass ++ ".xml")
+            liftIO $ removeFile (javaClass ++ ".xml")
+            return $ contents
 
 -- | Generates a program and writes to the output path, returning the name of the written file
 -- on success, or the seed on failure.
-fuzzProgram :: String -> IO (Either String String)
-fuzzProgram outPath =
-  do
-    seed <- System.randomIO
-    let className = "Klass" <> show seed
-    case program seed className "method" of
-      Left _ -> return $ Left $ "Fuzzer: Failed to generate program with seed: " <> show seed
-      Right prog ->
-        do
-          let fileName = outPath ++ className ++ ".java"
-          writeFile fileName (show $ pretty prog)
-          return $ Right fileName
+fuzzProgram :: Word64 -> String -> String -> ErrorM String
+fuzzProgram seed className outPath =
+  case program seed className "method" of
+    Left _ -> fail $ "Fuzzer: Failed to generate program with seed: " <> show seed
+    Right prog ->
+      do
+        let fileName = outPath ++ className ++ ".java"
+        liftIO $ writeFile fileName (show $ pretty prog)
+        return $ fileName
 
-verifyProgram :: String -> String -> IO (Either String String)
+verifyProgram :: String -> String -> ErrorM String
 verifyProgram javaFile method =
   do
-    currDir <- getCurrentDirectory
-    compileJavaProgram javaFile method currDir
-    >>= \case
-      Left err -> return $ Left err
-      Right xmlContent ->
-        verifyXML xmlContent
-          >>= \case
-            Left err -> return $ Left err
-            Right satRes -> return $ Right $ show satRes
+    xmlContent <- compileJavaProgram javaFile method
+    verifyXML xmlContent

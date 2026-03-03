@@ -41,28 +41,29 @@ instance Pretty JProgram where
             <> line
             <> indent
               4
-              ( pretty methodType
-                  <+> pretty "checksum"
-                  <+> equals
-                  <+> pretty methodName
-                  <> encloseSep
-                    lparen
-                    rparen
-                    (comma <> space)
-                    ( ( \(_, varType) ->
-                          pretty $
-                            case varType of
-                              JInt -> IntLit 0
-                              JLong -> LongLit 0
-                              JFloat -> FloatLit 0
-                              JDouble -> DoubleLit 0
+              ( wrapInException $
+                  pretty methodType
+                    <+> pretty "checksum"
+                    <+> equals
+                    <+> pretty methodName
+                    <> encloseSep
+                      lparen
+                      rparen
+                      (comma <> space)
+                      ( ( \(_, varType) ->
+                            pretty $
+                              case varType of
+                                JInt -> IntLit 0
+                                JLong -> LongLit 0
+                                JFloat -> FloatLit 0
+                                JDouble -> DoubleLit 0
+                        )
+                          <$> params
                       )
-                        <$> params
-                    )
-                  <> semi
-                  <> line
-                  <> pretty "System.out.println(checksum)"
-                  <> semi
+                    <> semi
+                    <> line
+                    <> pretty "System.out.println(checksum)"
+                    <> semi
               )
             <> line
             <> rbrace
@@ -72,6 +73,23 @@ instance Pretty JProgram where
       <> indent 4 (pretty method)
       <> line
       <> rbrace
+    where
+      -- Since we allow division by zero and other potential side effects, we need to make sure
+      -- that running with the interpreter does not crash the program
+      wrapInException p =
+        pretty "try"
+          <+> lbrace
+          <+> line
+          <> indent 4 p
+          <> line
+          <> rbrace
+          <+> pretty "catch"
+          <+> parens (pretty "Exception e")
+          <+> lbrace
+          <> line
+          <> indent 4 (pretty "System.out.println(e)" <> semi)
+          <> line
+          <> rbrace
 
 -- | Method <methodName> <retType> <parameters> <body> <return expr>
 data JMethod = JMethod String JType [(String, JType)] [JStmt] JExpr deriving (Show, Eq)

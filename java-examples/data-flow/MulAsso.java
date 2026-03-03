@@ -1,6 +1,6 @@
 public class MulAsso {
   public static void main(String[] args) {
-    float f = mulasso(1.800018061301167e-29f);
+    float f = mulasso(2.325661e15f);
     System.out.println(f);
   }
 

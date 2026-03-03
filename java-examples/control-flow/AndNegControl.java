@@ -1,7 +1,11 @@
 public class AndNegControl {
   public static void main(String[] args) {
-    int x = method(285212673, 45088768);
-    System.out.println(x);
+    try {
+      int x = method(285212673, 45088768);
+      System.out.println(x);
+    } catch (Exception e) {
+      System.out.println(e);
+    }
   }
 
   static int method(int x, int y) {
