@@ -106,8 +106,8 @@ data Node
     IfFalse NodeId
   | -- | Return <nodeId> <dataflow predecessor node id>
     Return NodeId NodeId
-  | -- | Static calls with own Id data flow predecessor (?)
-    CallStatic NodeId NodeId
+  | -- | Static calls with own Id
+    CallStatic NodeId
   deriving (Show, Eq)
 
 data RawNode = RawNode
@@ -128,7 +128,9 @@ data RawGraph = RawGraph
 
 data Graph
   = Graph
-  { -- | Maps nodeId (SoN id) to Node
+  { -- | Method return type
+    methodType :: RetType,
+    -- | Maps nodeId (SoN id) to Node
     nodeInfo :: NodeInfo,
     -- | Contains successors for the control flow nodes
     controlSuccessors :: ControlSuccessors,
@@ -141,8 +143,24 @@ data Graph
   }
   deriving (Show, Eq)
 
+-- | Graph with default values (everything empty)
+-- NOTE: The default return type is `int`
 defaultGraph :: Graph
-defaultGraph = Graph M.empty M.empty M.empty M.empty
+defaultGraph = Graph JINT M.empty M.empty M.empty M.empty
+
+-- | Used to define and keep track of valid method return types
+data RetType
+  = JINT
+  | JLONG
+  | JFLOAT
+  | JDOUBLE
+  deriving (Show, Eq)
+
+mkRetValue :: RetType -> SValue
+mkRetValue JINT = JInt 0
+mkRetValue JLONG = JLong 0
+mkRetValue JFLOAT = JFloat 0
+mkRetValue JDOUBLE = JDouble 0
 
 -- | Symbolic values, showing equivalence between Java values and SMT values
 data SValue
@@ -154,10 +172,11 @@ data SValue
     JDouble SDouble
   deriving (Show, Eq)
 
-mkGraph :: [(NodeId, Node)] -> [(NodeId, [NodeId])] -> Graph
-mkGraph nInfo successors =
+mkGraph :: RetType -> [(NodeId, Node)] -> [(NodeId, [NodeId])] -> Graph
+mkGraph retType nInfo successors =
   Graph
-    { nodeInfo = M.fromList nInfo,
+    { methodType = retType,
+      nodeInfo = M.fromList nInfo,
       controlSuccessors = M.fromList successors,
       regionPredecessor = M.empty,
       params = M.empty

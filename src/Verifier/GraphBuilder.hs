@@ -5,8 +5,9 @@ module Verifier.GraphBuilder (buildGraph) where
 import Control.Monad (unless)
 import Control.Monad.State.Lazy
 import Data.Char (isDigit)
-import Data.List (isPrefixOf, sortOn)
+import Data.List (find, isPrefixOf, sortOn)
 import qualified Data.Map as M
+import Data.Maybe (fromMaybe)
 import Debug.Trace
 import GHC.Float (castWord32ToFloat, castWord64ToDouble)
 import Numeric (readBin)
@@ -30,16 +31,48 @@ partitionParseResults = go ([], [])
     go (unsupported, parsed) (Parsed p : rest) = go (unsupported, p : parsed) rest
 
 buildGraph :: RawGraph -> Either String Graph
-buildGraph (RawGraph rNodes rEdges) =
+buildGraph rawGraph@(RawGraph rNodes rEdges) =
   do
     let (unsupported, parsedNodes) = partitionParseResults $ (buildNode rEdges) <$> rNodes
     unless (null unsupported) (Left $ unlines unsupported)
     controlFlow <- buildCtrlflow rEdges parsedNodes
+    retType <- findMethodType rawGraph
     Right $
       defaultGraph
-        { nodeInfo = M.fromList parsedNodes,
+        { methodType = retType,
+          nodeInfo = M.fromList parsedNodes,
           controlSuccessors = controlFlow
         }
+
+-- | Needed to keep track of method return type, to allow for mergeable tuples with sideeffects
+-- See @Ret@.
+-- NOTE: Yes, I was overly cautious writing this method, I like error messages.
+findMethodType ::
+  RawGraph ->
+  Either String RetType
+findMethodType (RawGraph rNodes rEdges) =
+  do
+    (RawNode retNid _ _) <-
+      fromMaybe
+        (Left $ "findMethodType: Did not find return statement")
+        (Right <$> find (\(RawNode _ nodeName _) -> nodeName == "Return") rNodes)
+    dataNid <-
+      case (findNodePred (read retNid) rEdges) of
+        [_ctrl, _parm6, _mem, _rawptr, _retAddress, dataPred] -> Right dataPred
+        preds -> Left $ "Return: Expected 6 predecessors but got " <> show (length preds)
+    (RawNode _ _ dataProps) <-
+      fromMaybe
+        (Left $ "findMethodType: Could not find data pred with id " <> show dataNid)
+        (Right <$> find (\(RawNode nid _ _) -> read nid == dataNid) rNodes)
+    let botType = M.lookup "bottom_type" dataProps
+    case botType of
+      Just typ
+        | "int" `isPrefixOf` typ -> Right JINT
+        | "long" `isPrefixOf` typ -> Right JLONG
+        | "float" `isPrefixOf` typ -> Right JFLOAT
+        | "double" `isPrefixOf` typ -> Right JDOUBLE
+        | otherwise -> Left $ "findMethodType: Unsupported return type " <> typ
+      Nothing -> Left $ "findMethodType: Data node had no \"bottom_type\""
 
 buildNode ::
   [(NodeId, NodeId, NodeId)] ->
@@ -50,6 +83,10 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
     "Start" -> Ignored
     "Root" -> Ignored
     "Con" -> Ignored
+    -- Proj and Halt mainly used for side effects (CallStatic)
+    "Proj" -> Ignored
+    "Halt" -> Ignored
+    "CallStaticJava" -> Parsed (nodeId, CallStatic nodeId)
     "Parm" ->
       let matchType typ
             | "int" `isPrefixOf` typ = Parsed (nodeId, ParmI nodeId)
@@ -214,6 +251,10 @@ buildCtrlflow rEdges nodes =
           case (findNodePred nid rEdges) of
             [ctrlPred, _parm6, _mem, _rawptr, _retAddress, _dataPred] -> Parsed [(ctrlPred, [nid])]
             preds -> Unsupported $ "Return: Expected 6 predecessors but got " <> show (length preds)
+        CallStatic nid ->
+          case (findNodePred nid rEdges) of
+            (ctrlPred : rest) | length rest == 7 -> Parsed [(ctrlPred, [nid])]
+            preds -> Unsupported $ "CallStatic: Expected 8 predecessors but got " <> show (length preds)
         -- Any node not handled is assumed to not be part of the control flow, and is safely ignored
         _ -> Ignored
 

@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Verifier.Verify where
@@ -8,6 +9,13 @@ import qualified Data.Map as M
 import Data.Proxy
 import Data.SBV
 import Verifier.Graph
+
+-- | Proper error message for search key in map
+(!!!) :: forall k a. (Show k, Show a, Ord k) => M.Map k a -> k -> a
+(!!!) m k =
+  case (M.!?) m k of
+    Just res -> res
+    Nothing -> error $ "(!!!): Could not find key " <> show k <> " in map " <> show m
 
 -- | Partial accessor functions, to help indicate any type errors during symbolic execution
 getInt :: SValue -> SInt32
@@ -74,10 +82,11 @@ sComp x y =
         (literal 0)
     )
 
--- | (side effect, return value)
--- e.g. (0, 64) is normal return with value 64
--- Any exception node will instead have their nodeId in the tuple, e.g. (11, ...)
--- for exception on node 11.
+-- | (SIDE_EFFECT, RET_VAL)
+-- SIDE_EFFECT will be the node id in which the side effect happens.
+-- Side effect nodes are either the return node or any `CallStatic` node.
+-- The RET_VAL will only have a return value when we reach the `Return` node.
+-- Otherwise, the value is `0` as we do not care for values returned by `CallStatic` nodes.
 type Ret = (SWord32, SValue)
 
 -- Given successor node and id of the current node,
@@ -102,46 +111,47 @@ updateRegionPredecessors _ _ g = g
 -- This check is done for @ParmCtrl@, @IfTrue@, @IfFalse@
 evalControlNode :: Graph -> Node -> Symbolic Ret
 evalControlNode graph (ParmCtrl nid) =
-  let [suc] = (controlSuccessors graph) M.! nid
-      succNode = (nodeInfo graph) M.! suc
+  let [suc] = (controlSuccessors graph) !!! nid
+      succNode = (nodeInfo graph) !!! suc
    in evalControlNode
         (updateRegionPredecessors succNode nid graph)
         succNode
 evalControlNode graph@(nodeInfo -> nodes) (Return nid dataId) =
   do
-    retVal <- evalDataNode graph (nodes M.! dataId)
-    return $ (0, retVal)
-evalControlNode graph@(nodeInfo -> nodes) (CallStatic nid dataId) =
-  do
-    retVal <- evalDataNode graph (nodes M.! dataId)
+    retVal <- evalDataNode graph (nodes !!! dataId)
     return $ (literal nid, retVal)
+evalControlNode graph (CallStatic nid) =
+  -- NOTE: The return value of a static call is always set to 0, as
+  -- we are interested in the node we reach in this case, not the value!
+  let retType = methodType graph
+   in return $ (literal nid, mkRetValue retType)
 evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
   do
-    let [elseNode, ifNode] = (controlSuccessors graph) M.! nid
+    let [elseNode, ifNode] = (controlSuccessors graph) !!! nid
     -- NOTE: Boolean guards require predecessor to be either 0 (false) or 1 (true)
-    boolGuard <- ((.== 1) . getInt) <$> evalDataNode graph (nodes M.! boolGuardId)
-    ifBranch <- evalControlNode graph $ nodes M.! ifNode
-    elseBranch <- evalControlNode graph $ nodes M.! elseNode
+    boolGuard <- ((.== 1) . getInt) <$> evalDataNode graph (nodes !!! boolGuardId)
+    ifBranch <- evalControlNode graph $ nodes !!! ifNode
+    elseBranch <- evalControlNode graph $ nodes !!! elseNode
     return $
       ite
         boolGuard
         ifBranch
         elseBranch
 evalControlNode graph (IfTrue nid) =
-  let [suc] = (controlSuccessors graph) M.! nid
-      succNode = (nodeInfo graph) M.! suc
+  let [suc] = (controlSuccessors graph) !!! nid
+      succNode = (nodeInfo graph) !!! suc
    in evalControlNode
         (updateRegionPredecessors succNode nid graph)
         succNode
 evalControlNode graph (IfFalse nid) =
-  let [suc] = (controlSuccessors graph) M.! nid
-      succNode = (nodeInfo graph) M.! suc
+  let [suc] = (controlSuccessors graph) !!! nid
+      succNode = (nodeInfo graph) !!! suc
    in evalControlNode
         (updateRegionPredecessors succNode nid graph)
         succNode
 evalControlNode graph (Region nid _) =
-  let [suc] = (controlSuccessors graph) M.! nid
-      succNode = (nodeInfo graph) M.! suc
+  let [suc] = (controlSuccessors graph) !!! nid
+      succNode = (nodeInfo graph) !!! suc
    in evalControlNode
         (updateRegionPredecessors succNode nid graph)
         succNode
@@ -149,81 +159,81 @@ evalControlNode _ node = error $ "Not a control node: " <> show node
 
 -- | Symbolically executed the data flow subgraph using denotational semantics
 evalDataNode :: Graph -> Node -> Symbolic SValue
-evalDataNode (params -> parms) (ParmI var) = return $ parms M.! var
-evalDataNode (params -> parms) (ParmL var) = return $ parms M.! var
-evalDataNode (params -> parms) (ParmF var) = return $ parms M.! var
-evalDataNode (params -> parms) (ParmD var) = return $ parms M.! var
+evalDataNode (params -> parms) (ParmI var) = return $ parms !!! var
+evalDataNode (params -> parms) (ParmL var) = return $ parms !!! var
+evalDataNode (params -> parms) (ParmF var) = return $ parms !!! var
+evalDataNode (params -> parms) (ParmD var) = return $ parms !!! var
 evalDataNode _ (ConI n) = pure $ JInt $ literal n
 evalDataNode _ (ConL n) = pure $ JLong $ literal n
 evalDataNode _ (ConF n) = pure $ JFloat $ literal n
 evalDataNode _ (ConD n) = pure $ JDouble $ literal n
 evalDataNode graph@(nodeInfo -> nodes) (AddI n1 n2) =
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 + v2)
 evalDataNode graph@(nodeInfo -> nodes) (AddL n1 n2) =
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getLong <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 + v2)
 evalDataNode graph@(nodeInfo -> nodes) (AddF n1 n2) =
   do
-    v1 <- getFloat <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getFloat <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getFloat <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getFloat <$> evalDataNode graph (nodes !!! n2)
     return $ JFloat (v1 + v2)
 evalDataNode graph@(nodeInfo -> nodes) (AddD n1 n2) =
   do
-    v1 <- getDouble <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getDouble <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getDouble <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getDouble <$> evalDataNode graph (nodes !!! n2)
     return $ JDouble (v1 + v2)
 evalDataNode graph@(nodeInfo -> nodes) (SubI n1 n2) =
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 - v2)
 evalDataNode graph@(nodeInfo -> nodes) (SubL n1 n2) =
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getLong <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 - v2)
 evalDataNode graph@(nodeInfo -> nodes) (SubF n1 n2) =
   do
-    v1 <- getFloat <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getFloat <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getFloat <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getFloat <$> evalDataNode graph (nodes !!! n2)
     return $ JFloat (v1 - v2)
 evalDataNode graph@(nodeInfo -> nodes) (SubD n1 n2) =
   do
-    v1 <- getDouble <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getDouble <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getDouble <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getDouble <$> evalDataNode graph (nodes !!! n2)
     return $ JDouble (v1 - v2)
 evalDataNode graph@(nodeInfo -> nodes) (MulI n1 n2) =
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 * v2)
 evalDataNode graph@(nodeInfo -> nodes) (MulL n1 n2) =
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getLong <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 * v2)
 evalDataNode graph@(nodeInfo -> nodes) (MulF n1 n2) =
   do
-    v1 <- getFloat <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getFloat <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getFloat <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getFloat <$> evalDataNode graph (nodes !!! n2)
     return $ JFloat (v1 * v2)
 evalDataNode graph@(nodeInfo -> nodes) (MulD n1 n2) =
   do
-    v1 <- getDouble <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getDouble <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getDouble <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getDouble <$> evalDataNode graph (nodes !!! n2)
     return $ JDouble (v1 * v2)
 evalDataNode graph@(nodeInfo -> nodes) (MulHiL n1 n2) =
   -- NOTE: Special mul operation
   -- Given two operands x and y, MulHiL will do the following:
   -- MulHiL x y = upperBits 64 ((signextend x 128) * (signextend y 128))
   do
-    l1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    l2 <- getLong <$> evalDataNode graph (nodes M.! n2)
+    l1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    l2 <- getLong <$> evalDataNode graph (nodes !!! n2)
 
     let sgnl1 = signExtend64To128 l1
     let sgnl2 = signExtend64To128 l2
@@ -237,71 +247,71 @@ evalDataNode graph@(nodeInfo -> nodes) (MulHiL n1 n2) =
     extractUpper64Bits = bvExtract (Proxy @127) (Proxy @64)
 evalDataNode graph@(nodeInfo -> nodes) (DivI n1 n2) =
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 `sDiv` v2)
 evalDataNode graph@(nodeInfo -> nodes) (DivL n1 n2) =
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getLong <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 `sDiv` v2)
 evalDataNode graph@(nodeInfo -> nodes) (DivF n1 n2) =
   do
-    v1 <- getFloat <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getFloat <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getFloat <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getFloat <$> evalDataNode graph (nodes !!! n2)
     return $ JFloat (v1 / v2)
 evalDataNode graph@(nodeInfo -> nodes) (DivD n1 n2) =
   do
-    v1 <- getDouble <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getDouble <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getDouble <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getDouble <$> evalDataNode graph (nodes !!! n2)
     return $ JDouble (v1 / v2)
 evalDataNode graph@(nodeInfo -> nodes) (AndI n1 n2) =
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 .&. v2)
 evalDataNode graph@(nodeInfo -> nodes) (AndL n1 n2) =
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getLong <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 .&. v2)
 evalDataNode graph@(nodeInfo -> nodes) (OrI n1 n2) =
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 .|. v2)
 evalDataNode graph@(nodeInfo -> nodes) (OrL n1 n2) =
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getLong <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 .|. v2)
 evalDataNode graph@(nodeInfo -> nodes) (LShiftI n1 n2) =
   -- NOTE: LShift has special semantics in the JVM
   -- int: n1 << (0x1f & n2)
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 `sShiftLeft` (literal 0x1f .&. v2))
 evalDataNode graph@(nodeInfo -> nodes) (LShiftL n1 n2) =
   -- NOTE: LShift has special semantics in the JVM
   -- long: n1 << (0x3f & n2)
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 `sShiftLeft` (literal 0x3f .&. v2))
 evalDataNode graph@(nodeInfo -> nodes) (RShiftI n1 n2) =
   -- NOTE: RShift has special semantics in the JVM
   -- int: n1 >> (0x1f & n2)
   do
-    v1 <- getInt <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 `sShiftRight` (literal 0x1f .&. v2))
 evalDataNode graph@(nodeInfo -> nodes) (RShiftL n1 n2) =
   -- NOTE: RShift has special semantics in the JVM
   -- long: n1 >> (0x3f & n2)
   do
-    v1 <- getLong <$> evalDataNode graph (nodes M.! n1)
-    v2 <- getInt <$> evalDataNode graph (nodes M.! n2)
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 `sShiftRight` (literal 0x3f .&. v2))
 -- NOTE: The compare semantics are:
 -- Cmp n1 n2
@@ -311,35 +321,35 @@ evalDataNode graph@(nodeInfo -> nodes) (RShiftL n1 n2) =
 -- The result is always an integer
 evalDataNode graph@(nodeInfo -> nodes) (CmpI n1 n2) =
   do
-    v1 <- evalDataNode graph (nodes M.! n1)
-    v2 <- evalDataNode graph (nodes M.! n2)
+    v1 <- evalDataNode graph (nodes !!! n1)
+    v2 <- evalDataNode graph (nodes !!! n2)
     return $ JInt $ sComp v1 v2
 evalDataNode graph@(nodeInfo -> nodes) (CmpL n1 n2) =
   do
-    v1 <- evalDataNode graph (nodes M.! n1)
-    v2 <- evalDataNode graph (nodes M.! n2)
+    v1 <- evalDataNode graph (nodes !!! n1)
+    v2 <- evalDataNode graph (nodes !!! n2)
     return $ JInt $ sComp v1 v2
 evalDataNode graph@(nodeInfo -> nodes) (CmpF n1 n2) =
   do
-    v1 <- evalDataNode graph (nodes M.! n1)
-    v2 <- evalDataNode graph (nodes M.! n2)
+    v1 <- evalDataNode graph (nodes !!! n1)
+    v2 <- evalDataNode graph (nodes !!! n2)
     return $ JInt $ sComp v1 v2
 evalDataNode graph@(nodeInfo -> nodes) (CmpD n1 n2) =
   do
-    v1 <- evalDataNode graph (nodes M.! n1)
-    v2 <- evalDataNode graph (nodes M.! n2)
+    v1 <- evalDataNode graph (nodes !!! n1)
+    v2 <- evalDataNode graph (nodes !!! n2)
     return $ JInt $ sComp v1 v2
 evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
   -- NOTE: Bool cmp n
   -- cmp = ne, return n == 0
   do
-    v <- getInt <$> evalDataNode graph (nodes M.! n)
+    v <- getInt <$> evalDataNode graph (nodes !!! n)
     case cmp of
       Ne -> return $ JInt $ ite (v .== 0) (literal 1) (literal 0)
 evalDataNode graph (Phi rid preds) =
   -- The phi node's value depends on the corresponding region node
-  let dataIdx = (regionPredecessor graph) M.! rid
-      chosenDataNode = (nodeInfo graph) M.! (preds !! fromIntegral dataIdx)
+  let dataIdx = (regionPredecessor graph) !!! rid
+      chosenDataNode = (nodeInfo graph) !!! (preds !! fromIntegral dataIdx)
    in return =<< evalDataNode graph chosenDataNode
 -- The floating-point conversions are taken from https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html#jvms-2.8
 -- Conversion to an integer value uses IEEE 754 roundTowardZero
@@ -347,50 +357,50 @@ evalDataNode graph (Phi rid preds) =
 -- Conversions to integer values, IEEE 754 roundTowardsZero:
 evalDataNode graph@(nodeInfo -> nodes) (ConvD2I nid) =
   do
-    v <- getDouble <$> evalDataNode graph (nodes M.! nid)
+    v <- getDouble <$> evalDataNode graph (nodes !!! nid)
     return $ JInt $ fromSDouble sRoundTowardZero v
 evalDataNode graph@(nodeInfo -> nodes) (ConvD2L nid) =
   do
-    v <- getDouble <$> evalDataNode graph (nodes M.! nid)
+    v <- getDouble <$> evalDataNode graph (nodes !!! nid)
     return $ JLong $ fromSDouble sRoundTowardZero v
 evalDataNode graph@(nodeInfo -> nodes) (ConvF2I nid) =
   do
-    v <- getFloat <$> evalDataNode graph (nodes M.! nid)
+    v <- getFloat <$> evalDataNode graph (nodes !!! nid)
     return $ JInt $ fromSFloat sRoundTowardZero v
 evalDataNode graph@(nodeInfo -> nodes) (ConvF2L nid) =
   do
-    v <- getFloat <$> evalDataNode graph (nodes M.! nid)
+    v <- getFloat <$> evalDataNode graph (nodes !!! nid)
     return $ JLong $ fromSFloat sRoundTowardZero v
 -- Other conversions, IEEE 754 roundTiesToEven:
 evalDataNode graph@(nodeInfo -> nodes) (ConvF2D nid) =
   do
-    v <- getFloat <$> evalDataNode graph (nodes M.! nid)
+    v <- getFloat <$> evalDataNode graph (nodes !!! nid)
     return $ JDouble $ fromSFloat sRoundNearestTiesToEven v
 evalDataNode graph@(nodeInfo -> nodes) (ConvD2F nid) =
   do
-    v <- getDouble <$> evalDataNode graph (nodes M.! nid)
+    v <- getDouble <$> evalDataNode graph (nodes !!! nid)
     return $ JFloat $ fromSDouble sRoundNearestTiesToEven v
 evalDataNode graph@(nodeInfo -> nodes) (ConvI2D nid) =
   do
-    v <- getInt <$> evalDataNode graph (nodes M.! nid)
+    v <- getInt <$> evalDataNode graph (nodes !!! nid)
     return $ JDouble $ toSDouble sRoundNearestTiesToEven v
 evalDataNode graph@(nodeInfo -> nodes) (ConvI2F nid) =
   do
-    v <- getInt <$> evalDataNode graph (nodes M.! nid)
+    v <- getInt <$> evalDataNode graph (nodes !!! nid)
     return $ JFloat $ toSFloat sRoundNearestTiesToEven v
 evalDataNode graph@(nodeInfo -> nodes) (ConvL2D nid) =
   do
-    v <- getLong <$> evalDataNode graph (nodes M.! nid)
+    v <- getLong <$> evalDataNode graph (nodes !!! nid)
     return $ JDouble $ toSDouble sRoundNearestTiesToEven v
 evalDataNode graph@(nodeInfo -> nodes) (ConvL2F nid) =
   do
-    v <- getLong <$> evalDataNode graph (nodes M.! nid)
+    v <- getLong <$> evalDataNode graph (nodes !!! nid)
     return $ JFloat $ toSFloat sRoundNearestTiesToEven v
 -- Conversion between integer and long https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html#jvms-2.11.4
 -- Widening operation, simple sign extension
 evalDataNode graph@(nodeInfo -> nodes) (ConvI2L nid) =
   do
-    v <- getInt <$> evalDataNode graph (nodes M.! nid)
+    v <- getInt <$> evalDataNode graph (nodes !!! nid)
     return $ JLong $ signExtend32To64 v
   where
     signExtend32To64 :: SInt32 -> SInt64
@@ -398,7 +408,7 @@ evalDataNode graph@(nodeInfo -> nodes) (ConvI2L nid) =
 -- Narrowing operation, discard all but the lower 32 bits
 evalDataNode graph@(nodeInfo -> nodes) (ConvL2I nid) =
   do
-    v <- getLong <$> evalDataNode graph (nodes M.! nid)
+    v <- getLong <$> evalDataNode graph (nodes !!! nid)
     return $ JInt $ dropUpper32 v
   where
     dropUpper32 :: SInt64 -> SInt32
@@ -431,9 +441,9 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
             go (M.insert nid param paramMap) rest
         _ -> go paramMap rest
 
-runVerification :: Graph -> Graph -> IO SatResult
-runVerification before after =
-  satWith z3 {verbose = True, timing = PrintTiming} $
+runVerification :: Bool -> Graph -> Graph -> IO SatResult
+runVerification showModel before after =
+  satWith z3 {verbose = showModel, timing = PrintTiming} $
     do
       parms <- createParams before
       res1 <- evalControlNode (before {params = parms}) (ParmCtrl 5)

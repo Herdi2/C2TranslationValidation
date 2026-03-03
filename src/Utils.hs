@@ -7,7 +7,8 @@ import Data.List
 import Data.SBV
 import Debug.Trace
 import Fuzzer.Gen
-import Prettyprinter (pretty)
+import Prettyprinter (Pretty, pretty)
+import System.Directory (getCurrentDirectory, removeFile)
 import System.Exit
 import System.Process
 import qualified System.Random as System
@@ -16,45 +17,49 @@ import Verifier.GraphBuilder
 import Verifier.GraphParser
 import Verifier.Verify
 
--- | Given a Java class name and a method within, return the output of the compiler and the interpreter
+-- | Given a Java file and a method within, return the output of the compiler and the interpreter
+-- NOTE: We assume the class who's method we'll compile shared the name with the Java file
 compareOutput :: String -> String -> IO (Either String (String, String))
-compareOutput javaClass methodName =
-  do
-    let compileCommands =
-          [ "-Xcomp", -- Compiler only
-            "-Xbatch", -- Makes sure compilation finishes
-            "-XX:-TieredCompilation", -- C2 only
-            "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName, -- Compile only `javaClass::method`
-            javaClass ++ ".java"
-          ]
-        interpreterCmds =
-          [ "-Xint",
-            javaClass ++ ".java"
-          ]
-    (compExitCode, compRes, compErr) <-
-      readCreateProcessWithExitCode
-        ( (proc "java" compileCommands)
-            { std_out = CreatePipe
-            }
-        )
-        ""
-    (intExitCode, intRes, intErr) <-
-      readCreateProcessWithExitCode
-        ( (proc "java" interpreterCmds)
-            { std_out = CreatePipe
-            }
-        )
-        ""
-    case (compExitCode, intExitCode) of
-      (ExitSuccess, ExitSuccess) ->
-        return $ Right $ (compRes, intRes)
-      _ ->
-        return $
-          Left $
-            unlines
-              [ "Compiler exited with code " ++ show compExitCode ++ ": " ++ compErr,
-                "Interpreter exited with code " ++ show intExitCode ++ ": " ++ intErr
+compareOutput javaFile methodName =
+  case extractClassName javaFile of
+    Nothing -> return $ Left $ "Invalid Java file " <> javaFile
+    Just (_path, javaClass) ->
+      do
+        let compileCommands =
+              [ "-Xcomp", -- Compiler only
+                "-Xbatch", -- Makes sure compilation finishes
+                "-XX:-TieredCompilation", -- C2 only
+                "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName, -- Compile only `javaClass::method`
+                javaFile
               ]
+            interpreterCmds =
+              [ "-Xint",
+                javaFile
+              ]
+        (compExitCode, compRes, compErr) <-
+          readCreateProcessWithExitCode
+            ( (proc "java" compileCommands)
+                { std_out = CreatePipe
+                }
+            )
+            ""
+        (intExitCode, intRes, intErr) <-
+          readCreateProcessWithExitCode
+            ( (proc "java" interpreterCmds)
+                { std_out = CreatePipe
+                }
+            )
+            ""
+        case (compExitCode, intExitCode) of
+          (ExitSuccess, ExitSuccess) ->
+            return $ Right $ (compRes, intRes)
+          _ ->
+            return $
+              Left $
+                unlines
+                  [ "Compiler exited with code " ++ show compExitCode ++ ": " ++ compErr,
+                    "Interpreter exited with code " ++ show intExitCode ++ ": " ++ intErr
+                  ]
 
 -- | Given XML content representing the C2 IR, it parses the `graphName`
 -- graph into an internal graph representation.
@@ -78,12 +83,10 @@ parseGraphs xmlContent =
 
 -- | Verifies the given XML file
 verifyXML :: String -> IO (Either String SatResult)
-verifyXML fileName =
-  do
-    content <- readFile fileName
-    case (parseGraphs content) of
-      Left err -> return $ Left err
-      Right (before, after) -> Right <$> runVerification before after
+verifyXML xmlContent =
+  case (parseGraphs xmlContent) of
+    Left err -> return $ Left err
+    Right (before, after) -> Right <$> runVerification False before after
 
 -- | Given a path to a Java file, e.g. /hello/this/path/Klass.java
 -- returns the Java class name and path: (/hello/this/path, Klass)
@@ -135,7 +138,10 @@ compileJavaProgram javaFile methodName outputPath =
             ""
         if exitCode /= ExitSuccess
           then return $ Left $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
-          else return $ Right $ javaClass ++ ".xml"
+          else do
+            contents <- readFile (javaClass ++ ".xml")
+            removeFile (javaClass ++ ".xml")
+            return $ Right $ contents
 
 -- | Generates a program and writes to the output path, returning the name of the written file
 -- on success, or the seed on failure.
@@ -151,3 +157,16 @@ fuzzProgram outPath =
           let fileName = outPath ++ className ++ ".java"
           writeFile fileName (show $ pretty prog)
           return $ Right fileName
+
+verifyProgram :: String -> String -> IO (Either String String)
+verifyProgram javaFile method =
+  do
+    currDir <- getCurrentDirectory
+    compileJavaProgram javaFile method currDir
+    >>= \case
+      Left err -> return $ Left err
+      Right xmlContent ->
+        verifyXML xmlContent
+          >>= \case
+            Left err -> return $ Left err
+            Right satRes -> return $ Right $ show satRes
