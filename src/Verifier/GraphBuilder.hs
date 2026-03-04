@@ -253,8 +253,8 @@ buildCtrlflow rEdges nodes =
             preds -> Unsupported $ "Return: Expected 6 predecessors but got " <> show (length preds)
         CallStatic nid ->
           case (findNodePred nid rEdges) of
-            (ctrlPred : rest) | length rest == 7 -> Parsed [(ctrlPred, [nid])]
-            preds -> Unsupported $ "CallStatic: Expected 8 predecessors but got " <> show (length preds)
+            (ctrlPred : rest) -> Parsed [(ctrlPred, [nid])]
+            preds -> Unsupported "CallStatic: got zero predecessors"
         -- Any node not handled is assumed to not be part of the control flow, and is safely ignored
         _ -> Ignored
 

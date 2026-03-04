@@ -6,6 +6,7 @@ import Options.Applicative
 data Command
   = Verify VerifyOpts
   | Fuzz FuzzOpts
+  | Campaign CampaignOpts
 
 data VerifyOpts = VerifyOpts
   { verifyFile :: FilePath,
@@ -15,12 +16,14 @@ data VerifyOpts = VerifyOpts
   }
 
 data FuzzOpts = FuzzOpts
-  { fuzzOutput :: FilePath,
-    fuzzNumber :: Word64,
+  { fuzzDir :: Maybe FilePath,
     fuzzSeed :: Maybe Word64
   }
 
--- Parsers
+data CampaignOpts = CampaignOpts
+  { campaignDir :: FilePath,
+    campaignNum :: Int
+  }
 
 verifyOpts :: Parser VerifyOpts
 verifyOpts =
@@ -42,23 +45,35 @@ verifyOpts =
 fuzzOpts :: Parser FuzzOpts
 fuzzOpts =
   FuzzOpts
-    <$> argument str (metavar "<DIR>" <> help "Directory where all generated Java files and SMT results will go")
-    <*> ( option
-            auto
-            ( long "number"
-                <> metavar "INT"
-                <> value 20
-                <> help "Number of fuzz tests to run"
-            )
-        )
+    <$> optional
+      ( strOption
+          ( long "output"
+              <> short 'o'
+              <> metavar "<DIR>"
+              <> help "Output the generated program to a file in <DIR>"
+          )
+      )
     <*> optional
       ( option
           auto
           ( long "seed"
-              <> metavar "INT"
-              <> help "Fuzz a single program with a given seed"
+              <> metavar "WORD64"
+              <> help "Generate a single program with a given seed"
           )
       )
+
+campaignOpts :: Parser CampaignOpts
+campaignOpts =
+  CampaignOpts
+    <$> argument str (metavar "<DIR>" <> help "Directory where all generated Java files and SMT results will go")
+    <*> ( option
+            auto
+            ( long "number"
+                <> metavar "<INT>"
+                <> value 20
+                <> help "Number of fuzz tests to run"
+            )
+        )
 
 commandParser :: Parser Command
 commandParser =
@@ -69,4 +84,7 @@ commandParser =
         <> command
           "fuzz"
           (info (Fuzz <$> fuzzOpts) (progDesc "Run the fuzzer"))
+        <> command
+          "campaign"
+          (info (Campaign <$> campaignOpts) (progDesc "Run the campaign"))
     )

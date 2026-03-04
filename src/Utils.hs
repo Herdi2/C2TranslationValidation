@@ -154,20 +154,15 @@ compileJavaProgram javaFile methodName =
           then fail $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
           else do
             contents <- liftIO $ readFile (javaClass ++ ".xml")
-            liftIO $ removeFile (javaClass ++ ".xml")
+            -- liftIO $ removeFile (javaClass ++ ".xml")
             return $ contents
 
--- | Generates a program and writes to the output path, returning the name of the written file
--- on success, or the seed on failure.
-fuzzProgram :: Word64 -> String -> String -> ErrorM String
-fuzzProgram seed className outPath =
+-- | Given a seed and name, generates a Java file with the given seed and class name
+fuzzProgram :: Word64 -> String -> ErrorM String
+fuzzProgram seed className =
   case program seed className "method" of
     Left _ -> fail $ "Fuzzer: Failed to generate program with seed: " <> show seed
-    Right prog ->
-      do
-        let fileName = outPath ++ className ++ ".java"
-        liftIO $ writeFile fileName (show $ pretty prog)
-        return $ fileName
+    Right prog -> return $ show $ pretty prog
 
 verifyProgram :: String -> String -> ErrorM String
 verifyProgram javaFile method =
