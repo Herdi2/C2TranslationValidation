@@ -7,7 +7,7 @@ import Control.Monad.State.Lazy
 import Data.Char (isDigit)
 import Data.List (find, isPrefixOf, sortOn)
 import qualified Data.Map as M
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isJust)
 import Debug.Trace
 import GHC.Float (castWord32ToFloat, castWord64ToDouble)
 import Numeric (readBin)
@@ -33,7 +33,7 @@ partitionParseResults = go ([], [])
 buildGraph :: RawGraph -> Either String Graph
 buildGraph rawGraph@(RawGraph rNodes rEdges) =
   do
-    let (unsupported, parsedNodes) = partitionParseResults $ (buildNode rEdges) <$> rNodes
+    let (unsupported, parsedNodes) = partitionParseResults $ (buildNode rawGraph) <$> rNodes
     unless (null unsupported) (Left $ unlines unsupported)
     controlFlow <- buildCtrlflow rEdges parsedNodes
     retType <- findMethodType rawGraph
@@ -75,10 +75,10 @@ findMethodType (RawGraph rNodes rEdges) =
       Nothing -> Left $ "findMethodType: Data node had no \"bottom_type\""
 
 buildNode ::
-  [(NodeId, NodeId, NodeId)] ->
+  RawGraph ->
   RawNode ->
   ParseResult (NodeId, Node)
-buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
+buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps) =
   case nodeName of
     "Start" -> Ignored
     "Root" -> Ignored
@@ -93,14 +93,27 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
             | "long" `isPrefixOf` typ = Parsed (nodeId, ParmL nodeId)
             | "float" `isPrefixOf` typ = Parsed (nodeId, ParmF nodeId)
             | "double" `isPrefixOf` typ = Parsed (nodeId, ParmD nodeId)
+            | "memory" `isPrefixOf` typ = Parsed (nodeId, ParmMem)
+            | "inst" `isPrefixOf` typ =
+                case (M.lookup "bottom_type" nodeProps) of
+                  Nothing -> Unsupported $ "buildNode: Internal error, node property didn't contain \"bottom_type\""
+                  Just ('i' : 'n' : 's' : 't' : 'p' : 't' : 'r' : ':' : rest) ->
+                    -- Parses "instptr:className:notNull+offset,..." into (className:notNull, offset)
+                    let blockAndOffset = takeWhile (/= ',') rest
+                        (blockId, offset) = span (/= '+') blockAndOffset
+                        (blockId', offset') = (repl <$> blockId, read $ tail offset)
+                        repl ':' = '_'
+                        repl c = c
+                     in Parsed (nodeId, ParmMemPtr (blockId', offset'))
+                  Just res -> Unsupported $ "inst: Expected instptr but got " <> res
             | "control" `isPrefixOf` typ = Parsed (nodeId, ParmCtrl nodeId)
             | "abIO" `isPrefixOf` typ = Ignored
             | "rawptr" `isPrefixOf` typ = Ignored
             | "return_address" `isPrefixOf` typ = Ignored
-            | "memory" `isPrefixOf` typ = Ignored
             | otherwise = Unsupported $ "Unsupported param of type: " <> typ
        in case (M.lookup "type" nodeProps) of
-            Nothing -> Unsupported $ "buildNode: Internal error, node property didn't contain \"type\""
+            -- NOTE: Using "type" instead of "bottom_type" since control flow param does not have bottom_type
+            Nothing -> Unsupported $ "buildNode: Internal error, node " <> nodeName <> " property didn't contain \"type\""
             Just typ -> matchType typ
     -- Constants
     "ConI" ->
@@ -136,38 +149,38 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
       where
         bitsToDouble = castWord64ToDouble . fst . head . readBin
     -- Addition
-    "AddI" -> arithmeticNode AddI nodeId rEdges
-    "AddL" -> arithmeticNode AddL nodeId rEdges
-    "AddF" -> arithmeticNode AddF nodeId rEdges
-    "AddD" -> arithmeticNode AddD nodeId rEdges
+    "AddI" -> arithmeticNode "AddI" AddI nodeId rEdges
+    "AddL" -> arithmeticNode "AddL" AddL nodeId rEdges
+    "AddF" -> arithmeticNode "AddF" AddF nodeId rEdges
+    "AddD" -> arithmeticNode "AddD" AddD nodeId rEdges
     -- Subtraction
-    "SubI" -> arithmeticNode SubI nodeId rEdges
-    "SubL" -> arithmeticNode SubL nodeId rEdges
-    "SubF" -> arithmeticNode SubF nodeId rEdges
-    "SubD" -> arithmeticNode SubD nodeId rEdges
+    "SubI" -> arithmeticNode "SubI" SubI nodeId rEdges
+    "SubL" -> arithmeticNode "SubL" SubL nodeId rEdges
+    "SubF" -> arithmeticNode "SubF" SubF nodeId rEdges
+    "SubD" -> arithmeticNode "SubD" SubD nodeId rEdges
     -- Multiplication
-    "MulI" -> arithmeticNode MulI nodeId rEdges
-    "MulL" -> arithmeticNode MulL nodeId rEdges
-    "MulF" -> arithmeticNode MulF nodeId rEdges
-    "MulD" -> arithmeticNode MulD nodeId rEdges
-    "MulHiL" -> arithmeticNode MulHiL nodeId rEdges
+    "MulI" -> arithmeticNode "MulI" MulI nodeId rEdges
+    "MulL" -> arithmeticNode "MulL" MulL nodeId rEdges
+    "MulF" -> arithmeticNode "MulF" MulF nodeId rEdges
+    "MulD" -> arithmeticNode "MulD" MulD nodeId rEdges
+    "MulHiL" -> arithmeticNode "MulHiL" MulHiL nodeId rEdges
     -- Division
-    "DivI" -> pinnedArithmeticNode DivI nodeId rEdges
-    "DivL" -> pinnedArithmeticNode DivL nodeId rEdges
-    "DivF" -> pinnedArithmeticNode DivF nodeId rEdges
-    "DivD" -> pinnedArithmeticNode DivD nodeId rEdges
+    "DivI" -> pinnedArithmeticNode "DivI" DivI nodeId rEdges
+    "DivL" -> pinnedArithmeticNode "DivL" DivL nodeId rEdges
+    "DivF" -> pinnedArithmeticNode "DivF" DivF nodeId rEdges
+    "DivD" -> pinnedArithmeticNode "DivD" DivD nodeId rEdges
     -- Bitwise and
-    "AndI" -> arithmeticNode AndI nodeId rEdges
-    "AndL" -> arithmeticNode AndL nodeId rEdges
+    "AndI" -> arithmeticNode "AndI" AndI nodeId rEdges
+    "AndL" -> arithmeticNode "AndL" AndL nodeId rEdges
     -- Bitwise or
-    "OrI" -> arithmeticNode OrI nodeId rEdges
-    "OrL" -> arithmeticNode OrL nodeId rEdges
+    "OrI" -> arithmeticNode "OrI" OrI nodeId rEdges
+    "OrL" -> arithmeticNode "OrL" OrL nodeId rEdges
     -- Left shifting
-    "LShiftI" -> arithmeticNode LShiftI nodeId rEdges
-    "LShiftL" -> arithmeticNode LShiftL nodeId rEdges
+    "LShiftI" -> arithmeticNode "LShiftI" LShiftI nodeId rEdges
+    "LShiftL" -> arithmeticNode "LShiftL" LShiftL nodeId rEdges
     -- Right shifting
-    "RShiftI" -> arithmeticNode RShiftI nodeId rEdges
-    "RShiftL" -> arithmeticNode RShiftL nodeId rEdges
+    "RShiftI" -> arithmeticNode "RShiftI" RShiftI nodeId rEdges
+    "RShiftL" -> arithmeticNode "RShiftL" RShiftL nodeId rEdges
     -- Conversions
     "ConvD2F" -> convNode ConvD2F nodeId rEdges
     "ConvD2I" -> convNode ConvD2I nodeId rEdges
@@ -182,22 +195,24 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
     "ConvL2F" -> convNode ConvL2F nodeId rEdges
     "ConvL2I" -> convNode ConvL2I nodeId rEdges
     -- Comparisons
-    "CmpI" -> arithmeticNode CmpI nodeId rEdges
-    "CmpL" -> arithmeticNode CmpL nodeId rEdges
-    "CmpF" -> arithmeticNode CmpF nodeId rEdges
-    "CmpD" -> arithmeticNode CmpD nodeId rEdges
+    "CmpI" -> arithmeticNode "CmpI" CmpI nodeId rEdges
+    "CmpL" -> arithmeticNode "CmpL" CmpL nodeId rEdges
+    "CmpF" -> arithmeticNode "CmpF" CmpF nodeId rEdges
+    "CmpD" -> arithmeticNode "CmpD" CmpD nodeId rEdges
     "Bool" ->
       let mkBool boolOp = case singlePred nodeId rEdges of
             Right pred -> Parsed (nodeId, Bool boolOp pred)
             Left err -> Unsupported $ "Bool: " <> err
        in case M.lookup "dump_spec" nodeProps of
             Just "[ne]" -> mkBool Ne
+            Just "[le]" -> mkBool Ne
             Just other -> Unsupported $ "Bool: Unrecognised dump_spec: " <> other
             Nothing -> Unsupported "Bool: Missing dump_spec"
     "Phi" ->
       case (findNodePred nodeId rEdges) of
         (regionId : preds) | length preds > 1 -> Parsed (nodeId, Phi regionId preds)
         preds -> Unsupported $ "Phi: Phi node got less than two predecessors"
+    -- \| CONTROL FLOW
     "Region" ->
       -- NOTE: A region always has an edge to itself, which is the first predecessor
       case (findNodePred nodeId rEdges) of
@@ -218,7 +233,37 @@ buildNode rEdges (RawNode (read -> nodeId) nodeName nodeProps) =
       case (findNodePred nodeId rEdges) of
         [_ctrl, _parm6, _mem, _rawptr, _retAddress, dataPred] -> Parsed (nodeId, Return nodeId dataPred)
         preds -> Unsupported $ "Return: Expected 6 predecessors but got " <> show (length preds)
+    -- \| MEMORY FLOW
+    "StoreI" -> storeNode StoreI nodeId rEdges
+    "StoreL" -> storeNode StoreL nodeId rEdges
+    "StoreF" -> storeNode StoreF nodeId rEdges
+    "StoreD" -> storeNode StoreD nodeId rEdges
+    "LoadI" -> arithmeticNode "LoadI" LoadI nodeId rEdges
+    "LoadL" -> arithmeticNode "LoadL" LoadL nodeId rEdges
+    "LoadF" -> arithmeticNode "LoadF" LoadF nodeId rEdges
+    "LoadD" -> arithmeticNode "LoadD" LoadD nodeId rEdges
+    "AddP" ->
+      case (findNodePred nodeId rEdges) of
+        [ptr1, ptr2, offset] -> Parsed $ (nodeId, AddP ptr1 ptr2 offset)
+        preds -> Unsupported $ "AddP: Expected three predecessors but got " <> show (length preds)
+    "MergeMem" ->
+      case (findNodePred nodeId rEdges) of
+        (_top1 : parmMem : rest) -> Parsed (nodeId, MergeMem parmMem (filter (not . isTop) rest))
+        preds -> Unsupported $ "MergeMem: Expected at least two predecessors but got " <> show (length preds)
+      where
+        isTop nid =
+          case (find ((==) nid . read . rawNodeId) rNodes) of
+            Just n -> (==) "Con" $ rawNodeName n
+            Nothing -> True
     _ -> Unsupported $ "buildNode: Unsupported node with name " <> nodeName
+
+-- | Given the data constructor of a store node, find the node id of its predecessors to create
+-- the corresponding @Node@.
+storeNode :: (NodeId -> NodeId -> NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
+storeNode constr nodeId rEdges =
+  case findNodePred nodeId rEdges of
+    [_ctrl, mem, addr, val] -> Parsed (nodeId, constr mem addr val)
+    neighbors -> Unsupported $ "Store node: Expected four preds but got: " <> show (length neighbors)
 
 -- | Given a control flow node, returns the predecessors of the node
 buildCtrlflow :: [RawEdge] -> [(NodeId, Node)] -> Either String ControlSuccessors
@@ -267,21 +312,21 @@ singlePred nodeId edges = case findNodePred nodeId edges of
 
 -- | Given the data constructor of an arithmetic node, find the node id of its predecessors to create
 -- the corresponding @Node@.
-arithmeticNode :: (NodeId -> NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
-arithmeticNode constr nodeId rEdges =
+arithmeticNode :: String -> (NodeId -> NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
+arithmeticNode nodeName constr nodeId rEdges =
   case findNodePred nodeId rEdges of
     [x, y] -> Parsed (nodeId, constr x y)
-    neighbors -> Unsupported $ "Arithmetic node: Expected two preds but got: " <> show (length neighbors)
+    neighbors -> Unsupported $ nodeName <> ": Expected two preds but got: " <> show (length neighbors)
 
 -- | Similar to @arithmeticNode@, except it allows for the node to get pinned by control flow.
 -- This can happen for division.
-pinnedArithmeticNode :: (NodeId -> NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
-pinnedArithmeticNode constr nodeId rEdges =
+pinnedArithmeticNode :: String -> (NodeId -> NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
+pinnedArithmeticNode nodeName constr nodeId rEdges =
   -- \| NOTE: Unlike other arithmetic nodes, Div can get pinned by control flow
   case findNodePred nodeId rEdges of
     [x, y] -> Parsed (nodeId, constr x y)
     [_ctrl, x, y] -> Parsed (nodeId, constr x y)
-    neighbors -> Unsupported $ "Arithmetic node: Expected two preds but got: " <> show (length neighbors)
+    neighbors -> Unsupported $ nodeName <> ": Expected two preds but got: " <> show (length neighbors)
 
 convNode :: (NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
 convNode constr nodeId rEdges =

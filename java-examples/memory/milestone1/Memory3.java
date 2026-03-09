@@ -1,11 +1,11 @@
 class Memory3 {
   public static void main(String[] args) {
-    method(true);
+    (new Memory3()).method(true);
   }
 
-  static int f1 = 1;
+  int f1 = 1;
 
-  static int method(boolean b) {
+  int method(boolean b) {
     if (b) {
       f1 = 10;
     } else {

@@ -1,12 +1,12 @@
 class Memory2 {
   public static void main(String[] args) {
-    method(true);
+    (new Memory2()).method(true);
   }
 
-  static int f1 = 1;
-  static int f2 = 2;
+  int f1 = 1;
+  int f2 = 2;
 
-  static void method(boolean b) {
+  void method(boolean b) {
     if (b) {
       f1 = 10;
     } else {

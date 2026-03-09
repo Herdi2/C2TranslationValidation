@@ -22,15 +22,26 @@ data ControlSucc
 type ControlSuccessors = M.Map NodeId [NodeId]
 
 data Comp
-  = Ne
+  = -- | Not Equal
+    Ne
+  | -- | Less than or equal
+    Le
   deriving (Show, Eq)
 
+-- (BlockId, Offset)
+type MemIndex = (String, Int64)
+
 data Node
-  = -- Parameters carry their own nodeId for parameter handling (see @createParams@)
+  = -- | Parameters carry their own nodeId for parameter handling (see @createParams@)
     ParmI NodeId
   | ParmL NodeId
   | ParmF NodeId
   | ParmD NodeId
+  | -- | ParmMem represents the initial memory of the method
+    ParmMem
+  | -- | ParmMemPtr contains the initial blockId and offset of the memory
+    -- Usually, offset=0
+    ParmMemPtr MemIndex
   | -- | Constant nodes
     ConI Int32
   | ConL Int64
@@ -108,6 +119,20 @@ data Node
     Return NodeId NodeId
   | -- | Static calls with own Id
     CallStatic NodeId
+  | -- | Store <Mem id> <address> <value>
+    StoreI NodeId NodeId NodeId
+  | StoreL NodeId NodeId NodeId
+  | StoreF NodeId NodeId NodeId
+  | StoreD NodeId NodeId NodeId
+  | -- | Load <Mem id> <address>
+    LoadI NodeId NodeId
+  | LoadL NodeId NodeId
+  | LoadF NodeId NodeId
+  | LoadD NodeId NodeId
+  | -- | MergeMem <Bot memory> [<Alias memory>]
+    MergeMem NodeId [NodeId]
+  | -- | AddP <ptr1> <ptr2> <offset>, ptr1 := ptr2 + offset
+    AddP NodeId NodeId NodeId
   deriving (Show, Eq)
 
 data RawNode = RawNode

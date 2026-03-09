@@ -346,6 +346,7 @@ evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
     v <- getInt <$> evalDataNode graph (nodes !!! n)
     case cmp of
       Ne -> return $ JInt $ ite (v .== 0) (literal 1) (literal 0)
+      Le -> return $ JInt $ ite (v .== -1 .|| v .== 0) (literal 1) (literal 0)
 evalDataNode graph (Phi rid preds) =
   -- The phi node's value depends on the corresponding region node
   let dataIdx = (regionPredecessor graph) !!! rid
