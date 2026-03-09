@@ -249,12 +249,16 @@ evalDataNode graph@(nodeInfo -> nodes) (DivI n1 n2) =
   do
     v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
     v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
-    return $ JInt (v1 `sDiv` v2)
+    -- NOTE: We use `sQuot` since division rounds towards zero
+    -- https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-6.html#jvms-6.5.idiv
+    return $ JInt (v1 `sQuot` v2)
 evalDataNode graph@(nodeInfo -> nodes) (DivL n1 n2) =
   do
     v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
     v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
-    return $ JLong (v1 `sDiv` v2)
+    -- NOTE: We use `sQuot` since division rounds towards zero
+    -- https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-6.html#jvms-6.5.ldiv
+    return $ JLong (v1 `sQuot` v2)
 evalDataNode graph@(nodeInfo -> nodes) (DivF n1 n2) =
   do
     v1 <- getFloat <$> evalDataNode graph (nodes !!! n1)
@@ -413,7 +417,7 @@ evalDataNode graph@(nodeInfo -> nodes) (ConvL2I nid) =
     return $ JInt $ dropUpper32 v
   where
     dropUpper32 :: SInt64 -> SInt32
-    dropUpper32 = fromSized . (bvDrop (Proxy @32) :: SInt 64 -> SInt 32) . toSized
+    dropUpper32 = fromSized . (bvExtract (Proxy @31) (Proxy @0) :: SInt 64 -> SInt 32) . toSized
 evalDataNode _ n = error $ "Not a data node:" <> show n
 
 -- | Creates a symbolic value for each parameter node.
@@ -444,7 +448,7 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
 
 runVerification :: Bool -> Graph -> Graph -> IO SatResult
 runVerification showModel before after =
-  satWith z3 {verbose = showModel, timing = PrintTiming} $
+  satWith z3 {verbose = True, timing = PrintTiming} $
     do
       parms <- createParams before
       res1 <- evalControlNode (before {params = parms}) (ParmCtrl 5)
