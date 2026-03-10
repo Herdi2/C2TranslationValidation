@@ -112,7 +112,7 @@ program seed className methodName =
 method :: String -> Gen JMethod
 method methodName =
   do
-    paramCount <- randR (1, 2)
+    paramCount <- randR (1, 4)
     params <-
       sequence $
         replicate paramCount $
@@ -121,7 +121,7 @@ method methodName =
             varType <- genArithmeticType
             return (varName, varType)
     mapM_ (uncurry declareVar) params
-    stmtCount <- randR (2, 3)
+    stmtCount <- randR (2, 5)
     methodBody <- sequence $ replicate stmtCount stmt
     -- Initial design choice: Calculate checksum of all variables?
     let retType = JDouble
@@ -136,19 +136,23 @@ mkReturn =
   do
     vars <- allVars
     retType <- getType
-    return $ go vars retType
+    go vars retType
   where
-    go [] _ = JConst JDouble (DoubleLit 0)
+    go [] _ = return $ JConst JDouble (DoubleLit 0)
     go [(varName, varType)] retType =
-      if varType == retType
-        then JVariable varType varName
-        else JConv retType (JVariable varType varName)
+      return $
+        if varType == retType
+          then JVariable varType varName
+          else JConv retType (JVariable varType varName)
     go ((varName, varType) : rest) retType =
-      let term =
-            if varType == retType
-              then JVariable varType varName
-              else JConv retType (JVariable varType varName)
-       in JBin JAdd term (go rest retType)
+      do
+        let term =
+              if varType == retType
+                then JVariable varType varName
+                else JConv retType (JVariable varType varName)
+        bop <- binOp
+        r <- go rest retType
+        return $ JBin bop term r
 
 stmt :: Gen JStmt
 stmt =

@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeApplications #-}
 
@@ -8,6 +9,7 @@ import Data.List (findIndex)
 import qualified Data.Map as M
 import Data.Proxy
 import Data.SBV
+import Debug.Trace
 import Verifier.Graph
 
 -- | Proper error message for search key in map
@@ -33,42 +35,6 @@ getFloat sval = error $ "getFloat: Got " <> show sval
 getDouble :: SValue -> SDouble
 getDouble (JDouble v) = v
 getDouble sval = error $ "getDouble: Got " <> show sval
-
-instance EqSymbolic SValue where
-  (.==) a b =
-    case (a, b) of
-      (JInt v1, JInt v2) -> v1 .== v2
-      (JLong v1, JLong v2) -> v1 .== v2
-      (JFloat v1, JFloat v2) -> v1 .== v2
-      (JDouble v1, JDouble v2) -> v1 .== v2
-      (_, _) -> sFalse
-
-  -- NOTE: Important to also implement (.===) to get equality between NaNs
-  -- Otherwise we get many false-positives.
-  (.===) a b =
-    case (a, b) of
-      (JInt v1, JInt v2) -> v1 .=== v2
-      (JLong v1, JLong v2) -> v1 .=== v2
-      (JFloat v1, JFloat v2) -> v1 .=== v2
-      (JDouble v1, JDouble v2) -> v1 .=== v2
-      (_, _) -> sFalse
-
-instance Mergeable SValue where
-  symbolicMerge force test left right = case (left, right) of
-    (JInt x, JInt y) -> JInt $ symbolicMerge force test x y
-    (JLong x, JLong y) -> JLong $ symbolicMerge force test x y
-    (JFloat x, JFloat y) -> JFloat $ symbolicMerge force test x y
-    (JDouble x, JDouble y) -> JDouble $ symbolicMerge force test x y
-    (x, y) -> error $ "Cannot merge different SValue types: " <> show x <> " and " <> show y
-
-instance OrdSymbolic SValue where
-  (.<) a b =
-    case (a, b) of
-      (JInt x, JInt y) -> x .< y
-      (JLong x, JLong y) -> x .< y
-      (JFloat x, JFloat y) -> x .< y
-      (JDouble x, JDouble y) -> x .< y
-      _ -> error "Cannot compare different SValue types"
 
 -- | Symbolic comparison function
 sComp :: SValue -> SValue -> SInt32
@@ -355,7 +321,7 @@ evalDataNode graph (Phi rid preds) =
   -- The phi node's value depends on the corresponding region node
   let dataIdx = (regionPredecessor graph) !!! rid
       chosenDataNode = (nodeInfo graph) !!! (preds !! fromIntegral dataIdx)
-   in return =<< evalDataNode graph chosenDataNode
+   in evalDataNode graph chosenDataNode
 -- The floating-point conversions are taken from https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html#jvms-2.8
 -- Conversion to an integer value uses IEEE 754 roundTowardZero
 -- Any other conversion uses IEEE 754 roundTiesToEven
@@ -418,7 +384,85 @@ evalDataNode graph@(nodeInfo -> nodes) (ConvL2I nid) =
   where
     dropUpper32 :: SInt64 -> SInt32
     dropUpper32 = fromSized . (bvExtract (Proxy @31) (Proxy @0) :: SInt 64 -> SInt 32) . toSized
+evalDataNode graph (LoadI memId addrId) = handleLoad graph memId addrId JINT
+evalDataNode graph (LoadL memId addrId) = handleLoad graph memId addrId JLONG
+evalDataNode graph (LoadF memId addrId) = handleLoad graph memId addrId JFLOAT
+evalDataNode graph (LoadD memId addrId) = handleLoad graph memId addrId JDOUBLE
 evalDataNode _ n = error $ "Not a data node:" <> show n
+
+handleLoad :: Graph -> NodeId -> NodeId -> JType -> Symbolic SValue
+handleLoad graph@(nodeInfo -> nodes) memId addrId jtyp =
+  do
+    let memIndex@(className, offset) = readAddress (nodes !!! addrId)
+    mem <- evalMemoryNode graph (nodes !!! memId)
+    case mem of
+      MemParm ->
+        case (classMems graph) M.!? className of
+          Nothing -> error $ "Load: couldn't find memory representation for class: " <> className
+          Just m -> readMem (return m) (literal offset) jtyp
+      MemBot botMem -> readMem (return botMem) (literal offset) jtyp
+      MemAlias _ memIndex' val ->
+        if memIndex == memIndex'
+          then return val
+          else error $ "Load: Mismatching memory slice"
+      MemMerge membot aliases ->
+        case membot of
+          MemBot m ->
+            go aliases m
+            where
+              -- No matching slices, read from bot
+              go [] botMem = readMem (return botMem) (literal offset) jtyp
+              -- Check if matching alias exists
+              go (MemAlias _ memIndex' val : xs) botMem =
+                if memIndex == memIndex'
+                  then return val
+                  else go xs botMem
+              go _ _ = error "LoadI: MergeMem malformed, found non-alias in aliases"
+          _ -> error "LoadI: MergeMem malformed, found non-bot in bot mem"
+
+evalMemoryNode :: Graph -> Node -> Symbolic Memory
+evalMemoryNode graph@(nodeInfo -> nodes) =
+  \case
+    ParmMem -> return MemParm
+    (MergeMem botMemNid aliasNids) ->
+      do
+        botMem <- evalMemoryNode graph (nodes !!! botMemNid)
+        aliases <- sequence $ (\nid -> (evalMemoryNode graph) (nodes !!! nid)) <$> aliasNids
+        return $ MemMerge botMem aliases
+    (Phi rid preds) ->
+      -- Phi nodes may be used by the memory subgraph as well.
+      -- The phi node's value depends on the corresponding region node
+      let dataIdx = (regionPredecessor graph) !!! rid
+          chosenDataNode = (nodeInfo graph) !!! (preds !! fromIntegral dataIdx)
+       in evalMemoryNode graph chosenDataNode
+    (StoreI slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
+    (StoreL slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
+    (StoreF slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
+    (StoreD slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
+    node -> error $ "evalMemoryNode: non-memory node " <> show node
+  where
+    handleStore slice memNid addrNid dataNid =
+      -- For a Store node the slice determines the return value.
+      -- If we return a slice, then the value of that slice is
+      -- single-handedly determined by the current store, and
+      -- previous memory may be ignored.
+      -- If we return Bot, then the store node will simply write to the
+      -- memory returned by the predecessor, and propagate it forward.
+      -- This then forces the predecessing memory to return Bot.
+      do
+        let memIndex@(className, offset) = readAddress (nodes !!! addrNid)
+        val <- evalDataNode graph (nodes !!! dataNid)
+        mem <- evalMemoryNode graph (nodes !!! memNid)
+        case (slice, mem) of
+          (Slice s, _) ->
+            return $ MemAlias s memIndex val
+          (Bot, MemParm) ->
+            case (classMems graph) M.!? className of
+              Nothing -> error $ "Store: couldn't find memory representation for class: " <> className
+              Just m -> MemBot <$> writeMem (return m) offset val
+          (Bot, MemBot m) -> MemBot <$> writeMem (return m) offset val
+          (Bot, MemMerge _ _) -> error $ "Not sure how to implement this"
+          (Bot, MemAlias _ _ _) -> error $ "ASSUMPTION BROKEN: Cannot go from alias to bot in a store"
 
 -- | Creates a symbolic value for each parameter node.
 -- The symbolic values will be reused in the SMT formulas
@@ -446,12 +490,30 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
             go (M.insert nid param paramMap) rest
         _ -> go paramMap rest
 
+-- | Allocate the arrays we will use for memory handling
+createMemory :: Graph -> Symbolic (M.Map String ClassMemory)
+createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
+  where
+    go mems [] = return mems
+    go mems (x : xs) =
+      case x of
+        ParmMemPtr className ->
+          do
+            mem <- sArray className
+            go (M.insert className mem mems) xs
+        _ -> go mems xs
+
+-- | Creates a symbolic array for each memory parameter,
+-- which represents the memory of a given class.
 runVerification :: Bool -> Graph -> Graph -> IO SatResult
 runVerification showModel before after =
   satWith z3 {verbose = True, timing = PrintTiming} $
     do
+      setTimeOut (60 * 1000)
       parms <- createParams before
-      res1 <- evalControlNode (before {params = parms}) (ParmCtrl 5)
-      res2 <- evalControlNode (after {params = parms}) (ParmCtrl 5)
+      mems <- createMemory before
+      traceM (show before)
+      res1 <- evalControlNode (before {params = parms, classMems = mems}) (ParmCtrl 5)
+      res2 <- evalControlNode (after {params = parms, classMems = mems}) (ParmCtrl 5)
       -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
       constrain $ res1 ./== res2

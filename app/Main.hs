@@ -77,5 +77,6 @@ campaign opts =
           Left err ->
             putStrLn $ "Error: " <> err
           Right satRes ->
-            putStrLn ("Writing results to " <> resFile)
+            putStrLn ("Results: " <> satRes)
+              >> putStrLn ("Writing results to " <> resFile)
               >> writeFile resFile satRes

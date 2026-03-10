@@ -92,7 +92,6 @@ parseGraphs xmlContent =
     afterGraph <- parseGraph "Before Matching" xmlContent
     before <- buildGraph beforeGraph
     after <- buildGraph afterGraph
-    traceM (show before)
     return (before, after)
 
 -- | Verifies the given XML file

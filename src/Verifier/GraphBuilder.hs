@@ -8,6 +8,7 @@ import Data.Char (isDigit)
 import Data.List (find, isPrefixOf, sortOn)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe, isJust)
+import Data.SBV (sArray)
 import Debug.Trace
 import GHC.Float (castWord32ToFloat, castWord64ToDouble)
 import Numeric (readBin)
@@ -49,7 +50,7 @@ buildGraph rawGraph@(RawGraph rNodes rEdges) =
 -- NOTE: Yes, I was overly cautious writing this method, I like error messages.
 findMethodType ::
   RawGraph ->
-  Either String RetType
+  Either String JType
 findMethodType (RawGraph rNodes rEdges) =
   do
     (RawNode retNid _ _) <-
@@ -97,14 +98,16 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
             | "inst" `isPrefixOf` typ =
                 case (M.lookup "bottom_type" nodeProps) of
                   Nothing -> Unsupported $ "buildNode: Internal error, node property didn't contain \"bottom_type\""
-                  Just ('i' : 'n' : 's' : 't' : 'p' : 't' : 'r' : ':' : rest) ->
-                    -- Parses "instptr:className:notNull+offset,..." into (className:notNull, offset)
-                    let blockAndOffset = takeWhile (/= ',') rest
-                        (blockId, offset) = span (/= '+') blockAndOffset
-                        (blockId', offset') = (repl <$> blockId, read $ tail offset)
+                  Just attr ->
+                    let attr' = drop (length "instptr:") attr
+                        (memName, rest) = span (/= '+') attr'
+                        offset = read $ takeWhile isDigit $ drop (length "+") rest
                         repl ':' = '_'
                         repl c = c
-                     in Parsed (nodeId, ParmMemPtr (blockId', offset'))
+                     in -- NOTE: Sanity check, since I assume the offset is initially 0
+                        if (offset == 0)
+                          then Parsed (nodeId, ParmMemPtr $ repl <$> memName)
+                          else Unsupported $ "Parm for mem: Expected offset 0, but got " <> show offset
                   Just res -> Unsupported $ "inst: Expected instptr but got " <> res
             | "control" `isPrefixOf` typ = Parsed (nodeId, ParmCtrl nodeId)
             | "abIO" `isPrefixOf` typ = Ignored
@@ -234,17 +237,31 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
         [_ctrl, _parm6, _mem, _rawptr, _retAddress, dataPred] -> Parsed (nodeId, Return nodeId dataPred)
         preds -> Unsupported $ "Return: Expected 6 predecessors but got " <> show (length preds)
     -- \| MEMORY FLOW
-    "StoreI" -> storeNode StoreI nodeId rEdges
-    "StoreL" -> storeNode StoreL nodeId rEdges
-    "StoreF" -> storeNode StoreF nodeId rEdges
-    "StoreD" -> storeNode StoreD nodeId rEdges
+    "StoreI" -> storeNode (M.lookup "dump_spec" nodeProps) StoreI nodeId rEdges
+    "StoreL" -> storeNode (M.lookup "dump_spec" nodeProps) StoreL nodeId rEdges
+    "StoreF" -> storeNode (M.lookup "dump_spec" nodeProps) StoreF nodeId rEdges
+    "StoreD" -> storeNode (M.lookup "dump_spec" nodeProps) StoreD nodeId rEdges
     "LoadI" -> arithmeticNode "LoadI" LoadI nodeId rEdges
     "LoadL" -> arithmeticNode "LoadL" LoadL nodeId rEdges
     "LoadF" -> arithmeticNode "LoadF" LoadF nodeId rEdges
     "LoadD" -> arithmeticNode "LoadD" LoadD nodeId rEdges
     "AddP" ->
+      -- NOTE: Here we shortcut. The final value calculated by AddP is always* given
+      -- in the "dump_spec", and as such we can immediately store it in the AddP node.
+      -- \*atleast from observation
       case (findNodePred nodeId rEdges) of
-        [ptr1, ptr2, offset] -> Parsed $ (nodeId, AddP ptr1 ptr2 offset)
+        [ptr1, ptr2, val] ->
+          case (M.lookup "bottom_type" nodeProps) of
+            Nothing -> Unsupported $ "AddP: No attribute \"bottom_type\""
+            Just attr ->
+              -- \| parsing "instptr:<memName>+<offset>..." into (memName, offset)
+              -- Any ':' in the name is replaced by '_', since ':' is not supported in SMT variable names
+              let attr' = drop (length "instptr:") attr
+                  (memName, rest) = span (/= '+') attr'
+                  offset = read $ takeWhile isDigit $ drop (length "+") rest
+                  repl ':' = '_'
+                  repl c = c
+               in Parsed $ (nodeId, AddP (repl <$> memName, offset) ptr1 ptr2 val)
         preds -> Unsupported $ "AddP: Expected three predecessors but got " <> show (length preds)
     "MergeMem" ->
       case (findNodePred nodeId rEdges) of
@@ -259,11 +276,27 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
 
 -- | Given the data constructor of a store node, find the node id of its predecessors to create
 -- the corresponding @Node@.
-storeNode :: (NodeId -> NodeId -> NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)
-storeNode constr nodeId rEdges =
+storeNode ::
+  Maybe String ->
+  (MemLattice -> NodeId -> NodeId -> NodeId -> Node) ->
+  NodeId ->
+  [(NodeId, NodeId, NodeId)] ->
+  ParseResult (NodeId, Node)
+storeNode Nothing _ _ _ = Unsupported "Store node: No attribute named \"dump_spec\". Needed to determine slice."
+storeNode (Just attr) constr nodeId rEdges =
   case findNodePred nodeId rEdges of
-    [_ctrl, mem, addr, val] -> Parsed (nodeId, constr mem addr val)
+    [_ctrl, mem, addr, val] ->
+      case findMemIdx attr of
+        Just slice -> Parsed (nodeId, constr slice mem addr val)
+        Nothing -> Unsupported $ "Store node: Could not find mem idx from props: " <> show attr
     neighbors -> Unsupported $ "Store node: Expected four preds but got: " <> show (length neighbors)
+  where
+    -- \| In dump_spec, the slice is given in the attribute `idx=<slice>`
+    findMemIdx [] = Nothing
+    findMemIdx ('i' : 'd' : 'x' : '=' : slice)
+      | "Bot" `isPrefixOf` slice = Just Bot
+      | otherwise = Slice <$> readMaybe (takeWhile isDigit slice)
+    findMemIdx (_ : rest) = findMemIdx rest
 
 -- | Given a control flow node, returns the predecessors of the node
 buildCtrlflow :: [RawEdge] -> [(NodeId, Node)] -> Either String ControlSuccessors
