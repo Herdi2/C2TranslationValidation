@@ -1,15 +1,19 @@
+{-# LANGUAGE LambdaCase #-}
+
 module GraphParserSpec (spec) where
 
-import Verifier.Graph
-import Test.Hspec
-import Verifier.Utils
+import Control.Monad
 import System.Directory
+import Test.Hspec
+import Utils
+import Verifier.Graph
+import Verifier.Graph (JType (JFLOAT))
 
 wuTestPath :: String
-wuTestPath = "/home/herdi/Desktop/master-work/C2TranslationValidation/java-examples/old-data-bugs/"
+wuTestPath = "./java-examples/data-flow/"
 
 testPath :: String
-testPath = "/home/herdi/Desktop/master-work/C2TranslationValidation/java-examples/tests/"
+testPath = "./java-examples/tests/"
 
 -- | Testing graph parsing and building
 -- to make sure that graphs are parsed correctly into our internal representation
@@ -30,26 +34,29 @@ spec =
         checkGraph wuTestPath "MulFloat.java" "mulfloat" mulFloat
     describe "Extended test suite (control flow etc.)" $ do
       it "can parse \"SideEffect.java\"" $
-        checkGraph testPath "SideEffect.java" "sideeffect" sideEffect 
+        checkGraph testPath "SideEffect.java" "sideeffect" sideEffect
 
 checkGraph :: String -> String -> String -> Graph -> IO ()
 checkGraph filePath fileName methodName referenceGraph =
-    do
-      res <- compileJavaProgram (filePath ++ fileName) methodName filePath
-      case res of
+  do
+    path <- makeAbsolute $ filePath
+    runErrorM
+      ( do
+          xmlContent <- compileJavaProgram (path ++ fileName) methodName
+          case createGraph xmlContent "After Parsing" of
+            Left err -> fail err
+            Right graph -> return graph
+      )
+      >>= \case
         Left err -> fail err
-        Right xmlFile ->
-          do
-            xmlContent <- readFile (filePath ++ xmlFile)
-            (case createGraph xmlContent "After Parsing" of
-              Right graph -> graph `shouldBe` referenceGraph
-              Left err -> fail err)
-            >> removeFile (filePath ++ xmlFile)
+        Right graph -> graph `shouldBe` referenceGraph
 
 andNeg :: Graph
 andNeg =
   mkGraph
+    JINT
     ( [ (5, ParmCtrl 5),
+        (7, ParmMem),
         (10, ParmI 10),
         (11, ParmI 11),
         (23, ConI 0),
@@ -64,7 +71,9 @@ andNeg =
 floating :: Graph
 floating =
   mkGraph
+    JFLOAT
     ( [ (5, ParmCtrl 5),
+        (7, ParmMem),
         (10, ParmF 10),
         (22, ConF 00000000000000000000000000000000),
         (23, SubF 22 10),
@@ -77,7 +86,9 @@ floating =
 lshift :: Graph
 lshift =
   mkGraph
+    JLONG
     ( [ (5, ParmCtrl 5),
+        (7, ParmMem),
         (10, ParmL 10),
         (23, AddL 10 10),
         (24, ConI 63),
@@ -90,7 +101,9 @@ lshift =
 mulAsso :: Graph
 mulAsso =
   mkGraph
+    JFLOAT
     ( [ (5, ParmCtrl 5),
+        (7, ParmMem),
         (10, ParmF 10),
         (22, ConF 00111101111110111110011101101101),
         (23, ConF 00111111100111010111000010100100),
@@ -104,7 +117,9 @@ mulAsso =
 mulFloat :: Graph
 mulFloat =
   mkGraph
+    JFLOAT
     ( [ (5, ParmCtrl 5),
+        (7, ParmMem),
         (10, ParmF 10),
         (22, ConF 0),
         (23, MulF 22 10),
@@ -117,7 +132,9 @@ mulFloat =
 
 sideEffect =
   mkGraph
+    JINT
     ( [ (10, ParmI 10),
+        (7, ParmMem),
         (11, ParmI 11),
         (23, ConI 0),
         (24, SubI 23 10),
@@ -148,7 +165,9 @@ sideEffect =
 phiBefore :: Graph
 phiBefore =
   mkGraph
+    JINT
     ( [ (5, ParmCtrl 5),
+        (7, ParmMem),
         (10, ParmI 10),
         (11, ParmI 11),
         (23, ConI 0),
@@ -180,7 +199,9 @@ phiBefore =
 phiAfter :: Graph
 phiAfter =
   mkGraph
+    JINT
     ( [ (5, ParmCtrl 5),
+        (7, ParmMem),
         (10, ParmI 10),
         (11, ParmI 11),
         (26, AndI 10 11),
