@@ -208,7 +208,8 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
             Left err -> Unsupported $ "Bool: " <> err
        in case M.lookup "dump_spec" nodeProps of
             Just "[ne]" -> mkBool Ne
-            Just "[le]" -> mkBool Ne
+            Just "[le]" -> mkBool Le
+            Just "[lt]" -> mkBool Lt
             Just other -> Unsupported $ "Bool: Unrecognised dump_spec: " <> other
             Nothing -> Unsupported "Bool: Missing dump_spec"
     "Phi" ->

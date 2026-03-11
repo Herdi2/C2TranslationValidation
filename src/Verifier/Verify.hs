@@ -317,6 +317,7 @@ evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
     case cmp of
       Ne -> return $ JInt $ ite (v .== 0) (literal 1) (literal 0)
       Le -> return $ JInt $ ite (v .== -1 .|| v .== 0) (literal 1) (literal 0)
+      Lt -> return $ JInt $ ite (v .== -1) (literal 1) (literal 0)
 evalDataNode graph (Phi rid preds) =
   -- The phi node's value depends on the corresponding region node
   let dataIdx = (regionPredecessor graph) !!! rid
@@ -507,13 +508,14 @@ createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
 -- which represents the memory of a given class.
 runVerification :: Bool -> Graph -> Graph -> IO SatResult
 runVerification showModel before after =
-  satWith z3 {verbose = True, timing = PrintTiming} $
+  satWith z3 {verbose = showModel, timing = PrintTiming} $
     do
       setTimeOut (60 * 1000)
       parms <- createParams before
       mems <- createMemory before
-      traceM (show before)
       res1 <- evalControlNode (before {params = parms, classMems = mems}) (ParmCtrl 5)
       res2 <- evalControlNode (after {params = parms, classMems = mems}) (ParmCtrl 5)
       -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
       constrain $ res1 ./== res2
+
+-- constrain $ res1 .=== (67, JInt $ 40)

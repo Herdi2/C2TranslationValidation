@@ -69,6 +69,7 @@ campaignOpts =
     <*> ( option
             auto
             ( long "number"
+                <> short 'n'
                 <> metavar "<INT>"
                 <> value 20
                 <> help "Number of fuzz tests to run"

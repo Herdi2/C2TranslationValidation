@@ -12,6 +12,7 @@ import Data.List (mapAccumL)
 import qualified Data.Map as M
 import Data.Proxy
 import Data.SBV
+import Debug.Trace
 import GHC.Prim
 
 type NodeId = Word32
@@ -32,6 +33,8 @@ data Comp
     Ne
   | -- | Less than or equal
     Le
+  | -- | Less than
+    Lt
   deriving (Show, Eq)
 
 data Node
