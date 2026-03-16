@@ -16,6 +16,7 @@ import Effectful.Reader.Static
 import Effectful.State.Static.Local
 import Fuzzer.Grammar
 import Fuzzer.RNG
+import Fuzzer.GenUtils
 
 -- | We keep track of declared variables through their types,
 -- to be able to pick them when possible/needed during program generation.

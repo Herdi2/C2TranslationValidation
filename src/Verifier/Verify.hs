@@ -124,6 +124,11 @@ evalControlNode graph (Region nid _) =
 evalControlNode _ node = error $ "Not a control node: " <> show node
 
 -- | Symbolically executed the data flow subgraph using denotational semantics
+-- NOTE: Very important regarding floating point and doubles.
+-- Using e.g. `fpAdd` with explicit roundingmodes to capture the correct semantics
+-- of floating point operations generates SMT formulas that take a very long time.
+-- I do not see why I shouldn't simply use (+) instead.
+-- No false positives yet.
 evalDataNode :: Graph -> Node -> Symbolic SValue
 evalDataNode (params -> parms) (ParmI var) = return $ parms !!! var
 evalDataNode (params -> parms) (ParmL var) = return $ parms !!! var
@@ -234,6 +239,8 @@ evalDataNode graph@(nodeInfo -> nodes) (DivD n1 n2) =
   do
     v1 <- getDouble <$> evalDataNode graph (nodes !!! n1)
     v2 <- getDouble <$> evalDataNode graph (nodes !!! n2)
+    -- https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-6.html#jvms-6.5.ddiv
+    -- IEEE 754 arithmetic, round to nearest policy
     return $ JDouble (v1 / v2)
 evalDataNode graph@(nodeInfo -> nodes) (AndI n1 n2) =
   do
@@ -506,11 +513,10 @@ createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
 
 -- | Creates a symbolic array for each memory parameter,
 -- which represents the memory of a given class.
-runVerification :: Bool -> Graph -> Graph -> IO SatResult
-runVerification showModel before after =
-  satWith z3 {verbose = showModel, timing = PrintTiming} $
+runVerification :: SMTConfig -> Graph -> Graph -> IO SatResult
+runVerification smtConfig before after =
+  satWith smtConfig $
     do
-      setTimeOut (60 * 1000)
       parms <- createParams before
       mems <- createMemory before
       res1 <- evalControlNode (before {params = parms, classMems = mems}) (ParmCtrl 5)

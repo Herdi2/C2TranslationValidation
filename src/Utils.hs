@@ -7,19 +7,15 @@
 
 module Utils where
 
-import Control.Monad
-import Control.Monad.Except
-import Data.List
+import Data.List (intercalate, unsnoc)
 import Data.SBV
-import Debug.Trace
 import Effectful
 import Effectful.Fail (Fail, runFail)
 import Fuzzer.Gen
-import Prettyprinter (Pretty, pretty)
-import System.Directory (getCurrentDirectory, removeFile)
+import Prettyprinter (pretty)
+import System.Directory (getCurrentDirectory)
 import System.Exit
 import System.Process
-import qualified System.Random as System
 import Verifier.Graph
 import Verifier.GraphBuilder
 import Verifier.GraphParser
@@ -95,12 +91,13 @@ parseGraphs xmlContent =
     return (before, after)
 
 -- | Verifies the given XML file
-verifyXML :: String -> ErrorM String
-verifyXML xmlContent =
+verifyXML :: SMTConfig -> String -> ErrorM SatResult
+verifyXML smtConfig xmlContent =
   case (parseGraphs xmlContent) of
     Left err -> fail err
+    Right (before, after) | before == after -> fail "The graphs are equal!"
     Right (before, after) ->
-      show <$> (liftIO $ runVerification False before after)
+      (liftIO $ runVerification smtConfig before after)
 
 -- | Given a path to a Java file, e.g. /hello/this/path/Klass.java
 -- returns the Java class name and path: (/hello/this/path, Klass)
@@ -164,8 +161,8 @@ fuzzProgram seed className =
     Left _ -> fail $ "Fuzzer: Failed to generate program with seed: " <> show seed
     Right prog -> return $ show $ pretty prog
 
-verifyProgram :: String -> String -> ErrorM String
+verifyProgram :: String -> String -> ErrorM SatResult
 verifyProgram javaFile method =
   do
     xmlContent <- compileJavaProgram javaFile method
-    verifyXML xmlContent
+    verifyXML z3 xmlContent

@@ -71,7 +71,9 @@ findMethodType (RawGraph rNodes rEdges) =
         | "int" `isPrefixOf` typ -> Right JINT
         | "long" `isPrefixOf` typ -> Right JLONG
         | "float" `isPrefixOf` typ -> Right JFLOAT
+        | "fltcon" `isPrefixOf` typ -> Right JFLOAT
         | "double" `isPrefixOf` typ -> Right JDOUBLE
+        | "dblcon" `isPrefixOf` typ -> Right JDOUBLE
         | otherwise -> Left $ "findMethodType: Unsupported return type " <> typ
       Nothing -> Left $ "findMethodType: Data node had no \"bottom_type\""
 

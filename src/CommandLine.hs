@@ -11,7 +11,6 @@ data Command
 data VerifyOpts = VerifyOpts
   { verifyFile :: FilePath,
     verifyMethod :: String,
-    verifyShowModel :: Bool,
     verifyOutput :: Maybe FilePath
   }
 
@@ -22,7 +21,8 @@ data FuzzOpts = FuzzOpts
 
 data CampaignOpts = CampaignOpts
   { campaignDir :: FilePath,
-    campaignNum :: Int
+    campaignNum :: Int,
+    campaignZ3Timeout :: Integer
   }
 
 verifyOpts :: Parser VerifyOpts
@@ -30,13 +30,10 @@ verifyOpts =
   VerifyOpts
     <$> argument str (metavar "<FILE>" <> help "Verify a Java file")
     <*> argument str (metavar "<METHOD>" <> help "The name of the method to compile in the Java file.")
-    <*> switch
-      ( long "show-model"
-          <> help "Show the model on success"
-      )
     <*> optional
       ( strOption
           ( long "output"
+              <> short 'o'
               <> metavar "<FILE>"
               <> help "Write output to this file"
           )
@@ -73,6 +70,15 @@ campaignOpts =
                 <> metavar "<INT>"
                 <> value 20
                 <> help "Number of fuzz tests to run"
+            )
+        )
+    <*> ( option
+            auto
+            ( long "timeout"
+                <> short 't'
+                <> metavar "<INT>"
+                <> value (180 * 1000)
+                <> help "Timeout for the SMT solver"
             )
         )
 
