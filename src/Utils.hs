@@ -39,6 +39,7 @@ compareOutput javaFile methodName =
                 "-Xbatch", -- Makes sure compilation finishes
                 "-XX:-TieredCompilation", -- C2 only
                 "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName, -- Compile only `javaClass::method`
+                "-XX:-UseCompressedOops",
                 javaFile
               ]
             interpreterCmds =
@@ -95,7 +96,7 @@ verifyXML :: SMTConfig -> String -> ErrorM SatResult
 verifyXML smtConfig xmlContent =
   case (parseGraphs xmlContent) of
     Left err -> fail err
-    Right (before, after) | before == after -> fail "The graphs are equal!"
+    -- Right (before, after) | before == after -> fail "The graphs are equal!"
     Right (before, after) ->
       (liftIO $ runVerification smtConfig before after)
 
@@ -131,6 +132,8 @@ compileJavaProgram javaFile methodName =
                 "-XX:-TieredCompilation", -- C2 only
                 -- Compile only `javaClass::method`
                 "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName,
+                -- Do not compress pointers, to simplify object and array handling
+                "-XX:-UseCompressedOops",
                 -- Minimal graph-level needed to get the correct gra[hs
                 "-XX:PrintIdealGraphLevel=1",
                 -- Output XML file into "<javaClass>.xml"

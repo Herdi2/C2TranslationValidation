@@ -9,8 +9,6 @@ class Memory1 {
 
   // Simple example of basic writing and reading to static fields
   int method(int x) {
-    f1 = x;
-    f2 = x;
-    return f3;
+    return f1 + f1 + f1;
   }
 }

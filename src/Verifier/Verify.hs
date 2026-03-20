@@ -1,10 +1,12 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Verifier.Verify where
 
+import Control.Monad
 import Data.List (findIndex)
 import qualified Data.Map as M
 import Data.Proxy
@@ -93,7 +95,11 @@ evalControlNode graph (CallStatic nid) =
    in return $ (literal nid, mkRetValue retType)
 evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
   do
-    let [elseNode, ifNode] = (controlSuccessors graph) !!! nid
+    let [elseNode, ifNode] =
+          -- NOTE: Node Id of the false branch is always greater than the true branch
+          case (controlSuccessors graph) !!! nid of
+            [a, b] | b > a -> [b, a]
+            other -> other
     -- NOTE: Boolean guards require predecessor to be either 0 (false) or 1 (true)
     boolGuard <- ((.== 1) . getInt) <$> evalDataNode graph (nodes !!! boolGuardId)
     ifBranch <- evalControlNode graph $ nodes !!! ifNode
@@ -138,6 +144,7 @@ evalDataNode _ (ConI n) = pure $ JInt $ literal n
 evalDataNode _ (ConL n) = pure $ JLong $ literal n
 evalDataNode _ (ConF n) = pure $ JFloat $ literal n
 evalDataNode _ (ConD n) = pure $ JDouble $ literal n
+evalDataNode _ (ConP NullPtr) = pure $ NullPtr
 evalDataNode graph@(nodeInfo -> nodes) (AddI n1 n2) =
   do
     v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
@@ -316,13 +323,22 @@ evalDataNode graph@(nodeInfo -> nodes) (CmpD n1 n2) =
     v1 <- evalDataNode graph (nodes !!! n1)
     v2 <- evalDataNode graph (nodes !!! n2)
     return $ JInt $ sComp v1 v2
+evalDataNode graph@(nodeInfo -> nodes) (CmpP n1 n2) =
+  do
+    v1 <- evalDataNode graph (nodes !!! n1)
+    v2 <- evalDataNode graph (nodes !!! n2)
+    -- HACK: THIS IS STRAIGHT ASS, but we cannot compare
+    -- pointers using @sComp@, but only check for
+    -- equality/inequality.
+    return $ JInt $ ite (v1 .== v2) (literal 0) (literal 1)
 evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
   -- NOTE: Bool cmp n
   -- cmp = ne, return n == 0
   do
     v <- getInt <$> evalDataNode graph (nodes !!! n)
     case cmp of
-      Ne -> return $ JInt $ ite (v .== 0) (literal 1) (literal 0)
+      Ne -> return $ JInt $ ite (v .== 0) (literal 0) (literal 1)
+      Ee -> return $ JInt $ ite (v .== 0) (literal 1) (literal 0)
       Le -> return $ JInt $ ite (v .== -1 .|| v .== 0) (literal 1) (literal 0)
       Lt -> return $ JInt $ ite (v .== -1) (literal 1) (literal 0)
 evalDataNode graph (Phi rid preds) =
@@ -392,41 +408,42 @@ evalDataNode graph@(nodeInfo -> nodes) (ConvL2I nid) =
   where
     dropUpper32 :: SInt64 -> SInt32
     dropUpper32 = fromSized . (bvExtract (Proxy @31) (Proxy @0) :: SInt 64 -> SInt 32) . toSized
-evalDataNode graph (LoadI memId addrId) = handleLoad graph memId addrId JINT
-evalDataNode graph (LoadL memId addrId) = handleLoad graph memId addrId JLONG
-evalDataNode graph (LoadF memId addrId) = handleLoad graph memId addrId JFLOAT
-evalDataNode graph (LoadD memId addrId) = handleLoad graph memId addrId JDOUBLE
+evalDataNode graph (LoadI _ memId addrId) = handleLoad graph memId addrId
+evalDataNode graph (LoadL _ memId addrId) = handleLoad graph memId addrId
+evalDataNode graph (LoadF _ memId addrId) = handleLoad graph memId addrId
+evalDataNode graph (LoadD _ memId addrId) = handleLoad graph memId addrId
+evalDataNode graph (LoadP _ _ memId addrId) = handleLoad graph memId addrId
 evalDataNode _ n = error $ "Not a data node:" <> show n
 
-handleLoad :: Graph -> NodeId -> NodeId -> JType -> Symbolic SValue
-handleLoad graph@(nodeInfo -> nodes) memId addrId jtyp =
+handleLoad :: Graph -> NodeId -> NodeId -> Symbolic SValue
+handleLoad graph@(nodeInfo -> nodes) memId addrId =
   do
-    let memIndex@(className, offset) = readAddress (nodes !!! addrId)
+    let ptr = readAddress (nodes !!! addrId)
+        (JPointer memIndex _ _ _) = ptr
     mem <- evalMemoryNode graph (nodes !!! memId)
     case mem of
-      MemParm ->
-        case (classMems graph) M.!? className of
-          Nothing -> error $ "Load: couldn't find memory representation for class: " <> className
-          Just m -> readMem (return m) (literal offset) jtyp
-      MemBot botMem -> readMem (return botMem) (literal offset) jtyp
-      MemAlias _ memIndex' val ->
-        if memIndex == memIndex'
+      MemSlice memIndex' val ->
+        if ptr == memIndex'
           then return val
           else error $ "Load: Mismatching memory slice"
-      MemMerge membot aliases ->
-        case membot of
-          MemBot m ->
-            go aliases m
-            where
-              -- No matching slices, read from bot
-              go [] botMem = readMem (return botMem) (literal offset) jtyp
-              -- Check if matching alias exists
-              go (MemAlias _ memIndex' val : xs) botMem =
-                if memIndex == memIndex'
-                  then return val
-                  else go xs botMem
-              go _ _ = error "LoadI: MergeMem malformed, found non-alias in aliases"
-          _ -> error "LoadI: MergeMem malformed, found non-bot in bot mem"
+      MemParm ->
+        case (classMems graph) M.!? memIndex of
+          Nothing -> error $ "Load: couldn't find slice: " <> show memIndex
+          Just m -> return m
+      MemMerge MemParm aliases -> go aliases
+        where
+          -- No matching slices, read from bot
+          go [] =
+            case (classMems graph) M.!? memIndex of
+              Nothing -> error $ "Load: couldn't find slice: " <> show memIndex
+              Just m -> return m
+          -- Check if matching alias exists
+          go (MemSlice memIndex' val : xs) =
+            if ptr == memIndex'
+              then return val
+              else go xs
+          go _ = error "Load: MergeMem malformed, found non-alias in aliases"
+      MemMerge _ _ -> error $ "Load: MergeMem non-parm in bot mem"
 
 evalMemoryNode :: Graph -> Node -> Symbolic Memory
 evalMemoryNode graph@(nodeInfo -> nodes) =
@@ -458,19 +475,13 @@ evalMemoryNode graph@(nodeInfo -> nodes) =
       -- memory returned by the predecessor, and propagate it forward.
       -- This then forces the predecessing memory to return Bot.
       do
-        let memIndex@(className, offset) = readAddress (nodes !!! addrNid)
+        let memIndex = readAddress (nodes !!! addrNid)
         val <- evalDataNode graph (nodes !!! dataNid)
         mem <- evalMemoryNode graph (nodes !!! memNid)
         case (slice, mem) of
-          (Slice s, _) ->
-            return $ MemAlias s memIndex val
-          (Bot, MemParm) ->
-            case (classMems graph) M.!? className of
-              Nothing -> error $ "Store: couldn't find memory representation for class: " <> className
-              Just m -> MemBot <$> writeMem (return m) offset val
-          (Bot, MemBot m) -> MemBot <$> writeMem (return m) offset val
-          (Bot, MemMerge _ _) -> error $ "Not sure how to implement this"
-          (Bot, MemAlias _ _ _) -> error $ "ASSUMPTION BROKEN: Cannot go from alias to bot in a store"
+          (Slice _, _) ->
+            return $ MemSlice memIndex val
+          (Bot, _) -> error $ "ASSUMPTION BROKEN: Store node returned Bot"
 
 -- | Creates a symbolic value for each parameter node.
 -- The symbolic values will be reused in the SMT formulas
@@ -498,30 +509,74 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
             go (M.insert nid param paramMap) rest
         _ -> go paramMap rest
 
--- | Allocate the arrays we will use for memory handling
-createMemory :: Graph -> Symbolic (M.Map String ClassMemory)
+-- | Allocate the slices that may potentially be used.
+-- This is done by adding a slice that corresponds to every address a Load node may access.
+-- Importantly, we only create this "unknown" value for loads that read from unknown memory.
+-- For now, this is only in the case of a memparm.
+--
+-- NOTE: It would be nicer to do this using a state monad, but allocating SMT variables to use
+-- before using them seems to be the correct approach (https://github.com/LeventErkok/sbv/issues/613)
+createMemory :: Graph -> Symbolic (M.Map MemIndex SValue)
 createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
   where
-    go mems [] = return mems
-    go mems (x : xs) =
+    go slices [] = return slices
+    go slices (x : xs) =
       case x of
-        ParmMemPtr className ->
-          do
-            mem <- sArray className
-            go (M.insert className mem mems) xs
-        _ -> go mems xs
+        (LoadI source memNid addrNid)
+          | predIsMemParm memNid ->
+              addSlice source slices addrNid JINT >>= flip go xs
+        (LoadL source memNid addrNid)
+          | predIsMemParm memNid ->
+              addSlice source slices addrNid JLONG >>= flip go xs
+        (LoadF source memNid addrNid)
+          | predIsMemParm memNid ->
+              addSlice source slices addrNid JFLOAT >>= flip go xs
+        (LoadD source memNid addrNid)
+          | predIsMemParm memNid ->
+              addSlice source slices addrNid JDOUBLE >>= flip go xs
+        (LoadP source pointerVal memNid addrNid)
+          | predIsMemParm memNid ->
+              addPtrSlice source slices addrNid pointerVal >>= flip go xs
+        _ -> go slices xs
+    addSlice source slices nid jtype =
+      let JPointer memIndex@(className, offset) _ _ Nothing = readAddress (nodes !!! nid)
+       in if (memIndex `M.member` slices)
+            then return slices
+            else do
+              sliceVal <-
+                ( case jtype of
+                    JINT -> JInt <$> sInt32 source
+                    JLONG -> JLong <$> sInt64 source
+                    JFLOAT -> JFloat <$> sFloat source
+                    JDOUBLE -> JDouble <$> sDouble source
+                )
+              return $ M.insert (className, offset) sliceVal slices
+    addPtrSlice source slices nid (JPointer (className, offset) ptrRefinement objStatus Nothing) =
+      let JPointer memIndex _ _ Nothing = readAddress (nodes !!! nid)
+       in if (memIndex `M.member` slices)
+            then return slices
+            else do
+              let createPtr = JPointer (className, offset) ptrRefinement objStatus . Just
+              botPtr <- sBool source
+              let sliceVal =
+                    case objStatus of
+                      Null -> createPtr $ fromBool True
+                      NotNull -> createPtr $ fromBool False
+                      BotPTR -> createPtr $ botPtr
+              return $ M.insert memIndex sliceVal slices
+    predIsMemParm memNid = (nodes !!! memNid == ParmMem)
 
 -- | Creates a symbolic array for each memory parameter,
 -- which represents the memory of a given class.
 runVerification :: SMTConfig -> Graph -> Graph -> IO SatResult
 runVerification smtConfig before after =
-  satWith smtConfig $
+  satWith (smtConfig {verbose = True}) $
     do
       parms <- createParams before
       mems <- createMemory before
       res1 <- evalControlNode (before {params = parms, classMems = mems}) (ParmCtrl 5)
       res2 <- evalControlNode (after {params = parms, classMems = mems}) (ParmCtrl 5)
+      traceM (show before)
       -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
-      constrain $ res1 ./== res2
-
--- constrain $ res1 .=== (67, JInt $ 40)
+      -- constraint $ res1 ./== res2
+      constrain $ res1 .=== (67, JInt $ 20)

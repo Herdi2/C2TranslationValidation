@@ -29,7 +29,8 @@ mkConfig smtFile tmout timingRef =
   z3
     { transcript = smtFile,
       solverSetOptions = [SetTimeOut tmout],
-      timing = SaveTiming timingRef
+      timing = SaveTiming timingRef,
+      printBase = 10
     }
 
 main :: IO ()

@@ -35,6 +35,8 @@ data Comp
     Le
   | -- | Less than
     Lt
+  | -- | Equal
+    Ee
   deriving (Show, Eq)
 
 data Node
@@ -45,14 +47,14 @@ data Node
   | ParmD NodeId
   | -- | ParmMem represents the initial memory of the method
     ParmMem
-  | -- | ParmMemPtr contains the initial blockId and offset of the memory
-    -- Usually, offset=0
-    ParmMemPtr String
+  | -- | ParmMemPtr contains pointer to own object, i.e. "this"
+    ParmMemPtr SValue
   | -- | Constant nodes
     ConI Int32
   | ConL Int64
   | ConF Float
   | ConD Double
+  | ConP SValue
   | -- | Addition
     AddI NodeId NodeId
   | AddL NodeId NodeId
@@ -105,6 +107,7 @@ data Node
   | CmpL NodeId NodeId
   | CmpF NodeId NodeId
   | CmpD NodeId NodeId
+  | CmpP NodeId NodeId
   | -- | Bool node
     Bool Comp NodeId
   | -- | Starting point of the control flow subgraph, with own Id
@@ -130,15 +133,17 @@ data Node
   | StoreL MemLattice NodeId NodeId NodeId
   | StoreF MemLattice NodeId NodeId NodeId
   | StoreD MemLattice NodeId NodeId NodeId
-  | -- | Load <Mem id> <address>
-    LoadI NodeId NodeId
-  | LoadL NodeId NodeId
-  | LoadF NodeId NodeId
-  | LoadD NodeId NodeId
+  | StoreP MemLattice NodeId NodeId NodeId
+  | -- | Load <field name> <Mem id> <address>
+    LoadI String NodeId NodeId
+  | LoadL String NodeId NodeId
+  | LoadF String NodeId NodeId
+  | LoadD String NodeId NodeId
+  | LoadP String SValue NodeId NodeId
   | -- | MergeMem <Bot memory> [<Alias memory>]
     MergeMem NodeId [NodeId]
-  | -- | AddP <ptr1> <ptr2> <offset>, ptr1 := ptr2 + offset
-    AddP MemIndex NodeId NodeId NodeId
+  | -- | AddP <ptr result> <ptr1> <ptr2> <offset>
+    AddP SValue NodeId NodeId NodeId
   deriving (Show, Eq)
 
 data RawNode = RawNode
@@ -171,9 +176,8 @@ data Graph
     -- | Contains unified variables for parameters.
     -- Both to be reused within the graph and unify between the graphs.
     params :: ParamMap,
-    -- | Contains mapping from string to SMT array.
-    -- Used to represent alias/memory of a given class
-    classMems :: M.Map String ClassMemory
+    -- | Contains mapping from a slice to the corresponding SMT value
+    classMems :: M.Map MemIndex SValue
   }
   deriving (Show, Eq)
 
@@ -199,6 +203,7 @@ data JType
   | JLONG
   | JFLOAT
   | JDOUBLE
+  | JPOINTER
   deriving (Show, Eq)
 
 mkRetValue :: JType -> SValue
@@ -206,6 +211,8 @@ mkRetValue JINT = JInt 0
 mkRetValue JLONG = JLong 0
 mkRetValue JFLOAT = JFloat 0
 mkRetValue JDOUBLE = JDouble 0
+
+type MemIndex = (String, Word64)
 
 -- | Symbolic values, showing equivalence between Java values and SMT values
 data SValue
@@ -215,6 +222,12 @@ data SValue
     JFloat SFloat
   | -- | FP 11 53
     JDouble SDouble
+  | -- | Object pointers
+    -- We wish to know which class is its base, the offset into the class,
+    -- refinement level and whether it is Null (True) or NotNull (False).
+    -- BotPTR can be either Null or NotNull, which can be modeled using a symbolic value SBool
+    JPointer MemIndex PtrRefinement ObjectStatus (Maybe SBool)
+  | NullPtr
   deriving (Show, Eq)
 
 instance EqSymbolic SValue where
@@ -224,6 +237,13 @@ instance EqSymbolic SValue where
       (JLong v1, JLong v2) -> v1 .== v2
       (JFloat v1, JFloat v2) -> v1 .== v2
       (JDouble v1, JDouble v2) -> v1 .== v2
+      (JPointer memIdx1 ptrRef1 objStat1 x, JPointer memIdx2 ptrRef2 objStat2 y) ->
+        fromBool (memIdx1 == memIdx2 && ptrRefEq ptrRef1 ptrRef2 && objStat1 == objStat2)
+          .&& x .== y
+      (JPointer memIdx1 ptrRef1 objStat1 x, NullPtr) ->
+        x .== Nothing
+      (NullPtr, JPointer memIdx1 ptrRef1 objStat1 x) ->
+        x .== Nothing
       (_, _) -> sFalse
 
   -- NOTE: Important to also implement (.===) to get equality between NaNs
@@ -234,7 +254,14 @@ instance EqSymbolic SValue where
       (JLong v1, JLong v2) -> v1 .=== v2
       (JFloat v1, JFloat v2) -> v1 .=== v2
       (JDouble v1, JDouble v2) -> v1 .=== v2
-      (_, _) -> sFalse
+      (JPointer memIdx1 ptrRef1 objStat1 x, JPointer memIdx2 ptrRef2 objStat2 y) ->
+        fromBool (memIdx1 == memIdx2 && ptrRefEq ptrRef1 ptrRef2 && objStat1 == objStat2)
+          .&& x .=== y
+      (JPointer memIdx1 ptrRef1 objStat1 x, NullPtr) ->
+        x .=== Nothing
+      (NullPtr, JPointer memIdx1 ptrRef1 objStat1 x) ->
+        x .=== Nothing
+      (_, _) -> error $ "Tried to compare differenr SValue types"
 
 instance Mergeable SValue where
   symbolicMerge force test left right = case (left, right) of
@@ -242,6 +269,8 @@ instance Mergeable SValue where
     (JLong x, JLong y) -> JLong $ symbolicMerge force test x y
     (JFloat x, JFloat y) -> JFloat $ symbolicMerge force test x y
     (JDouble x, JDouble y) -> JDouble $ symbolicMerge force test x y
+    (JPointer memidx ref objstatus x, JPointer _ _ _ y) ->
+      JPointer memidx ref objstatus $ symbolicMerge force test x y
     (x, y) -> error $ "Cannot merge different SValue types: " <> show x <> " and " <> show y
 
 instance OrdSymbolic SValue where
@@ -251,11 +280,18 @@ instance OrdSymbolic SValue where
       (JLong x, JLong y) -> x .< y
       (JFloat x, JFloat y) -> x .< y
       (JDouble x, JDouble y) -> x .< y
-      _ -> error "Cannot compare different SValue types"
+      _ -> error "OrdSymbolic: Cannot compare different SValue types"
 
 {- MEMORY REPRESENTATION -}
--- (BlockId, Offset)
-type MemIndex = (String, Word64)
+
+-- | Refinement level of pointers
+data PtrRefinement = InstPtr | Ptr deriving (Show, Eq)
+
+ptrRefEq :: PtrRefinement -> PtrRefinement -> Bool
+ptrRefEq p1 p2 = p1 == p2
+
+-- | Status of the object pointer to, either Null, NotNull or BotPTR (unknown if null or not)
+data ObjectStatus = Null | NotNull | BotPTR deriving (Show, Eq)
 
 -- | Models the memory lattice, which is Bot (Whole memory) or a slice (one field/memory address)
 data MemLattice = Bot | Slice Integer deriving (Show, Eq)
@@ -264,19 +300,18 @@ data MemLattice = Bot | Slice Integer deriving (Show, Eq)
 -- which stores the values of each field.
 type ClassMemory = SArray Word64 Word8
 
--- | @Memory@ represents our three different memory representations,
--- which are the three different values the memory subgraph may return
+-- | In our assumptions about the memory subgraph, we have three different types of memory we read from:
+-- 1. A slice, which is what we assume every store node creates
+-- 2. The memory parameter - initial unknown memory of the method, which we do not know the values of.
+-- 3. A MergeMem node, which contains slices and a representation of the Bot memory.
+-- Note that, due to our assumption that Store nodes cannot create Bot, the Bot memory of the
+-- MergeMem node *has* to be provided by the memory parameter
 data Memory
-  = -- | A memory slice, which represents one index (one field/mem position)
-    MemAlias Integer MemIndex SValue
-  | -- | Bot, i.e. the whole memory.
-    -- This is represented as an SMT array
-    -- Importantly, this will mostly be used for when we do not know the value we wish to return.
-    MemBot ClassMemory
-  | -- | Memory parameter, base case for traversing the memory graph
-    MemParm
-  | -- | MergeMem, which contains both Bot (first slice) and any aliases that are being unioned with.
-    MemMerge Memory [Memory]
+  = -- Pointer value, value
+    MemSlice SValue SValue
+  | MemParm
+  | MemMerge Memory [Memory]
+  deriving (Eq, Show)
 
 -- Write to array representing class memory
 -- NOTE: Since fields have different types, the memory of a class is a byte array.
@@ -315,6 +350,6 @@ readMem classMem key jtyp =
     go :: ClassMemory -> SWord64 -> Int -> [SWord 8]
     go mem key byteCount = map toSized $ readArray mem <$> (take byteCount $ iterate (+ 1) key)
 
-readAddress :: Node -> MemIndex
+readAddress :: Node -> SValue
 readAddress (AddP m _ _ _) = m
 readAddress n = error $ "Store node got address from node other than AddP: " <> show n
