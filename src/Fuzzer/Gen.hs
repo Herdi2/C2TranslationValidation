@@ -1,22 +1,26 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Fuzzer.Gen (program) where
+module Fuzzer.Gen where
 
 import Control.Monad
 import qualified Data.Map as M
 import Data.Word
 import Effectful
+import Effectful.Labeled
+import qualified Effectful.Labeled.State as LS
 import Effectful.NonDet
 import Effectful.Reader.Static
 import Effectful.State.Static.Local
+import Fuzzer.GenUtils
 import Fuzzer.Grammar
 import Fuzzer.RNG
-import Fuzzer.GenUtils
 
 -- | We keep track of declared variables through their types,
 -- to be able to pick them when possible/needed during program generation.
@@ -29,10 +33,29 @@ type GenEffects =
      Reader (Maybe JType), -- Keeps track of current type when generating expressions
      State VarScope, -- Keeps track of declared variables, can then be used in generation
      State Integer, -- Used for fresh identifiers
+     ExprDepth,
+     StmtDepth,
      NonDet -- Allows for generators to fail, which allows a generator to back track and try another one
    ]
 
 type Gen a = Eff GenEffects a
+
+maxExprDepth :: Integer
+maxExprDepth = 3
+
+maxStmtDepth :: Integer
+maxStmtDepth = 3
+
+runGen :: Word64 -> Gen a -> Either CallStack a
+runGen seed =
+  runPureEff
+    . runNonDet OnEmptyRollback
+    . LS.evalStateLocal @"StmtFuel" maxStmtDepth
+    . LS.evalStateLocal @"ExprFuel" maxExprDepth
+    . evalState 0
+    . evalState [M.empty]
+    . runReader Nothing
+    . runRNG seed
 
 withScope :: (State VarScope :> es) => Eff es a -> Eff es a
 withScope gen =
@@ -87,15 +110,6 @@ allVars = go [JInt, JLong, JFloat, JDouble]
         rest <- go typs
         vars <- getVars t
         return $ ((,t) <$> vars) ++ rest
-
-runGen :: Word64 -> Gen a -> Either CallStack a
-runGen seed =
-  runPureEff
-    . runNonDet OnEmptyRollback
-    . evalState 0
-    . evalState [M.empty]
-    . runReader Nothing
-    . runRNG seed
 
 withType :: (Reader (Maybe JType) :> es) => JType -> Eff es a -> Eff es a
 withType typ = local (const $ Just typ)
@@ -168,8 +182,8 @@ genArithmeticType =
   weighted
     [ (JInt, 0.40),
       (JLong, 0.35),
-      (JFloat, 0.3),
-      (JDouble, 0.3)
+      (JFloat, 0.15),
+      (JDouble, 0.1)
     ]
 
 declare :: Gen JStmt
@@ -192,11 +206,12 @@ assign =
 
 expr :: Gen JExpr
 expr =
-  weightedM
-    [ (var, 0.15),
-      (constExpr, 0.40),
-      (arithmeticExpr, 0.30)
-    ]
+  withExprFuel $
+    weightedM
+      [ (var, 0.15),
+        (constExpr, 0.40),
+        (arithmeticExpr, 0.30)
+      ]
 
 var :: Gen JExpr
 var =

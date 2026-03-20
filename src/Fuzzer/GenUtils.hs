@@ -1,11 +1,10 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Fuzzer.GenUtils where
 
@@ -15,16 +14,24 @@ import Effectful.Labeled
 import Effectful.Labeled.State
 import Effectful.NonDet
 
-type StmtDepth = Labeled "StmtFuel" Fuel
-
 type Fuel = State Integer
+
+type StmtDepth = Labeled "StmtFuel" Fuel
 
 type ExprDepth = Labeled "ExprFuel" Fuel
 
-withFuel :: forall label a es. (NonDet :> es, Labeled label Fuel :> es) => Eff es a -> Eff es a
-withFuel gen =
-    do
-    fuel :: Integer <- get @label
+withExprFuel :: (NonDet :> es, Labeled "ExprFuel" Fuel :> es) => Eff es a -> Eff es a
+withExprFuel gen =
+  do
+    fuel :: Integer <- get @"ExprFuel"
     when (fuel <= (0 :: Integer)) empty
+    modify @"ExprFuel" (subtract (1 :: Integer))
     gen
 
+withStmtFuel :: (NonDet :> es, Labeled "StmtFuel" Fuel :> es) => Eff es a -> Eff es a
+withStmtFuel gen =
+  do
+    fuel :: Integer <- get @"StmtFuel"
+    when (fuel <= (0 :: Integer)) empty
+    modify @"StmtFuel" (subtract (1 :: Integer))
+    gen
