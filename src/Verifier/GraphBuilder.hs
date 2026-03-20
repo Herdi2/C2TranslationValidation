@@ -103,7 +103,7 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
                     Unsupported $
                       "Pointer param: Internal error, node property didn't contain \"bottom_type\" or invalid ptr string given"
                   Just (Left err) -> Unsupported $ "Pointer param: " <> err
-                  Just (Right memIndex) -> Parsed (nodeId, ParmMemPtr memIndex)
+                  Just (Right memIndex) -> Parsed (nodeId, ParmMemPtr nodeId memIndex)
             | "control" `isPrefixOf` typ = Parsed (nodeId, ParmCtrl nodeId)
             | "abIO" `isPrefixOf` typ = Ignored
             | "rawptr" `isPrefixOf` typ = Ignored

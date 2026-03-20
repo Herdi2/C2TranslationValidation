@@ -45,10 +45,10 @@ data Node
   | ParmL NodeId
   | ParmF NodeId
   | ParmD NodeId
+  | -- | ParmMemPtr contains pointer to own object, i.e. "this"
+    ParmMemPtr NodeId SValue
   | -- | ParmMem represents the initial memory of the method
     ParmMem
-  | -- | ParmMemPtr contains pointer to own object, i.e. "this"
-    ParmMemPtr SValue
   | -- | Constant nodes
     ConI Int32
   | ConL Int64
@@ -240,10 +240,11 @@ instance EqSymbolic SValue where
       (JPointer memIdx1 ptrRef1 objStat1 x, JPointer memIdx2 ptrRef2 objStat2 y) ->
         fromBool (memIdx1 == memIdx2 && ptrRefEq ptrRef1 ptrRef2 && objStat1 == objStat2)
           .&& x .== y
-      (JPointer memIdx1 ptrRef1 objStat1 x, NullPtr) ->
-        x .== Nothing
-      (NullPtr, JPointer memIdx1 ptrRef1 objStat1 x) ->
-        x .== Nothing
+      -- NOTE: The boolean in a JPointer tells us whether it is a nullptr or not
+      (JPointer _ _ _ x, NullPtr) ->
+        x .== Just (fromBool True)
+      (NullPtr, JPointer _ _ _ x) ->
+        x .== Just (fromBool True)
       (_, _) -> sFalse
 
   -- NOTE: Important to also implement (.===) to get equality between NaNs

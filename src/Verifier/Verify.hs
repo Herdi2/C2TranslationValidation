@@ -140,6 +140,7 @@ evalDataNode (params -> parms) (ParmI var) = return $ parms !!! var
 evalDataNode (params -> parms) (ParmL var) = return $ parms !!! var
 evalDataNode (params -> parms) (ParmF var) = return $ parms !!! var
 evalDataNode (params -> parms) (ParmD var) = return $ parms !!! var
+evalDataNode (params -> parms) (ParmMemPtr var _) = return $ parms !!! var
 evalDataNode _ (ConI n) = pure $ JInt $ literal n
 evalDataNode _ (ConL n) = pure $ JLong $ literal n
 evalDataNode _ (ConF n) = pure $ JFloat $ literal n
@@ -330,6 +331,7 @@ evalDataNode graph@(nodeInfo -> nodes) (CmpP n1 n2) =
     -- HACK: THIS IS STRAIGHT ASS, but we cannot compare
     -- pointers using @sComp@, but only check for
     -- equality/inequality.
+    traceM $ show n1 <> ": " <> show v1 <> " = " <> show n2 <> ": " <> show v2 <> " -> " <> show (v1 .== v2)
     return $ JInt $ ite (v1 .== v2) (literal 0) (literal 1)
 evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
   -- NOTE: Bool cmp n
@@ -457,13 +459,14 @@ evalMemoryNode graph@(nodeInfo -> nodes) =
     (Phi rid preds) ->
       -- Phi nodes may be used by the memory subgraph as well.
       -- The phi node's value depends on the corresponding region node
-      let dataIdx = (regionPredecessor graph) !!! rid
-          chosenDataNode = (nodeInfo graph) !!! (preds !! fromIntegral dataIdx)
-       in evalMemoryNode graph chosenDataNode
+      let memIdx = (regionPredecessor graph) !!! rid
+          chosenMemNode = (nodeInfo graph) !!! (preds !! fromIntegral memIdx)
+       in evalMemoryNode graph chosenMemNode
     (StoreI slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
     (StoreL slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
     (StoreF slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
     (StoreD slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
+    (StoreP slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
     node -> error $ "evalMemoryNode: non-memory node " <> show node
   where
     handleStore slice memNid addrNid dataNid =
@@ -507,6 +510,12 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
           do
             param <- JDouble <$> sDouble ("parm" <> show nid)
             go (M.insert nid param paramMap) rest
+        ParmMemPtr nid (JPointer memIndex ptrRefinement objectStatus Nothing) ->
+          do
+            param <- JPointer memIndex ptrRefinement objectStatus <$> (Just <$> (sBool ("parm" <> show nid)))
+            go (M.insert nid param paramMap) rest
+        ParmMemPtr _ (JPointer _ _ _ (Just _)) ->
+          error $ "createParams: JPointer value should not be set"
         _ -> go paramMap rest
 
 -- | Allocate the slices that may potentially be used.
@@ -522,24 +531,19 @@ createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
     go slices [] = return slices
     go slices (x : xs) =
       case x of
-        (LoadI source memNid addrNid)
-          | predIsMemParm memNid ->
-              addSlice source slices addrNid JINT >>= flip go xs
-        (LoadL source memNid addrNid)
-          | predIsMemParm memNid ->
-              addSlice source slices addrNid JLONG >>= flip go xs
-        (LoadF source memNid addrNid)
-          | predIsMemParm memNid ->
-              addSlice source slices addrNid JFLOAT >>= flip go xs
-        (LoadD source memNid addrNid)
-          | predIsMemParm memNid ->
-              addSlice source slices addrNid JDOUBLE >>= flip go xs
-        (LoadP source pointerVal memNid addrNid)
-          | predIsMemParm memNid ->
-              addPtrSlice source slices addrNid pointerVal >>= flip go xs
+        (LoadI source memNid addrNid) ->
+          addSlice source slices addrNid JINT >>= flip go xs
+        (LoadL source memNid addrNid) ->
+          addSlice source slices addrNid JLONG >>= flip go xs
+        (LoadF source memNid addrNid) ->
+          addSlice source slices addrNid JFLOAT >>= flip go xs
+        (LoadD source memNid addrNid) ->
+          addSlice source slices addrNid JDOUBLE >>= flip go xs
+        (LoadP source pointerVal memNid addrNid) ->
+          addPtrSlice source slices addrNid pointerVal >>= flip go xs
         _ -> go slices xs
     addSlice source slices nid jtype =
-      let JPointer memIndex@(className, offset) _ _ Nothing = readAddress (nodes !!! nid)
+      let JPointer memIndex _ _ Nothing = readAddress (nodes !!! nid)
        in if (memIndex `M.member` slices)
             then return slices
             else do
@@ -550,7 +554,7 @@ createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
                     JFLOAT -> JFloat <$> sFloat source
                     JDOUBLE -> JDouble <$> sDouble source
                 )
-              return $ M.insert (className, offset) sliceVal slices
+              return $ M.insert memIndex sliceVal slices
     addPtrSlice source slices nid (JPointer (className, offset) ptrRefinement objStatus Nothing) =
       let JPointer memIndex _ _ Nothing = readAddress (nodes !!! nid)
        in if (memIndex `M.member` slices)
@@ -564,7 +568,6 @@ createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
                       NotNull -> createPtr $ fromBool False
                       BotPTR -> createPtr $ botPtr
               return $ M.insert memIndex sliceVal slices
-    predIsMemParm memNid = (nodes !!! memNid == ParmMem)
 
 -- | Creates a symbolic array for each memory parameter,
 -- which represents the memory of a given class.
@@ -574,9 +577,11 @@ runVerification smtConfig before after =
     do
       parms <- createParams before
       mems <- createMemory before
+      traceM (show mems)
       res1 <- evalControlNode (before {params = parms, classMems = mems}) (ParmCtrl 5)
       res2 <- evalControlNode (after {params = parms, classMems = mems}) (ParmCtrl 5)
       traceM (show before)
       -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
       -- constraint $ res1 ./== res2
-      constrain $ res1 .=== (67, JInt $ 20)
+      traceM (show res1)
+      constrain $ res1 .=== (35, JInt $ 20)
