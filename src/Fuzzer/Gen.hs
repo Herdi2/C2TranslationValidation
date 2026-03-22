@@ -14,7 +14,7 @@ import qualified Data.Map as M
 import Data.Word
 import Effectful
 import Effectful.Labeled
-import qualified Effectful.Labeled.State as LS
+import qualified Effectful.Labeled.Reader as LR
 import Effectful.NonDet
 import Effectful.Reader.Static
 import Effectful.State.Static.Local
@@ -44,14 +44,14 @@ maxExprDepth :: Integer
 maxExprDepth = 3
 
 maxStmtDepth :: Integer
-maxStmtDepth = 3
+maxStmtDepth = 1
 
 runGen :: Word64 -> Gen a -> Either CallStack a
 runGen seed =
   runPureEff
     . runNonDet OnEmptyRollback
-    . LS.evalStateLocal @"StmtFuel" maxStmtDepth
-    . LS.evalStateLocal @"ExprFuel" maxExprDepth
+    . LR.runReader @"StmtFuel" maxStmtDepth
+    . LR.runReader @"ExprFuel" maxExprDepth
     . evalState 0
     . evalState [M.empty]
     . runReader Nothing
@@ -114,6 +114,12 @@ allVars = go [JInt, JLong, JFloat, JDouble]
 withType :: (Reader (Maybe JType) :> es) => JType -> Eff es a -> Eff es a
 withType typ = local (const $ Just typ)
 
+guardType :: (Reader (Maybe JType) :> es, NonDet :> es) => JType -> Eff es ()
+guardType wantedType =
+  do
+    t <- getType
+    when (t /= wantedType) empty
+
 program :: Word64 -> String -> String -> Either String JProgram
 program seed className methodName =
   let prog =
@@ -137,7 +143,10 @@ method methodName =
             return (varName, varType)
     mapM_ (uncurry declareVar) params
     stmtCount <- randR (2, 5)
-    methodBody <- sequence $ replicate stmtCount stmt
+    methodBody <-
+      putStmtFuel maxStmtDepth $
+        sequence $
+          replicate stmtCount stmt
     -- Initial design choice: Calculate checksum of all variables?
     let retType = JDouble
     ret <- withType retType $ mkReturn
@@ -171,10 +180,77 @@ mkReturn =
 
 stmt :: Gen JStmt
 stmt =
-  weightedM
-    [ (declare, 0.7),
-      (assign, 0.3)
-    ]
+  putExprFuel maxExprDepth $
+    weightedM
+      [ (declare, 0.5),
+        (assign, 0.3),
+        (ifElseStmt, 0.1),
+        (ifStmt, 0.1)
+      ]
+
+ifStmt :: Gen JStmt
+ifStmt =
+  do
+    boolGuard <- withType JBool $ logicalExpr
+    ifBody <- blockStmt
+    return $ JIf boolGuard ifBody Nothing
+
+ifElseStmt :: Gen JStmt
+ifElseStmt =
+  do
+    boolGuard <- withType JBool $ boolExpr
+    ifBody <- blockStmt
+    elseBody <- blockStmt
+    return $ JIf boolGuard ifBody (Just elseBody)
+
+blockStmt :: Gen JStmt
+blockStmt =
+  withStmtFuel $
+    withScope $
+      do
+        stmtCount <- randR (1, 4)
+        JBlock <$> sequence (replicate stmtCount stmt)
+
+-- | Generates a boolean expression
+boolExpr :: Gen JExpr
+boolExpr =
+  guardType JBool
+    >> weightedM
+      [ (logicalConst, 0.5),
+        (logicalExpr, 0.3),
+        (compExpr, 0.2)
+      ]
+
+-- | Generates a boolean constant True or False.
+logicalConst :: Gen JExpr
+logicalConst =
+  guardType JBool
+    >> (JConst JBool . BoolLit) <$> choose [True, False]
+
+-- | Generates a logical expression between booleans
+-- e.g. True && (x > 1)
+logicalExpr :: Gen JExpr
+logicalExpr =
+  withExprFuel $
+    do
+      guardType JBool
+      e1 <- withType JBool boolExpr
+      e2 <- withType JBool boolExpr
+      op <- choose [JLAnd, JLOr, JEQ, JNE]
+      return $ JBin op e1 e2
+
+-- | Generates comparisons between arithmetic expressions.
+-- e.g. (1 + 2) > 8
+compExpr :: Gen JExpr
+compExpr =
+  withExprFuel $
+    do
+      guardType JBool
+      typ <- genArithmeticType
+      e1 <- withType typ expr
+      e2 <- withType typ expr
+      op <- choose [JEQ, JNE, JLT, JGT, JGTEQ, JLTEQ]
+      return $ JBin op e1 e2
 
 -- | Weighted choise of arithmetic types (Int, Long, Float, Double)
 genArithmeticType :: Gen JType
@@ -206,12 +282,11 @@ assign =
 
 expr :: Gen JExpr
 expr =
-  withExprFuel $
-    weightedM
-      [ (var, 0.15),
-        (constExpr, 0.40),
-        (arithmeticExpr, 0.30)
-      ]
+  weightedM
+    [ (var, 0.15),
+      (constExpr, 0.40),
+      (arithmeticExpr, 0.30)
+    ]
 
 var :: Gen JExpr
 var =
@@ -257,11 +332,12 @@ constExpr =
 
 arithmeticExpr :: Gen JExpr
 arithmeticExpr =
-  do
-    bop <- binOp
-    e1 <- expr
-    e2 <- expr
-    return $ JBin bop e1 e2
+  withExprFuel $
+    do
+      bop <- binOp
+      e1 <- expr
+      e2 <- expr
+      return $ JBin bop e1 e2
 
 -- | Pick a binary operation which fits with the current type in the Reader env
 binOp :: Gen BOp
@@ -272,5 +348,4 @@ binOp =
       Just JLong -> choose [JAdd, JSub, JMul, JDiv, JAnd, JOr, JLShift, JRShift]
       Just JFloat -> choose [JAdd, JSub, JMul, JDiv]
       Just JDouble -> choose [JAdd, JSub, JMul, JDiv]
-      Just JBool -> choose [JLAnd, JLOr, JEQ, JNE, JLT, JGT, JGTEQ, JLTEQ]
       Nothing -> error "binOp: Tried to generate a binary op without specified type"

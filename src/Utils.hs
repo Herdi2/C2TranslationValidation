@@ -40,6 +40,8 @@ compareOutput javaFile methodName =
                 "-XX:-TieredCompilation", -- C2 only
                 "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName, -- Compile only `javaClass::method`
                 "-XX:-UseCompressedOops",
+                -- Print floating-point numbers as binaries
+                "-XX:+PrintFloatBits",
                 javaFile
               ]
             interpreterCmds =
@@ -134,6 +136,8 @@ compileJavaProgram javaFile methodName =
                 "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName,
                 -- Do not compress pointers, to simplify object and array handling
                 "-XX:-UseCompressedOops",
+                -- Print floating-point numbers as binaries
+                "-XX:+PrintFloatBits",
                 -- Minimal graph-level needed to get the correct gra[hs
                 "-XX:PrintIdealGraphLevel=1",
                 -- Output XML file into "<javaClass>.xml"

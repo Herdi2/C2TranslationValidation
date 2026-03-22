@@ -1,5 +1,6 @@
 module Fuzzer.Grammar where
 
+import Data.Char
 import Data.Word
 import Prettyprinter
 
@@ -157,6 +158,7 @@ data Lit
   | LongLit Integer
   | FloatLit Float
   | DoubleLit Double
+  | BoolLit Bool
   deriving (Show, Eq)
 
 instance Pretty Lit where
@@ -164,6 +166,7 @@ instance Pretty Lit where
   pretty (LongLit l) = pretty l <> pretty "l"
   pretty (FloatLit f) = pretty f <> pretty "f"
   pretty (DoubleLit d) = pretty d
+  pretty (BoolLit b) = pretty $ toLower <$> show b
 
 data BOp
   = -- Arithmetic operations

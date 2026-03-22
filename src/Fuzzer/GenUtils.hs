@@ -11,27 +11,31 @@ module Fuzzer.GenUtils where
 import Control.Monad
 import Effectful
 import Effectful.Labeled
-import Effectful.Labeled.State
+import Effectful.Labeled.Reader
 import Effectful.NonDet
 
-type Fuel = State Integer
+type Fuel = Reader Integer
 
 type StmtDepth = Labeled "StmtFuel" Fuel
 
 type ExprDepth = Labeled "ExprFuel" Fuel
 
-withExprFuel :: (NonDet :> es, Labeled "ExprFuel" Fuel :> es) => Eff es a -> Eff es a
+withExprFuel :: (NonDet :> es, ExprDepth :> es) => Eff es a -> Eff es a
 withExprFuel gen =
   do
-    fuel :: Integer <- get @"ExprFuel"
+    fuel :: Integer <- ask @"ExprFuel"
     when (fuel <= (0 :: Integer)) empty
-    modify @"ExprFuel" (subtract (1 :: Integer))
-    gen
+    local @"ExprFuel" (subtract (1 :: Integer)) gen
 
-withStmtFuel :: (NonDet :> es, Labeled "StmtFuel" Fuel :> es) => Eff es a -> Eff es a
+putExprFuel :: (ExprDepth :> es) => Integer -> Eff es a -> Eff es a
+putExprFuel fuel gen = local @"ExprFuel" (const fuel) $ gen
+
+putStmtFuel :: (StmtDepth :> es) => Integer -> Eff es a -> Eff es a
+putStmtFuel fuel gen = local @"StmtFuel" (const fuel) $ gen
+
+withStmtFuel :: (NonDet :> es, StmtDepth :> es) => Eff es a -> Eff es a
 withStmtFuel gen =
   do
-    fuel :: Integer <- get @"StmtFuel"
+    fuel :: Integer <- ask @"StmtFuel"
     when (fuel <= (0 :: Integer)) empty
-    modify @"StmtFuel" (subtract (1 :: Integer))
-    gen
+    local @"StmtFuel" (subtract (1 :: Integer)) gen

@@ -331,7 +331,6 @@ evalDataNode graph@(nodeInfo -> nodes) (CmpP n1 n2) =
     -- HACK: THIS IS STRAIGHT ASS, but we cannot compare
     -- pointers using @sComp@, but only check for
     -- equality/inequality.
-    traceM $ show n1 <> ": " <> show v1 <> " = " <> show n2 <> ": " <> show v2 <> " -> " <> show (v1 .== v2)
     return $ JInt $ ite (v1 .== v2) (literal 0) (literal 1)
 evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
   -- NOTE: Bool cmp n
@@ -573,15 +572,12 @@ createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
 -- which represents the memory of a given class.
 runVerification :: SMTConfig -> Graph -> Graph -> IO SatResult
 runVerification smtConfig before after =
-  satWith (smtConfig {verbose = True}) $
+  satWith smtConfig $
     do
       parms <- createParams before
       mems <- createMemory before
-      traceM (show mems)
       res1 <- evalControlNode (before {params = parms, classMems = mems}) (ParmCtrl 5)
       res2 <- evalControlNode (after {params = parms, classMems = mems}) (ParmCtrl 5)
-      traceM (show before)
       -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
-      -- constraint $ res1 ./== res2
-      traceM (show res1)
-      constrain $ res1 .=== (35, JInt $ 20)
+      -- constrain $ res1 .=== (35, JInt $ 20)
+      constrain $ res1 ./== res2
