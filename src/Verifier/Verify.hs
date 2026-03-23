@@ -328,13 +328,10 @@ evalDataNode graph@(nodeInfo -> nodes) (CmpP n1 n2) =
   do
     v1 <- evalDataNode graph (nodes !!! n1)
     v2 <- evalDataNode graph (nodes !!! n2)
-    -- HACK: THIS IS STRAIGHT ASS, but we cannot compare
-    -- pointers using @sComp@, but only check for
-    -- equality/inequality.
+    -- NOTE: When comparing two pointers, only
+    -- equality checks (==, !=) are allowed.
     return $ JInt $ ite (v1 .== v2) (literal 0) (literal 1)
 evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
-  -- NOTE: Bool cmp n
-  -- cmp = ne, return n == 0
   do
     v <- getInt <$> evalDataNode graph (nodes !!! n)
     case cmp of

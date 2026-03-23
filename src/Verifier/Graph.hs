@@ -227,7 +227,8 @@ data SValue
     -- refinement level and whether it is Null (True) or NotNull (False).
     -- BotPTR can be either Null or NotNull, which can be modeled using a symbolic value SBool
     JPointer MemIndex PtrRefinement ObjectStatus (Maybe SBool)
-  | NullPtr
+  | -- | Represent null pointers
+    NullPtr
   deriving (Show, Eq)
 
 instance EqSymbolic SValue where
@@ -262,7 +263,7 @@ instance EqSymbolic SValue where
         x .=== Nothing
       (NullPtr, JPointer memIdx1 ptrRef1 objStat1 x) ->
         x .=== Nothing
-      (_, _) -> error $ "Tried to compare differenr SValue types"
+      (_, _) -> error $ "Tried to compare different SValue types"
 
 instance Mergeable SValue where
   symbolicMerge force test left right = case (left, right) of
@@ -297,10 +298,6 @@ data ObjectStatus = Null | NotNull | BotPTR deriving (Show, Eq)
 -- | Models the memory lattice, which is Bot (Whole memory) or a slice (one field/memory address)
 data MemLattice = Bot | Slice Integer deriving (Show, Eq)
 
--- | Each class has memory represented by an array of bytes,
--- which stores the values of each field.
-type ClassMemory = SArray Word64 Word8
-
 -- | In our assumptions about the memory subgraph, we have three different types of memory we read from:
 -- 1. A slice, which is what we assume every store node creates
 -- 2. The memory parameter - initial unknown memory of the method, which we do not know the values of.
@@ -313,43 +310,6 @@ data Memory
   | MemParm
   | MemMerge Memory [Memory]
   deriving (Eq, Show)
-
--- Write to array representing class memory
--- NOTE: Since fields have different types, the memory of a class is a byte array.
--- Values of a field, e.g. an integer, will be written using contiguous fields
--- e.g
--- Writing int @ index 12
--- 12: Int(31, 24)
--- 13: Int(23, 16)
--- 14: Int(15, 8)
--- 15: Int(7, 0)
-writeMem :: Symbolic ClassMemory -> Word64 -> SValue -> Symbolic ClassMemory
-writeMem classMem key val =
-  do
-    evaluatedMem <- classMem
-    return $
-      case val of
-        (JInt v) -> go evaluatedMem (toBytes (sFromIntegral v :: SWord 32))
-        (JLong v) -> go evaluatedMem (toBytes (sFromIntegral v :: SWord 64))
-        (JFloat v) -> go evaluatedMem (toBytes (toSized $ sFloatAsSWord32 v))
-        (JDouble v) -> go evaluatedMem (toBytes (toSized $ sDoubleAsSWord64 v))
-  where
-    go :: ClassMemory -> [SWord 8] -> ClassMemory
-    go mem val = fst $ mapAccumL (\m b -> (writeArray m (literal key) b, b + 1)) mem (fmap fromSized val)
-
-readMem :: Symbolic ClassMemory -> SWord64 -> JType -> Symbolic SValue
-readMem classMem key jtyp =
-  do
-    evaluatedMem <- classMem
-    return $
-      case jtyp of
-        JINT -> JInt (sFromIntegral (fromBytes (go evaluatedMem key 4) :: SWord 32))
-        JLONG -> JLong (sFromIntegral (fromBytes (go evaluatedMem key 8) :: SWord 64))
-        JFLOAT -> JFloat (sWord32AsSFloat $ fromSized $ (fromBytes (go evaluatedMem key 4) :: SWord 32))
-        JDOUBLE -> JDouble (sWord64AsSDouble $ fromSized $ (fromBytes (go evaluatedMem key 8) :: SWord 64))
-  where
-    go :: ClassMemory -> SWord64 -> Int -> [SWord 8]
-    go mem key byteCount = map toSized $ readArray mem <$> (take byteCount $ iterate (+ 1) key)
 
 readAddress :: Node -> SValue
 readAddress (AddP m _ _ _) = m

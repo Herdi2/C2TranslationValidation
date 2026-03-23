@@ -410,7 +410,10 @@ findNodePred = go []
 -- | Read the pointer type of a pointer node
 -- Structure of a pointer: <refinement>:<className>:<ObjectStatus>+<offset>,iid=<something>
 -- e.g. instptr:Object3:NotNull+16,iid=bot
--- becomes: JPointer "Object3" 16 InstPtr (fromBool false)
+-- becomes: JPointer ("Object3", 16) InstPtr NotNull Nothing
+-- The `Nothing` is placeholder for a symbolic boolean,
+-- which indicates whether the pointer is a nullptr or not.
+-- It will be filled during verification.
 -- NOTE: The iid (instance id) is ignored for now
 readPtrType :: String -> Either String SValue
 readPtrType (takeWhile (/= ',') -> ptrStr) =
