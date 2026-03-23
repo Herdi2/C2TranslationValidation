@@ -35,8 +35,7 @@ compareOutput javaFile methodName =
     Just (_path, javaClass) ->
       do
         let compileCommands =
-              [ "-Xcomp", -- Compiler only
-                "-Xbatch", -- Makes sure compilation finishes
+              [ "-Xbatch", -- Makes sure compilation finishes
                 "-XX:-TieredCompilation", -- C2 only
                 "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName, -- Compile only `javaClass::method`
                 "-XX:-UseCompressedOops",
@@ -126,9 +125,7 @@ compileJavaProgram javaFile methodName =
     Just (_path, javaClass) ->
       do
         let compileCommands =
-              [ -- Use compiler only
-                "-Xcomp",
-                -- Make sure compilation finishes before execution
+              [ -- Make sure compilation finishes before execution
                 "-Xbatch", -- Makes sure compilation finishes
                 -- Compile with C2 only
                 "-XX:-TieredCompilation", -- C2 only
