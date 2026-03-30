@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
 -- |
@@ -12,6 +13,7 @@ import Data.List (mapAccumL)
 import qualified Data.Map as M
 import Data.Proxy
 import Data.SBV
+import qualified Data.SBV.Internals as SI
 import Debug.Trace
 import GHC.Prim
 
@@ -177,14 +179,15 @@ data Graph
     -- Both to be reused within the graph and unify between the graphs.
     params :: ParamMap,
     -- | Contains mapping from a slice to the corresponding SMT value
-    classMems :: M.Map MemIndex SValue
+    classMems :: M.Map MemIndex SValue,
+    -- | AliasClasses. See @createAliasClass@ for documentation.
+    aliasClasses :: M.Map MemIndex (SWord64 -> SWord64)
   }
-  deriving (Show, Eq)
 
 -- | Graph with default values (everything empty)
 -- NOTE: The default return type is `int`, since we always want to have a return statement
 defaultGraph :: Graph
-defaultGraph = Graph JINT M.empty M.empty M.empty M.empty M.empty
+defaultGraph = Graph JINT M.empty M.empty M.empty M.empty M.empty M.empty
 
 mkGraph :: JType -> [(NodeId, Node)] -> [(NodeId, [NodeId])] -> Graph
 mkGraph retType nInfo successors =
@@ -194,7 +197,8 @@ mkGraph retType nInfo successors =
       controlSuccessors = M.fromList successors,
       regionPredecessor = M.empty,
       params = M.empty,
-      classMems = M.empty
+      classMems = M.empty,
+      aliasClasses = M.empty
     }
 
 -- | Used to define and keep track of valid method return types

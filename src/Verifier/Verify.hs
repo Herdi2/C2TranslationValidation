@@ -565,6 +565,57 @@ createMemory (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
                       BotPTR -> createPtr $ botPtr
               return $ M.insert memIndex sliceVal slices
 
+-- | Creates an uninterpreter function that keeps track of memory aliasing
+-- Unless the load and store nodes read the relevant address from the
+-- same AddP node, the instances of the objects they read may not be the same.
+-- However, if the AddP nodes are the same, then the two objects are guaranteed
+-- to be the same instance.
+--
+-- To illustrate:
+-- MemParm 7
+--    |
+-- StoreI (AddP 12 Object1$A+12) 10
+--    |
+-- LoadI (AddP 13 Object1$A+12)
+--
+-- Now, the value of the load is not solely determined by
+-- the StoreI above it due to using a different AddP node.
+-- This means that the instances of Object1$A used in the store
+-- and in the load may differ.
+-- Therefore, the loaded value may be 10 (as given by the StoreI)
+-- or it may be unknown, given by MemParm.
+--
+-- To model this, we create an uninterpreted function
+-- `alias_class_object1$A_12 :: SInteger -> SInteger`.
+-- This function will map each AddP id to an alias Id.
+-- In the case above, e.g.
+-- AddP 12 Object1$A+12 gets assigned id x
+-- AddP 13 Object1$A+12 gets assigned id y.
+-- Now, x and y may be equal, which means they alias, or they may be different!
+-- Note, these functions are the same for both before and after graphs,
+-- to make sure that the same aliasing set-up is used.
+createAliasClass :: Graph -> M.Map MemIndex (SWord64 -> SWord64)
+createAliasClass (nodeInfo -> nodes) = go M.empty (M.toList nodes)
+  where
+    go aliasClasses [] = aliasClasses
+    go aliasClasses ((nid, node) : rest) =
+      case node of
+        (LoadI _ memId addrId) -> undefined
+        (LoadL _ memId addrId) -> undefined
+        (LoadF _ memId addrId) -> undefined
+        (LoadD _ memId addrId) -> undefined
+        (LoadP _ _ memId addrId) -> undefined
+        _ -> go aliasClasses rest
+    createFunc aliasClasses memId =
+      let ptr = readAddress (nodes !!! memId)
+          (JPointer memIndex@(className, offset) _ _ _) = ptr
+       in M.insert
+            memIndex
+            ( uninterpret $ "aliasclass_" <> className <> "_" <> show offset ::
+                SWord64 -> SWord64
+            )
+            aliasClasses
+
 -- | Creates a symbolic array for each memory parameter,
 -- which represents the memory of a given class.
 runVerification :: SMTConfig -> Graph -> Graph -> IO SatResult
@@ -573,8 +624,25 @@ runVerification smtConfig before after =
     do
       parms <- createParams before
       mems <- createMemory before
-      res1 <- evalControlNode (before {params = parms, classMems = mems}) (ParmCtrl 5)
-      res2 <- evalControlNode (after {params = parms, classMems = mems}) (ParmCtrl 5)
+      let aliasfuncs = createAliasClass before
+      res1 <-
+        evalControlNode
+          ( before
+              { params = parms,
+                classMems = mems,
+                aliasClasses = aliasfuncs
+              }
+          )
+          (ParmCtrl 5)
+      res2 <-
+        evalControlNode
+          ( after
+              { params = parms,
+                classMems = mems,
+                aliasClasses = aliasfuncs
+              }
+          )
+          (ParmCtrl 5)
       -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
       -- constrain $ res1 .=== (35, JInt $ 20)
       constrain $ res1 ./== res2
