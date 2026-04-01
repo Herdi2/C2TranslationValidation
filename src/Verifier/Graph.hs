@@ -181,13 +181,31 @@ data Graph
     -- | Contains mapping from a slice to the corresponding SMT value
     classMems :: M.Map MemIndex SValue,
     -- | AliasClasses. See @createAliasClass@ for documentation.
-    aliasClasses :: M.Map MemIndex (SWord64 -> SWord64)
+    _aliasClasses :: M.Map MemIndex (SWord64 -> SWord64),
+    -- | Initial memory functions. Maps alias indices
+    -- from @_aliasClasses@ to free variables.
+    _initialIntMem :: SWord64 -> SInt32,
+    _initialLongMem :: SWord64 -> SInt64,
+    _initialFloatMem :: SWord64 -> SFloat,
+    _initialDoubleMem :: SWord64 -> SDouble
   }
 
 -- | Graph with default values (everything empty)
 -- NOTE: The default return type is `int`, since we always want to have a return statement
 defaultGraph :: Graph
-defaultGraph = Graph JINT M.empty M.empty M.empty M.empty M.empty M.empty
+defaultGraph =
+  Graph
+    JINT
+    M.empty
+    M.empty
+    M.empty
+    M.empty
+    M.empty
+    M.empty
+    (uninterpret $ "initialIntMem" :: SWord64 -> SInt32)
+    (uninterpret $ "initialLongMem" :: SWord64 -> SInt64)
+    (uninterpret $ "initialFloatMem" :: SWord64 -> SFloat)
+    (uninterpret $ "initialDoubleMem" :: SWord64 -> SDouble)
 
 mkGraph :: JType -> [(NodeId, Node)] -> [(NodeId, [NodeId])] -> Graph
 mkGraph retType nInfo successors =
@@ -198,7 +216,7 @@ mkGraph retType nInfo successors =
       regionPredecessor = M.empty,
       params = M.empty,
       classMems = M.empty,
-      aliasClasses = M.empty
+      _aliasClasses = M.empty
     }
 
 -- | Used to define and keep track of valid method return types

@@ -406,81 +406,131 @@ evalDataNode graph@(nodeInfo -> nodes) (ConvL2I nid) =
   where
     dropUpper32 :: SInt64 -> SInt32
     dropUpper32 = fromSized . (bvExtract (Proxy @31) (Proxy @0) :: SInt 64 -> SInt 32) . toSized
-evalDataNode graph (LoadI _ memId addrId) = handleLoad graph memId addrId
-evalDataNode graph (LoadL _ memId addrId) = handleLoad graph memId addrId
-evalDataNode graph (LoadF _ memId addrId) = handleLoad graph memId addrId
-evalDataNode graph (LoadD _ memId addrId) = handleLoad graph memId addrId
-evalDataNode graph (LoadP _ _ memId addrId) = handleLoad graph memId addrId
+evalDataNode graph (LoadI _ memId addrId) = handleLoad graph JINT memId addrId
+evalDataNode graph (LoadL _ memId addrId) = handleLoad graph JLONG memId addrId
+evalDataNode graph (LoadF _ memId addrId) = handleLoad graph JFLOAT memId addrId
+evalDataNode graph (LoadD _ memId addrId) = handleLoad graph JDOUBLE memId addrId
+evalDataNode graph (LoadP _ _ memId addrId) = handleLoad graph JPOINTER memId addrId
 evalDataNode _ n = error $ "Not a data node:" <> show n
 
-handleLoad :: Graph -> NodeId -> NodeId -> Symbolic SValue
-handleLoad graph@(nodeInfo -> nodes) memId addrId =
+handleLoad :: Graph -> JType -> NodeId -> NodeId -> Symbolic SValue
+handleLoad graph@(nodeInfo -> nodes) jtype memId addrId =
   do
     let ptr = readAddress (nodes !!! addrId)
-        (JPointer memIndex _ _ _) = ptr
-    mem <- evalMemoryNode graph (nodes !!! memId)
+    let (JPointer memIndex _ _ _) = ptr
+    let aliasFunc = (M.!?) (_aliasClasses graph) memIndex
+    mem <- evalMemoryNode graph addrId memIndex (nodes !!! memId)
     case mem of
-      MemSlice memIndex' val ->
-        if ptr == memIndex'
-          then return val
-          else error $ "Load: Mismatching memory slice"
-      MemParm ->
-        case (classMems graph) M.!? memIndex of
-          Nothing -> error $ "Load: couldn't find slice: " <> show memIndex
-          Just m -> return m
-      MemMerge MemParm aliases -> go aliases
-        where
-          -- No matching slices, read from bot
-          go [] =
-            case (classMems graph) M.!? memIndex of
-              Nothing -> error $ "Load: couldn't find slice: " <> show memIndex
-              Just m -> return m
-          -- Check if matching alias exists
-          go (MemSlice memIndex' val : xs) =
-            if ptr == memIndex'
-              then return val
-              else go xs
-          go _ = error "Load: MergeMem malformed, found non-alias in aliases"
-      MemMerge _ _ -> error $ "Load: MergeMem non-parm in bot mem"
-
-evalMemoryNode :: Graph -> Node -> Symbolic Memory
-evalMemoryNode graph@(nodeInfo -> nodes) =
-  \case
-    ParmMem -> return MemParm
-    (MergeMem botMemNid aliasNids) ->
-      do
-        botMem <- evalMemoryNode graph (nodes !!! botMemNid)
-        aliases <- sequence $ (\nid -> (evalMemoryNode graph) (nodes !!! nid)) <$> aliasNids
-        return $ MemMerge botMem aliases
-    (Phi rid preds) ->
-      -- Phi nodes may be used by the memory subgraph as well.
-      -- The phi node's value depends on the corresponding region node
-      let memIdx = (regionPredecessor graph) !!! rid
-          chosenMemNode = (nodeInfo graph) !!! (preds !! fromIntegral memIdx)
-       in evalMemoryNode graph chosenMemNode
-    (StoreI slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
-    (StoreL slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
-    (StoreF slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
-    (StoreD slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
-    (StoreP slice memNid addrNid dataNid) -> handleStore slice memNid addrNid dataNid
-    node -> error $ "evalMemoryNode: non-memory node " <> show node
+      (False, [(_, val)]) -> return val
+      (True, vals) -> undefined
   where
-    handleStore slice memNid addrNid dataNid =
-      -- For a Store node the slice determines the return value.
-      -- If we return a slice, then the value of that slice is
-      -- single-handedly determined by the current store, and
-      -- previous memory may be ignored.
-      -- If we return Bot, then the store node will simply write to the
-      -- memory returned by the predecessor, and propagate it forward.
-      -- This then forces the predecessing memory to return Bot.
-      do
-        let memIndex = readAddress (nodes !!! addrNid)
-        val <- evalDataNode graph (nodes !!! dataNid)
-        mem <- evalMemoryNode graph (nodes !!! memNid)
-        case (slice, mem) of
-          (Slice _, _) ->
-            return $ MemSlice memIndex val
-          (Bot, _) -> error $ "ASSUMPTION BROKEN: Store node returned Bot"
+    go aliasFunc addrId [] = undefined
+    go aliasFunc addrId (x : xs) = undefined
+
+-- | @evalMemoryNode@ will return the possible values that
+-- are written to the slice the given memory subgraph
+-- is writing to. Much of this is based on the fact
+-- that we assume everything is done on slices.
+--
+-- To illustrate:
+-- MemParm 7
+--    |
+-- StoreI (AddP 12 Object1$A+12) 10
+--    |
+-- LoadI (AddP 13 Object1$A+12)
+--
+-- Here, since the AddP nodes used to store and load
+-- are different, it is not guaranteed that
+-- they write to the same instance.
+-- Therefore, @evalMemoryNode@ will return `(True, [10])`.
+-- The boolean indicates whether we access unknown memory
+-- or not (i.e. memory outside of the method).
+evalMemoryNode ::
+  Graph ->
+  -- | The Id of the AddP node, representing the Instance Id.
+  NodeId ->
+  -- | The address (Object pointer) we are reading from.
+  MemIndex ->
+  -- | The memory node.
+  Node ->
+  Symbolic (Bool, [(NodeId, SValue)])
+evalMemoryNode = go (False, [])
+  where
+    go
+      retValues@(accessUnknown, possibleValues)
+      graph@(nodeInfo -> nodes)
+      instanceId
+      memIndex =
+        \case
+          ParmMem -> return (True, possibleValues)
+          (Phi rid preds) ->
+            -- Phi nodes may be used by the memory subgraph as well.
+            -- The phi node's value depends on the corresponding region node
+            let memIdx = (regionPredecessor graph) !!! rid
+                chosenMemNode = (nodeInfo graph) !!! (preds !! fromIntegral memIdx)
+             in go retValues graph instanceId memIndex chosenMemNode
+          (MergeMem botMemNid aliasNids) ->
+            do
+              let aliases = (\nid -> nodes !!! nid) <$> aliasNids
+              let getStoreIds =
+                    \case
+                      (StoreI _ memId addrNid _) ->
+                        (addrNid, memId)
+                      (StoreL _ memId addrNid _) ->
+                        (addrNid, memId)
+                      (StoreF _ memId addrNid _) ->
+                        (addrNid, memId)
+                      (StoreD _ memId addrNid _) ->
+                        (addrNid, memId)
+                      _ -> error "Found non-store in slices of MergeMem"
+              let findSlice =
+                    \case
+                      [] -> Nothing
+                      ((getStoreIds -> (addrNid, memId)) : xs) ->
+                        let JPointer addrMemIndex _ _ _ = readAddress (nodes !!! addrNid)
+                         in if (addrMemIndex == memIndex)
+                              then Just (nodes !!! memId)
+                              else findSlice xs
+              case findSlice aliases of
+                Nothing ->
+                  go retValues graph instanceId memIndex (nodes !!! botMemNid)
+                Just sliceMemNode ->
+                  go retValues graph instanceId memIndex sliceMemNode
+          (StoreI slice memNid addrNid dataNid) ->
+            handleStore graph slice memNid addrNid dataNid instanceId memIndex retValues
+          (StoreL slice memNid addrNid dataNid) ->
+            handleStore graph slice memNid addrNid dataNid instanceId memIndex retValues
+          (StoreF slice memNid addrNid dataNid) ->
+            handleStore graph slice memNid addrNid dataNid instanceId memIndex retValues
+          (StoreD slice memNid addrNid dataNid) ->
+            handleStore graph slice memNid addrNid dataNid instanceId memIndex retValues
+          (StoreP slice memNid addrNid dataNid) ->
+            handleStore graph slice memNid addrNid dataNid instanceId memIndex retValues
+          node -> error $ "evalMemoryNode: non-memory node " <> show node
+    handleStore
+      graph@(nodeInfo -> nodes)
+      slice
+      memNid
+      addrNid
+      dataNid
+      instanceId
+      memIndex
+      retValues@(accessUnknown, possibleValues) =
+        -- When encountering the store node we have two options:
+        -- 1. If the AddP node Id is equal to the given instance Id
+        --    when evaluating the memory, they are from the same object.
+        --    We can immediately return from this function then.
+        -- 2. If the AddP node Id does not match the instance Id, then
+        --    they are potentially different objects. Therefore,
+        --    we continue evaluating the memory coming into the Store
+        --    node.
+        do
+          when (slice == Bot) (error $ "ASSUMPTION BROKEN: Store node returned Bot")
+          val <- evalDataNode graph (nodes !!! dataNid)
+          if (addrNid == instanceId)
+            then return (accessUnknown, (addrNid, val) : possibleValues)
+            else
+              go retValues graph instanceId memIndex (nodes !!! memNid)
 
 -- | Creates a symbolic value for each parameter node.
 -- The symbolic values will be reused in the SMT formulas
@@ -598,7 +648,7 @@ createAliasClass :: Graph -> M.Map MemIndex (SWord64 -> SWord64)
 createAliasClass (nodeInfo -> nodes) = go M.empty (M.toList nodes)
   where
     go aliasClasses [] = aliasClasses
-    go aliasClasses ((nid, node) : rest) =
+    go aliasClasses ((_, node) : rest) =
       case node of
         (LoadI _ memId addrId) -> undefined
         (LoadL _ memId addrId) -> undefined
@@ -625,12 +675,20 @@ runVerification smtConfig before after =
       parms <- createParams before
       mems <- createMemory before
       let aliasfuncs = createAliasClass before
+      let initialIntMem = (uninterpret $ "initialIntMem" :: SWord64 -> SInt32)
+      let initialLongMem = (uninterpret $ "initialLongMem" :: SWord64 -> SInt64)
+      let initialFloatMem = (uninterpret $ "initialFloatMem" :: SWord64 -> SFloat)
+      let initialDoubleMem = (uninterpret $ "initialDoubleMem" :: SWord64 -> SDouble)
       res1 <-
         evalControlNode
           ( before
               { params = parms,
                 classMems = mems,
-                aliasClasses = aliasfuncs
+                _aliasClasses = aliasfuncs,
+                _initialIntMem = initialIntMem,
+                _initialLongMem = initialLongMem,
+                _initialFloatMem = initialFloatMem,
+                _initialDoubleMem = initialDoubleMem
               }
           )
           (ParmCtrl 5)
@@ -639,7 +697,11 @@ runVerification smtConfig before after =
           ( after
               { params = parms,
                 classMems = mems,
-                aliasClasses = aliasfuncs
+                _aliasClasses = aliasfuncs,
+                _initialIntMem = initialIntMem,
+                _initialLongMem = initialLongMem,
+                _initialFloatMem = initialFloatMem,
+                _initialDoubleMem = initialDoubleMem
               }
           )
           (ParmCtrl 5)
