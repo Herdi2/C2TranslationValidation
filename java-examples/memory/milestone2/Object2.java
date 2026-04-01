@@ -1,7 +1,9 @@
 class Object2 {
   public static void main(String[] args) {
     Object2 obj = new Object2();
-    System.out.println(obj.method(false, obj.new A(1, 2)));
+    for (int i = 0; i < 20_000; i++) {
+      obj.method(i % 2 == 0, obj.new A(i % 2, i % 2));
+    }
   }
 
   class A {

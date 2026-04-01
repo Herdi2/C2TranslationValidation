@@ -118,6 +118,8 @@ extractClassName fullPath =
     splitPath' (x : xs) acc = splitPath' xs (x : acc)
 
 -- | Given a Java program, the method within to be compiled, and an output path
+-- NOTE: Right now -Xcomp is not used to trigger speculative optimizations.
+-- However, that might change (possible add cmd flag)
 compileJavaProgram :: String -> String -> ErrorM String
 compileJavaProgram javaFile methodName =
   case extractClassName javaFile of

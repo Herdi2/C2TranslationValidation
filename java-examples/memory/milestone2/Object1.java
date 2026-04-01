@@ -1,6 +1,9 @@
 class Object1 {
   public static void main(String[] args) {
-    (new Object1()).method(1);
+    Object1 obj = new Object1();
+    for (int i = 0; i < 20_000; i++) {
+      obj.method(i % 2);
+    }
   }
 
   class A {
@@ -11,6 +14,10 @@ class Object1 {
   A f1 = new A();
 
   public int method(int x) {
-    return f1.a1 + x;
+    if (x == 12) {
+      return f1.a1;
+    } else {
+      return 10;
+    }
   }
 }

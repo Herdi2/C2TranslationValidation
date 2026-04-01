@@ -1,6 +1,9 @@
 class Memory1 {
   public static void main(String[] args) {
-    (new Memory1()).method(10);
+    Memory1 obj = new Memory1();
+    for (int i = 0; i < 20_000; i++) {
+      obj.method(i % 2);
+    }
   }
 
   int f1 = 20;
@@ -9,6 +12,6 @@ class Memory1 {
 
   // Simple example of basic writing and reading to static fields
   int method(int x) {
-    return f1 + f1 + f1;
+    return f1 + f2 + f3;
   }
 }

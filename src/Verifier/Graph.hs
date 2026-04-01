@@ -19,6 +19,8 @@ import GHC.Prim
 
 type NodeId = Word32
 
+type SNodeId = SWord32
+
 type ParamMap = M.Map NodeId SValue
 
 type NodeInfo = M.Map NodeId Node
@@ -181,14 +183,29 @@ data Graph
     -- | Contains mapping from a slice to the corresponding SMT value
     classMems :: M.Map MemIndex SValue,
     -- | AliasClasses. See @createAliasClass@ for documentation.
-    _aliasClasses :: M.Map MemIndex (SWord64 -> SWord64),
+    _aliasClasses :: M.Map MemIndex (SNodeId -> SWord64),
     -- | Initial memory functions. Maps alias indices
     -- from @_aliasClasses@ to free variables.
     _initialIntMem :: SWord64 -> SInt32,
     _initialLongMem :: SWord64 -> SInt64,
     _initialFloatMem :: SWord64 -> SFloat,
-    _initialDoubleMem :: SWord64 -> SDouble
+    _initialDoubleMem :: SWord64 -> SDouble,
+    _initialPointerMem :: SWord64 -> SBool
   }
+
+instance Show Graph where
+  show (Graph _1 _2 _3 _4 _5 _6 _7 _ _ _ _ _) =
+    "Graph: "
+      <> ( unlines
+             [ show _1,
+               show _2,
+               show _3,
+               show _4,
+               show _5,
+               show _6,
+               "alias_classes" <> show (fst <$> M.toList _7)
+             ]
+         )
 
 -- | Graph with default values (everything empty)
 -- NOTE: The default return type is `int`, since we always want to have a return statement
@@ -206,17 +223,14 @@ defaultGraph =
     (uninterpret $ "initialLongMem" :: SWord64 -> SInt64)
     (uninterpret $ "initialFloatMem" :: SWord64 -> SFloat)
     (uninterpret $ "initialDoubleMem" :: SWord64 -> SDouble)
+    (uninterpret $ "initialPointerMem" :: SWord64 -> SBool)
 
 mkGraph :: JType -> [(NodeId, Node)] -> [(NodeId, [NodeId])] -> Graph
 mkGraph retType nInfo successors =
-  Graph
+  defaultGraph
     { methodType = retType,
       nodeInfo = M.fromList nInfo,
-      controlSuccessors = M.fromList successors,
-      regionPredecessor = M.empty,
-      params = M.empty,
-      classMems = M.empty,
-      _aliasClasses = M.empty
+      controlSuccessors = M.fromList successors
     }
 
 -- | Used to define and keep track of valid method return types
