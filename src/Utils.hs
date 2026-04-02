@@ -9,6 +9,7 @@ module Utils where
 
 import Data.List (intercalate, unsnoc)
 import Data.SBV
+import Debug.Trace
 import Effectful
 import Effectful.Fail (Fail, runFail)
 import Fuzzer.Gen

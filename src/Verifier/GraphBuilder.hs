@@ -22,6 +22,7 @@ data ParseResult a
     Unsupported String
   | -- | Successful parse
     Parsed a
+  deriving (Show, Eq)
 
 partitionParseResults :: [ParseResult a] -> ([String], [a])
 partitionParseResults = go ([], [])
@@ -246,7 +247,11 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
         [_ctrl, _parm6, _mem, _rawptr, _retAddress, dataPred] -> Parsed (nodeId, Return nodeId dataPred)
         preds -> Unsupported $ "Return: Expected 6 predecessors but got " <> show (length preds)
     -- \| MEMORY FLOW
-    "CastPP" -> Ignored
+    "CastPP" ->
+      case (findNodePred nodeId rEdges) of
+        [ptr] -> Parsed (nodeId, CastPP ptr)
+        [_ctrl, ptr] -> Parsed (nodeId, CastPP ptr)
+        preds -> Unsupported $ "CastPP: Expected 1 predecessor but got " <> show (length preds)
     "CmpP" -> arithmeticNode "CmpP" CmpP nodeId rEdges
     "StoreI" -> storeNode (M.lookup "dump_spec" nodeProps) StoreI nodeId rEdges
     "StoreL" -> storeNode (M.lookup "dump_spec" nodeProps) StoreL nodeId rEdges
@@ -386,6 +391,7 @@ loadNode nodeName constr (Just src) nodeId rEdges =
   case findNodePred nodeId rEdges of
     [x, y] -> Parsed (nodeId, constr src x y)
     [_ctrl, x, y] -> Parsed (nodeId, constr src x y)
+    [_ctrl1, x, y, _ctrl2] -> Parsed (nodeId, constr src x y)
     neighbors -> Unsupported $ nodeName <> ": Expected two preds but got: " <> show (length neighbors)
 
 convNode :: (NodeId -> Node) -> NodeId -> [(NodeId, NodeId, NodeId)] -> ParseResult (NodeId, Node)

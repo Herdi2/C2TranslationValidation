@@ -148,6 +148,8 @@ data Node
     MergeMem NodeId [NodeId]
   | -- | AddP <ptr result> <ptr1> <ptr2> <offset>
     AddP SValue NodeId NodeId NodeId
+  | -- | CastPP <ptr>
+    CastPP NodeId
   deriving (Show, Eq)
 
 data RawNode = RawNode
@@ -299,7 +301,7 @@ instance EqSymbolic SValue where
         x .=== Nothing
       (NullPtr, JPointer memIdx1 ptrRef1 objStat1 x) ->
         x .=== Nothing
-      (_, _) -> error $ "Tried to compare different SValue types"
+      (v1, v2) -> error $ "Tried to compare different SValue types :" <> show v1 <> " and " <> show v2
 
 instance Mergeable SValue where
   symbolicMerge force test left right = case (left, right) of
