@@ -98,7 +98,7 @@ verifyXML :: SMTConfig -> String -> ErrorM SatResult
 verifyXML smtConfig xmlContent =
   case (parseGraphs xmlContent) of
     Left err -> fail err
-    -- Right (before, after) | before == after -> fail "The graphs are equal!"
+    Right (before, after) | before == after -> fail "The graphs are equal!"
     Right (before, after) ->
       (liftIO $ runVerification smtConfig before after)
 

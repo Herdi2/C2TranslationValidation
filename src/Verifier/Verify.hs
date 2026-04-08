@@ -94,6 +94,10 @@ evalControlNode graph (CallStatic nid) =
   -- we are interested in the node we reach in this case, not the value!
   let retType = methodType graph
    in return $ (literal nid, mkRetValue retType)
+evalControlNode graph (Rethrow nid) =
+  -- NOTE: Similar motivation as @CallStatic@
+  let retType = methodType graph
+   in return $ (literal nid, mkRetValue retType)
 evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
   do
     let [elseNode, ifNode] =

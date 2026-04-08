@@ -210,6 +210,14 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
     "CmpL" -> arithmeticNode "CmpL" CmpL nodeId rEdges
     "CmpF" -> arithmeticNode "CmpF" CmpF nodeId rEdges
     "CmpD" -> arithmeticNode "CmpD" CmpD nodeId rEdges
+    -- These <CMP>3 nodes are special, as they are used
+    -- for comparisons going into `unstable_if`
+    -- Semantically, they are equivalent to their Cmp
+    -- counterparts.
+    "CmpI3" -> arithmeticNode "CmpI3" CmpI nodeId rEdges
+    "CmpL3" -> arithmeticNode "CmpL3" CmpL nodeId rEdges
+    "CmpF3" -> arithmeticNode "CmpF3" CmpF nodeId rEdges
+    "CmpD3" -> arithmeticNode "CmpD3" CmpD nodeId rEdges
     "Bool" ->
       let mkBool boolOp = case singlePred nodeId rEdges of
             Right pred -> Parsed (nodeId, Bool boolOp pred)
@@ -246,6 +254,12 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
       case (findNodePred nodeId rEdges) of
         [_ctrl, _parm6, _mem, _rawptr, _retAddress, dataPred] -> Parsed (nodeId, Return nodeId dataPred)
         preds -> Unsupported $ "Return: Expected 6 predecessors but got " <> show (length preds)
+    "Rethrow" ->
+      -- NOTE: Happens when we break an assumption made by the speculative optimizations
+      -- Semantically similar to an exception (@CallStaticJava@).
+      case (findNodePred nodeId rEdges) of
+        [_ctrl, _parm6, _mem, _rawptr, _retAddress, _dataPred] -> Parsed (nodeId, Rethrow nodeId)
+        preds -> Unsupported $ "Rethrow: Expected 6 predecessors but got " <> show (length preds)
     -- \| MEMORY FLOW
     "CastPP" ->
       case (findNodePred nodeId rEdges) of
@@ -354,6 +368,10 @@ buildCtrlflow rEdges nodes =
           case (findNodePred nid rEdges) of
             (ctrlPred : rest) -> Parsed [(ctrlPred, [nid])]
             preds -> Unsupported "CallStatic: got zero predecessors"
+        Rethrow nid ->
+          case (findNodePred nid rEdges) of
+            (ctrlPred : rest) -> Parsed [(ctrlPred, [nid])]
+            preds -> Unsupported "Rethrow: got zero predecessors"
         -- Any node not handled is assumed to not be part of the control flow, and is safely ignored
         _ -> Ignored
 
