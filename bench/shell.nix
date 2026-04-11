@@ -8,7 +8,7 @@ pkgs.mkShell {
     haskell-language-server
 
     # JDK build dependencies
-    jdk17
+    jdk25
     autoconf
     automake
     unzip
@@ -26,6 +26,7 @@ pkgs.mkShell {
   # Make Stack use Nix-provided GHC instead of downloading its own
   shellHook = ''
     export STACK_IN_NIX_SHELL=1
+    export GIT_SSH_COMMAND="ssh -F ~/.ssh/config"
     echo "Benchmarking environment loaded"
   '';
 }
