@@ -7,12 +7,15 @@
 
 module Verifier.Verify where
 
+import Control.Exception
 import Control.Monad
+import Control.Monad.IO.Class
 import Data.List (findIndex)
 import qualified Data.Map as M
 import Data.Proxy
 import Data.SBV
 import Debug.Trace
+import Verifier.ErrorHandler
 import Verifier.Graph
 
 -- | Proper error message for search key in map
@@ -132,7 +135,7 @@ evalControlNode graph (Region nid _) =
    in evalControlNode
         (updateRegionPredecessors succNode nid graph)
         succNode
-evalControlNode _ node = error $ "Not a control node: " <> show node
+evalControlNode _ node = raiseException $ "Not a control node: " <> show node
 
 -- | Symbolically executed the data flow subgraph using denotational semantics
 -- NOTE: Very important regarding floating point and doubles.
@@ -431,7 +434,7 @@ evalDataNode graph@(nodeInfo -> nodes) (CastPP addrId) =
   do
     JPointer memIndex ptrRef _ _ <- evalDataNode graph (nodes !!! addrId)
     return $ JPointer memIndex ptrRef NotNull (Just $ fromBool False)
-evalDataNode _ n = error $ "Not a data node:" <> show n
+evalDataNode _ n = raiseException $ "Not a data node:" <> show n
 
 handleLoad :: Graph -> JType -> NodeId -> NodeId -> Symbolic SValue
 handleLoad graph@(nodeInfo -> nodes) jtype memId addrId =
@@ -524,7 +527,7 @@ evalMemoryNode graph@(nodeInfo -> nodes) instanceId address jtype =
       handleStore slice memNid addrNid dataNid
     (StoreP slice memNid addrNid dataNid) ->
       handleStore slice memNid addrNid dataNid
-    node -> error $ "evalMemoryNode: non-memory node " <> show node
+    node -> raiseException $ "evalMemoryNode: non-memory node " <> show node
   where
     handleStore
       slice
@@ -540,7 +543,7 @@ evalMemoryNode graph@(nodeInfo -> nodes) instanceId address jtype =
         --    we continue evaluating the memory coming into the Store
         --    node.
         do
-          when (slice == Bot) (error $ "ASSUMPTION BROKEN: Store node returned Bot")
+          when (slice == Bot) (raiseException $ "ASSUMPTION BROKEN: Store node returned Bot")
           val <- evalDataNode graph (nodes !!! dataNid)
           let aliasClass = (M.!) (_aliasClasses graph) address
           restOfMemory <- evalMemoryNode graph instanceId address jtype (nodes !!! memNid)
@@ -582,7 +585,7 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
             param <- JPointer memIndex ptrRefinement objectStatus <$> (Just <$> (sBool ("parm" <> show nid)))
             go (M.insert nid param paramMap) rest
         ParmMemPtr _ (JPointer _ _ _ (Just _)) ->
-          error $ "createParams: JPointer value should not be set"
+          raiseException $ "createParams: JPointer value should not be set"
         _ -> go paramMap rest
 
 -- | Creates an uninterpreter function that keeps track of memory aliasing
@@ -636,43 +639,42 @@ createAliasClass (nodeInfo -> nodes) = go M.empty (M.toList nodes)
             )
             aliasClasses
 
--- | Creates a symbolic array for each memory parameter,
--- which represents the memory of a given class.
-runVerification :: SMTConfig -> Graph -> Graph -> IO SatResult
+runVerification :: SMTConfig -> Graph -> Graph -> IO (Either VerifyException SatResult)
 runVerification smtConfig before after =
-  satWith smtConfig $
-    do
-      parms <- createParams before
-      let aliasfuncs = createAliasClass before
-      let initialIntMem = (uninterpret $ "initialIntMem" :: SWord64 -> SInt32)
-      let initialLongMem = (uninterpret $ "initialLongMem" :: SWord64 -> SInt64)
-      let initialFloatMem = (uninterpret $ "initialFloatMem" :: SWord64 -> SFloat)
-      let initialDoubleMem = (uninterpret $ "initialDoubleMem" :: SWord64 -> SDouble)
-      -- traceM (show before)
-      res1 <-
-        evalControlNode
-          ( before
-              { params = parms,
-                _aliasClasses = aliasfuncs,
-                _initialIntMem = initialIntMem,
-                _initialLongMem = initialLongMem,
-                _initialFloatMem = initialFloatMem,
-                _initialDoubleMem = initialDoubleMem
-              }
-          )
-          (ParmCtrl 5)
-      res2 <-
-        evalControlNode
-          ( after
-              { params = parms,
-                _aliasClasses = aliasfuncs,
-                _initialIntMem = initialIntMem,
-                _initialLongMem = initialLongMem,
-                _initialFloatMem = initialFloatMem,
-                _initialDoubleMem = initialDoubleMem
-              }
-          )
-          (ParmCtrl 5)
-      -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
-      -- constrain $ res1 .=== (120, JInt $ 31)
-      constrain $ res1 ./== res2
+  try $
+    satWith smtConfig $
+      do
+        parms <- createParams before
+        let aliasfuncs = createAliasClass before
+        let initialIntMem = (uninterpret $ "initialIntMem" :: SWord64 -> SInt32)
+        let initialLongMem = (uninterpret $ "initialLongMem" :: SWord64 -> SInt64)
+        let initialFloatMem = (uninterpret $ "initialFloatMem" :: SWord64 -> SFloat)
+        let initialDoubleMem = (uninterpret $ "initialDoubleMem" :: SWord64 -> SDouble)
+        -- traceM (show before)
+        res1 <-
+          evalControlNode
+            ( before
+                { params = parms,
+                  _aliasClasses = aliasfuncs,
+                  _initialIntMem = initialIntMem,
+                  _initialLongMem = initialLongMem,
+                  _initialFloatMem = initialFloatMem,
+                  _initialDoubleMem = initialDoubleMem
+                }
+            )
+            (ParmCtrl 5)
+        res2 <-
+          evalControlNode
+            ( after
+                { params = parms,
+                  _aliasClasses = aliasfuncs,
+                  _initialIntMem = initialIntMem,
+                  _initialLongMem = initialLongMem,
+                  _initialFloatMem = initialFloatMem,
+                  _initialDoubleMem = initialDoubleMem
+                }
+            )
+            (ParmCtrl 5)
+        -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
+        -- constrain $ res1 .=== (120, JInt $ 31)
+        constrain $ res1 ./== res2

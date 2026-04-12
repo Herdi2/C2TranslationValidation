@@ -3,6 +3,12 @@ module CommandLine where
 import Data.Word
 import Options.Applicative
 
+data GlobalOpts
+  = GlobalOpts
+  { globalJavaBin :: FilePath,
+    globalCommand :: Command
+  }
+
 data Command
   = Verify VerifyOpts
   | Fuzz FuzzOpts
@@ -95,3 +101,16 @@ commandParser =
           "campaign"
           (info (Campaign <$> campaignOpts) (progDesc "Run the campaign"))
     )
+
+globalParser :: Parser GlobalOpts
+globalParser =
+  GlobalOpts
+    <$> strOption
+      ( long "java"
+          <> short 'j'
+          <> metavar "<FILE>"
+          <> value "java"
+          <> showDefault
+          <> help "Path to the Java binary to use"
+      )
+    <*> commandParser

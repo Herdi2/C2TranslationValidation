@@ -2,15 +2,16 @@ module Verifier.GraphParser (parseGraph) where
 
 import Data.Char (isSpace, toLower)
 import qualified Data.Map as M
-import Verifier.Graph
 import Text.XML.Light
+import Verifier.ErrorHandler
+import Verifier.Graph
 
 -- | Parses the graph with `graphName` from the given XML file into a @RawGraph@
-parseGraph :: String -> String -> Either String RawGraph
+parseGraph :: String -> String -> Either CustomError RawGraph
 parseGraph graphName xml = do
-  root <- maybe (Left "Failed to parse XML") Right $ parseXMLDoc xml
+  root <- maybe (Left $ parseError "Failed to parse XML") Right $ parseXMLDoc xml
   graph <-
-    maybe (Left $ "Graph not found: " <> graphName) Right $
+    maybe (Left $ parseError $ "Graph not found: " <> graphName) Right $
       findGraphElement graphName root
   let edges = parseEdges graph
       nodes = parseNodes graph

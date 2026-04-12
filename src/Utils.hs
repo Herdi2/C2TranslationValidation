@@ -7,25 +7,27 @@
 
 module Utils where
 
+import Control.Exception
 import Data.List (intercalate, unsnoc)
 import Data.SBV
 import Debug.Trace
 import Effectful
-import Effectful.Fail (Fail, runFail)
+import Effectful.Error.Static
 import Fuzzer.Gen
 import Prettyprinter (pretty)
 import System.Directory (getCurrentDirectory)
 import System.Exit
 import System.Process
+import Verifier.ErrorHandler
 import Verifier.Graph
 import Verifier.GraphBuilder
 import Verifier.GraphParser
 import Verifier.Verify
 
-type ErrorM = Eff '[Fail, IOE]
+type ErrorM = Eff '[Error CustomError, IOE]
 
-runErrorM :: ErrorM a -> IO (Either String a)
-runErrorM = runEff . runFail
+runErrorM :: ErrorM a -> IO (Either CustomError a)
+runErrorM = runEff . runErrorNoCallStack
 
 -- | Given a Java file and a method within, return the output of the compiler and the interpreter
 -- NOTE: We assume the class who's method we'll compile shared the name with the Java file
@@ -75,7 +77,7 @@ compareOutput javaFile methodName =
 
 -- | Given XML content representing the C2 IR, it parses the `graphName`
 -- graph into an internal graph representation.
-createGraph :: String -> String -> Either String Graph
+createGraph :: String -> String -> Either CustomError Graph
 createGraph xmlContent graphName =
   do
     parsedGraph <- parseGraph graphName xmlContent
@@ -84,7 +86,7 @@ createGraph xmlContent graphName =
 
 -- | Given XML content representing the C2 IR, parses the "After Parsing" and "Before Matching"
 -- graphs into internal graph representations.
-parseGraphs :: String -> Either String (Graph, Graph)
+parseGraphs :: String -> Either CustomError (Graph, Graph)
 parseGraphs xmlContent =
   do
     beforeGraph <- parseGraph "After Parsing" xmlContent
@@ -97,10 +99,14 @@ parseGraphs xmlContent =
 verifyXML :: SMTConfig -> String -> ErrorM SatResult
 verifyXML smtConfig xmlContent =
   case (parseGraphs xmlContent) of
-    Left err -> fail err
-    Right (before, after) | before == after -> fail "The graphs are equal!"
+    Left err -> throwError err
+    Right (before, after) | before == after -> throwError $ verificationError "The graphs are equal!"
     Right (before, after) ->
-      (liftIO $ runVerification smtConfig before after)
+      do
+        result <- (liftIO $ runVerification smtConfig before after)
+        case result of
+          Left (VerifyException err) -> throwError err
+          Right res -> return res
 
 -- | Given a path to a Java file, e.g. /hello/this/path/Klass.java
 -- returns the Java class name and path: (/hello/this/path, Klass)
@@ -121,10 +127,10 @@ extractClassName fullPath =
 -- | Given a Java program, the method within to be compiled, and an output path
 -- NOTE: Right now -Xcomp is not used to trigger speculative optimizations.
 -- However, that might change (possible add cmd flag)
-compileJavaProgram :: String -> String -> ErrorM String
-compileJavaProgram javaFile methodName =
+compileJavaProgram :: FilePath -> String -> String -> ErrorM String
+compileJavaProgram javaBin javaFile methodName =
   case extractClassName javaFile of
-    Nothing -> fail $ "Invalid Java file " <> javaFile
+    Nothing -> throwError $ parseError $ "Invalid Java file " <> javaFile
     Just (_path, javaClass) ->
       do
         let compileCommands =
@@ -136,9 +142,13 @@ compileJavaProgram javaFile methodName =
                 "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName,
                 -- Do not compress pointers, to simplify object and array handling
                 "-XX:-UseCompressedOops",
-                -- Print floating-point numbers as binaries
+                -- Print floating-point numbers as binaries (NOTE: Custom JDK flag)
                 "-XX:+PrintFloatBits",
-                -- Minimal graph-level needed to get the correct gra[hs
+                -- Delay arithmetic optimizations to after parsing (NOTE: Custom JDK flag)
+                "-XX:+DelayArithmeticOpts",
+                -- Print numeral values instead of "minint/maxint" (NOTE: Custom JDK flag)
+                "-XX:+PrintRealMinMax",
+                -- Minimal graph-level needed to get the correct graphs
                 "-XX:PrintIdealGraphLevel=1",
                 -- Output XML file into "<javaClass>.xml"
                 "-XX:PrintIdealGraphFile=" ++ javaClass ++ ".xml",
@@ -148,14 +158,14 @@ compileJavaProgram javaFile methodName =
         (exitCode, _, stdErr) <-
           liftIO $
             readCreateProcessWithExitCode
-              ( (proc "java" compileCommands)
+              ( (proc javaBin compileCommands)
                   { cwd = Just outputPath,
                     std_out = CreatePipe
                   }
               )
               ""
         if exitCode /= ExitSuccess
-          then fail $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
+          then throwError $ runtimeError $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
           else do
             contents <- liftIO $ readFile (javaClass ++ ".xml")
             -- liftIO $ removeFile (javaClass ++ ".xml")
@@ -165,11 +175,5 @@ compileJavaProgram javaFile methodName =
 fuzzProgram :: Word64 -> String -> ErrorM String
 fuzzProgram seed className =
   case program seed className "method" of
-    Left _ -> fail $ "Fuzzer: Failed to generate program with seed: " <> show seed
+    Left _ -> throwError $ fuzzError $ "Fuzzer: Failed to generate program with seed: " <> show seed
     Right prog -> return $ show $ pretty prog
-
-verifyProgram :: String -> String -> ErrorM SatResult
-verifyProgram javaFile method =
-  do
-    xmlContent <- compileJavaProgram javaFile method
-    verifyXML z3 xmlContent

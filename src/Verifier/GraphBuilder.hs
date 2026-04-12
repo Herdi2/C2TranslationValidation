@@ -13,6 +13,7 @@ import Debug.Trace
 import GHC.Float (castWord32ToFloat, castWord64ToDouble)
 import Numeric (readBin)
 import Text.Read (readMaybe)
+import Verifier.ErrorHandler
 import Verifier.Graph
 
 data ParseResult a
@@ -32,11 +33,11 @@ partitionParseResults = go ([], [])
     go (unsupported, parsed) (Unsupported s : rest) = go (s : unsupported, parsed) rest
     go (unsupported, parsed) (Parsed p : rest) = go (unsupported, p : parsed) rest
 
-buildGraph :: RawGraph -> Either String Graph
+buildGraph :: RawGraph -> Either CustomError Graph
 buildGraph rawGraph@(RawGraph rNodes rEdges) =
   do
     let (unsupported, parsedNodes) = partitionParseResults $ (buildNode rawGraph) <$> rNodes
-    unless (null unsupported) (Left $ unlines unsupported)
+    unless (null unsupported) (Left $ builderError $ unwords unsupported)
     controlFlow <- buildCtrlflow rEdges parsedNodes
     retType <- findMethodType rawGraph
     Right $
@@ -51,20 +52,20 @@ buildGraph rawGraph@(RawGraph rNodes rEdges) =
 -- NOTE: Yes, I was overly cautious writing this method, I like error messages.
 findMethodType ::
   RawGraph ->
-  Either String JType
+  Either CustomError JType
 findMethodType (RawGraph rNodes rEdges) =
   do
     (RawNode retNid _ _) <-
       fromMaybe
-        (Left $ "findMethodType: Did not find return statement")
+        (Left $ builderError "findMethodType: Did not find return statement")
         (Right <$> find (\(RawNode _ nodeName _) -> nodeName == "Return") rNodes)
     dataNid <-
       case (findNodePred (read retNid) rEdges) of
         [_ctrl, _parm6, _mem, _rawptr, _retAddress, dataPred] -> Right dataPred
-        preds -> Left $ "Return: Expected 6 predecessors but got " <> show (length preds)
+        preds -> Left $ builderError $ "Return: Expected 6 predecessors but got " <> show (length preds)
     (RawNode _ _ dataProps) <-
       fromMaybe
-        (Left $ "findMethodType: Could not find data pred with id " <> show dataNid)
+        (Left $ builderError $ "findMethodType: Could not find data pred with id " <> show dataNid)
         (Right <$> find (\(RawNode nid _ _) -> read nid == dataNid) rNodes)
     let botType = M.lookup "bottom_type" dataProps
     case botType of
@@ -75,8 +76,8 @@ findMethodType (RawGraph rNodes rEdges) =
         | "double" `isPrefixOf` typ -> Right JDOUBLE
         | "fltcon" `isPrefixOf` typ -> Right JFLOAT
         | "dblcon" `isPrefixOf` typ -> Right JDOUBLE
-        | otherwise -> Left $ "findMethodType: Unsupported return type " <> typ
-      Nothing -> Left $ "findMethodType: Data node had no \"bottom_type\""
+        | otherwise -> Left $ builderError $ "findMethodType: Unsupported return type " <> typ
+      Nothing -> Left $ builderError $ "findMethodType: Data node had no \"bottom_type\""
 
 buildNode ::
   RawGraph ->
@@ -334,11 +335,11 @@ storeNode (Just attr) constr nodeId rEdges =
     findMemIdx (_ : rest) = findMemIdx rest
 
 -- | Given a control flow node, returns the predecessors of the node
-buildCtrlflow :: [RawEdge] -> [(NodeId, Node)] -> Either String ControlSuccessors
+buildCtrlflow :: [RawEdge] -> [(NodeId, Node)] -> Either CustomError ControlSuccessors
 buildCtrlflow rEdges nodes =
   do
     let (unsupported, ctrlEdges) = partitionParseResults $ (handleNode rEdges) <$> nodes
-    unless (null unsupported) (Left $ unlines unsupported)
+    unless (null unsupported) (Left $ builderError $ unwords unsupported)
     Right $ M.fromListWith (++) $ ctrlEdges >>= id
   where
     handleNode rEdges node =
@@ -445,8 +446,10 @@ readPtrType (takeWhile (/= ',') -> ptrStr) =
   case parseAttr ptrStr of
     ("instptr", rest) ->
       let (className, rest') = parseAttr rest
-          (objStatus, '+' : offset) = parseAttr rest'
-       in Right $ JPointer (className, read offset) InstPtr (parseObjStatus objStatus) Nothing
+       in case parseAttr rest' of
+            (objStatus, '+' : offset) ->
+              Right $ JPointer (className, read offset) InstPtr (parseObjStatus objStatus) Nothing
+            _ -> Left $ "readPtrType: Unrecognized pattern without offset"
     ("ptr", rest) ->
       case (parseAttr rest) of
         ("null", _) -> Right NullPtr
