@@ -36,6 +36,8 @@ dependencies:
 - optparse-applicative >= 0.19
 - ghc-prim >= 0.12
 - time >= 1.12
+- filepath >= 1.5
+- clock >= 0.8
 
 ghc-options:
 - -Wall
