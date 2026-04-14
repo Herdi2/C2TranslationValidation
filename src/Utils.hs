@@ -8,6 +8,7 @@
 module Utils where
 
 import Control.Exception
+import Control.Monad
 import Data.List (intercalate, unsnoc)
 import Data.SBV
 import Debug.Trace
@@ -15,8 +16,9 @@ import Effectful
 import Effectful.Error.Static
 import Fuzzer.Gen
 import Prettyprinter (pretty)
-import System.Directory (getCurrentDirectory)
+import System.Directory (getCurrentDirectory, removeFile)
 import System.Exit
+import System.FilePath (dropExtension, takeFileName)
 import System.Process
 import Verifier.ErrorHandler
 import Verifier.Graph
@@ -127,49 +129,47 @@ extractClassName fullPath =
 -- | Given a Java program, the method within to be compiled, and an output path
 -- NOTE: Right now -Xcomp is not used to trigger speculative optimizations.
 -- However, that might change (possible add cmd flag)
-compileJavaProgram :: FilePath -> String -> String -> ErrorM String
-compileJavaProgram javaBin javaFile methodName =
-  case extractClassName javaFile of
-    Nothing -> throwError $ parseError $ "Invalid Java file " <> javaFile
-    Just (_path, javaClass) ->
-      do
-        let compileCommands =
-              [ -- Make sure compilation finishes before execution
-                "-Xbatch", -- Makes sure compilation finishes
-                -- Compile with C2 only
-                "-XX:-TieredCompilation", -- C2 only
-                -- Compile only `javaClass::method`
-                "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName,
-                -- Do not compress pointers, to simplify object and array handling
-                "-XX:-UseCompressedOops",
-                -- Print floating-point numbers as binaries (NOTE: Custom JDK flag)
-                "-XX:+PrintFloatBits",
-                -- Delay arithmetic optimizations to after parsing (NOTE: Custom JDK flag)
-                "-XX:+DelayArithmeticOpts",
-                -- Print numeral values instead of "minint/maxint" (NOTE: Custom JDK flag)
-                "-XX:+PrintRealMinMax",
-                -- Minimal graph-level needed to get the correct graphs
-                "-XX:PrintIdealGraphLevel=1",
-                -- Output XML file into "<javaClass>.xml"
-                "-XX:PrintIdealGraphFile=" ++ javaClass ++ ".xml",
-                javaFile
-              ]
-        outputPath <- liftIO getCurrentDirectory
-        (exitCode, _, stdErr) <-
-          liftIO $
-            readCreateProcessWithExitCode
-              ( (proc javaBin compileCommands)
-                  { cwd = Just outputPath,
-                    std_out = CreatePipe
-                  }
-              )
-              ""
-        if exitCode /= ExitSuccess
-          then throwError $ runtimeError $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
-          else do
-            contents <- liftIO $ readFile (javaClass ++ ".xml")
-            -- liftIO $ removeFile (javaClass ++ ".xml")
-            return $ contents
+compileJavaProgram :: FilePath -> String -> String -> Bool -> ErrorM String
+compileJavaProgram javaBin javaFile methodName deleteXML =
+  do
+    let javaClass = dropExtension (takeFileName javaFile)
+        compileCommands =
+          [ -- Make sure compilation finishes before execution
+            "-Xbatch", -- Makes sure compilation finishes
+            -- Compile with C2 only
+            "-XX:-TieredCompilation", -- C2 only
+            -- Compile only `javaClass::method`
+            "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName,
+            -- Do not compress pointers, to simplify object and array handling
+            "-XX:-UseCompressedOops",
+            -- Print floating-point numbers as binaries (NOTE: Custom JDK flag)
+            "-XX:+PrintFloatBits",
+            -- Delay arithmetic optimizations to after parsing (NOTE: Custom JDK flag)
+            "-XX:+DelayArithmeticOpts",
+            -- Print numeral values instead of "minint/maxint" (NOTE: Custom JDK flag)
+            "-XX:+PrintRealMinMax",
+            -- Minimal graph-level needed to get the correct graphs
+            "-XX:PrintIdealGraphLevel=1",
+            -- Output XML file into "<javaClass>.xml"
+            "-XX:PrintIdealGraphFile=" ++ javaClass ++ ".xml",
+            javaFile
+          ]
+    outputPath <- liftIO getCurrentDirectory
+    (exitCode, _, stdErr) <-
+      liftIO $
+        readCreateProcessWithExitCode
+          ( (proc javaBin compileCommands)
+              { cwd = Just outputPath,
+                std_out = CreatePipe
+              }
+          )
+          ""
+    if exitCode /= ExitSuccess
+      then throwError $ runtimeError $ "Exited with code " ++ show exitCode ++ ": " ++ stdErr
+      else do
+        contents <- liftIO $ readFile (javaClass ++ ".xml")
+        when deleteXML $ liftIO $ removeFile (javaClass ++ ".xml")
+        return $ contents
 
 -- | Given a seed and name, generates a Java file with the given seed and class name
 fuzzProgram :: Word64 -> String -> ErrorM String

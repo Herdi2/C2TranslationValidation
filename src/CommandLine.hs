@@ -15,9 +15,10 @@ data Command
   | Campaign CampaignOpts
 
 data VerifyOpts = VerifyOpts
-  { verifyFile :: FilePath,
+  { verifyPath :: FilePath,
     verifyMethod :: String,
-    verifyOutput :: Maybe FilePath
+    verifyOutput :: FilePath,
+    verifyIteration :: Int
   }
 
 data FuzzOpts = FuzzOpts
@@ -34,16 +35,18 @@ data CampaignOpts = CampaignOpts
 verifyOpts :: Parser VerifyOpts
 verifyOpts =
   VerifyOpts
-    <$> argument str (metavar "<FILE>" <> help "Verify a Java file")
+    <$> argument str (metavar "<FILE/DIR>" <> help "Verify a Java file")
     <*> argument str (metavar "<METHOD>" <> help "The name of the method to compile in the Java file.")
-    <*> optional
-      ( strOption
-          ( long "output"
-              <> short 'o'
-              <> metavar "<FILE>"
-              <> help "Write output to this file"
-          )
-      )
+    <*> argument str (metavar "<DIR>" <> help "Directory to output CSV")
+    <*> ( option
+            auto
+            ( long "iter"
+                <> short 'i'
+                <> value 1
+                <> metavar "Integer"
+                <> help "Amount of iterations to run"
+            )
+        )
 
 fuzzOpts :: Parser FuzzOpts
 fuzzOpts =
@@ -93,7 +96,7 @@ commandParser =
   subparser
     ( command
         "verify"
-        (info (Verify <$> verifyOpts) (progDesc "Verify a Java file"))
+        (info (Verify <$> verifyOpts) (progDesc "Verify Java file(s)"))
         <> command
           "fuzz"
           (info (Fuzz <$> fuzzOpts) (progDesc "Run the fuzzer"))
