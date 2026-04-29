@@ -19,13 +19,17 @@
   # environment.
   home.packages = with pkgs; [
     # Own tools
+    # Haskell
     stack
     haskell-language-server
     haskell.compiler.ghc910
+    # Translation validation
     z3
     elan
+    # Dev tools
     neovim
     ripgrep
+    stow
     ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -60,6 +64,7 @@
   #  /etc/profiles/per-user/herdi/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
+    THESIS_JDK = "~/work/jdk-thesis/build/linux-x86_64-server-fastdebug/images/jdk/bin/java";
   };
 
   # Let Home Manager install and manage itself.

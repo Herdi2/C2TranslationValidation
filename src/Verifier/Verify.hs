@@ -103,11 +103,12 @@ evalControlNode graph (Rethrow nid) =
    in return $ (literal nid, mkRetValue retType)
 evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
   do
-    let [elseNode, ifNode] =
-          -- NOTE: Node Id of the false branch is always greater than the true branch
-          case (controlSuccessors graph) !!! nid of
-            [a, b] | b > a -> [b, a]
-            other -> other
+    [elseNode, ifNode] <-
+      -- NOTE: Node Id of the false branch is always greater than the true branch
+      case (controlSuccessors graph) !!! nid of
+        [a, b] | b > a -> return [b, a]
+        [a, b] -> return [a, b]
+        other -> raiseException $ "Ifnode " <> show nid <> ": Expected 2 successors but got " <> show other
     -- NOTE: Boolean guards require predecessor to be either 0 (false) or 1 (true)
     boolGuard <- ((.== 1) . getInt) <$> evalDataNode graph (nodes !!! boolGuardId)
     ifBranch <- evalControlNode graph $ nodes !!! ifNode
@@ -347,6 +348,7 @@ evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
       Ee -> return $ JInt $ ite (v .== 0) (literal 1) (literal 0)
       Le -> return $ JInt $ ite (v .== -1 .|| v .== 0) (literal 1) (literal 0)
       Lt -> return $ JInt $ ite (v .== -1) (literal 1) (literal 0)
+      Gt -> return $ JInt $ ite (v .== 1) (literal 1) (literal 0)
 evalDataNode graph (Phi rid preds) =
   -- The phi node's value depends on the corresponding region node
   let dataIdx = (regionPredecessor graph) !!! rid

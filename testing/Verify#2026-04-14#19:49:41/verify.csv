@@ -1,0 +1,21 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-14 17:49:41.223803976 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.027652158s,0.079976674s
+2026-04-14 17:49:46.162879834 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.029505108s,0.0765213s
+2026-04-14 17:49:51.076146371 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.027563461s,0.085454333s
+2026-04-14 17:49:56.01195644 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.026843151s,0.072353969s
+2026-04-14 17:50:01.053541776 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.02670279s,0.073494988s
+2026-04-14 17:50:05.92100812 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.02799923s,0.083658842s
+2026-04-14 17:50:10.906346021 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.027825354s,0.076981645s
+2026-04-14 17:50:15.884152718 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.026892743s,0.070601936s
+2026-04-14 17:50:20.77726666 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.026616872s,0.078430045s
+2026-04-14 17:50:25.676530717 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.028864028s,0.0852562s
+2026-04-14 17:50:30.517648805 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.707099357s,0.772058728s
+2026-04-14 17:50:36.177640502 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.73700048s,0.80636328s
+2026-04-14 17:50:41.850103462 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.731759539s,0.791451861s
+2026-04-14 17:50:47.5146416 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.732858217s,0.813716143s
+2026-04-14 17:50:53.214118151 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.727103632s,0.816807274s
+2026-04-14 17:50:58.912149071 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.739450719s,0.804531941s
+2026-04-14 17:51:04.491839139 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.68612758s,0.761664828s
+2026-04-14 17:51:09.968858009 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.738926822s,0.804658161s
+2026-04-14 17:51:15.538398584 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.73885139s,0.809003945s
+2026-04-14 17:51:21.098962365 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm14 = 0.0 :: Double\n  parm16 =   0 :: Int32",0.726224627s,0.802586372s

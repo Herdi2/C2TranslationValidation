@@ -1,0 +1,2 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-20 08:45:54.347572365 UTC,/home/herdi/work/C2TranslationValidation/java-examples/data-flow/LShift.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = -1 :: Int64",0.029987338s,0.06075754s

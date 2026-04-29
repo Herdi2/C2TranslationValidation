@@ -1,0 +1,2 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-17 20:32:33.371764434 UTC,/home/herdi/work/C2TranslationValidation/java-examples/data-flow/AndNeg.java,0,Unsat,,0.024187645s,0.069004733s

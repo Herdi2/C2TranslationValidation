@@ -1,0 +1,2 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-20 08:45:15.520421138 UTC,/home/herdi/work/C2TranslationValidation/java-examples/data-flow/Floating.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = -0.0 :: Float",0.039109658s,0.0746658s

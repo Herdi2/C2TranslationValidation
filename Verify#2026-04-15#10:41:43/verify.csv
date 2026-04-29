@@ -1,0 +1,2 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-15 08:41:43.345160659 UTC,/home/herdi/work/C2TranslationValidation/Test.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 0 :: Int32",0.026718426s,0.080278209s

@@ -1,0 +1,7 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-15 09:11:26.001273617 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test13.java,0,Unsat,,0.028708565s,0.083788616s
+2026-04-15 09:11:30.850511298 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test4.java,0,Unsat,,0.029630343s,0.250539876s
+2026-04-15 09:11:36.14718793 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test1.java,0,Unsat,,0.048594798s,0.44050001s
+2026-04-15 09:11:41.483182806 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test6.java,0,Unsat,,0.027902107s,0.182653102s
+2026-04-15 09:11:46.654034165 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test2.java,0,Unsat,,0.021887858s,0.083863284s
+2026-04-15 09:11:51.769165286 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test10.java,0,VerificationError,"The graphs are equal!",0s,0s

@@ -77,24 +77,15 @@ compareOutput javaFile methodName =
                     "Interpreter exited with code " ++ show intExitCode ++ ": " ++ intErr
                   ]
 
--- | Given XML content representing the C2 IR, it parses the `graphName`
--- graph into an internal graph representation.
-createGraph :: String -> String -> Either CustomError Graph
-createGraph xmlContent graphName =
-  do
-    parsedGraph <- parseGraph graphName xmlContent
-    builtGraph <- buildGraph parsedGraph
-    return builtGraph
-
 -- | Given XML content representing the C2 IR, parses the "After Parsing" and "Before Matching"
 -- graphs into internal graph representations.
 parseGraphs :: String -> Either CustomError (Graph, Graph)
 parseGraphs xmlContent =
   do
     beforeGraph <- parseGraph "After Parsing" xmlContent
+    before <- buildGraph Nothing beforeGraph
     afterGraph <- parseGraph "Before Matching" xmlContent
-    before <- buildGraph beforeGraph
-    after <- buildGraph afterGraph
+    after <- buildGraph (Just $ methodType before) afterGraph
     return (before, after)
 
 -- | Verifies the given XML file
@@ -102,7 +93,7 @@ verifyXML :: SMTConfig -> String -> ErrorM SatResult
 verifyXML smtConfig xmlContent =
   case (parseGraphs xmlContent) of
     Left err -> throwError err
-    Right (before, after) | before == after -> throwError $ verificationError "The graphs are equal!"
+    -- Right (before, after) | before == after -> throwError $ verificationError "The graphs are equal!"
     Right (before, after) ->
       do
         result <- (liftIO $ runVerification smtConfig before after)
@@ -135,6 +126,7 @@ compileJavaProgram javaBin javaFile methodName deleteXML =
     let javaClass = dropExtension (takeFileName javaFile)
         compileCommands =
           [ -- Make sure compilation finishes before execution
+            "-Xcomp",
             "-Xbatch", -- Makes sure compilation finishes
             -- Compile with C2 only
             "-XX:-TieredCompilation", -- C2 only
@@ -148,6 +140,8 @@ compileJavaProgram javaBin javaFile methodName deleteXML =
             "-XX:+DelayArithmeticOpts",
             -- Print numeral values instead of "minint/maxint" (NOTE: Custom JDK flag)
             "-XX:+PrintRealMinMax",
+            -- Reintroduce bugs used by Wu (NOTE: Custom JDK flag)
+            -- "-XX:+ReintroduceBugs",
             -- Minimal graph-level needed to get the correct graphs
             "-XX:PrintIdealGraphLevel=1",
             -- Output XML file into "<javaClass>.xml"

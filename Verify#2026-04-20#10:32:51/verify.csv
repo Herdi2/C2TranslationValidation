@@ -1,0 +1,2 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-20 08:32:51.988719156 UTC,/home/herdi/work/C2TranslationValidation/java-examples/data-flow/MulFloat.java,0,RuntimeError,"Exited with code ExitFailure 1: /home/herdi/work/C2TranslationValidation/java-examples/data-flow/MulFloat.java:3: error: cannot find symbol\n    float f = mulfloat(Float.NaN);\n              ^\n  symbol:   method mulfloat(float)\n  location: class MulFloat\n1 error\nerror: compilation failed\n",0s,0s

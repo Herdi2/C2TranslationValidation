@@ -11,6 +11,7 @@ data GlobalOpts
 
 data Command
   = Verify VerifyOpts
+  | Compare CompareOpts
   | Fuzz FuzzOpts
   | Campaign CampaignOpts
 
@@ -19,6 +20,12 @@ data VerifyOpts = VerifyOpts
     verifyMethod :: String,
     verifyOutput :: FilePath,
     verifyIteration :: Int
+  }
+
+data CompareOpts = CompareOpts
+  { compareBefore :: FilePath,
+    compareAfter :: FilePath,
+    compareIteration :: Int
   }
 
 data FuzzOpts = FuzzOpts
@@ -38,6 +45,21 @@ verifyOpts =
     <$> argument str (metavar "<FILE/DIR>" <> help "Verify a Java file")
     <*> argument str (metavar "<METHOD>" <> help "The name of the method to compile in the Java file.")
     <*> argument str (metavar "<DIR>" <> help "Directory to output CSV")
+    <*> ( option
+            auto
+            ( long "iter"
+                <> short 'i'
+                <> value 1
+                <> metavar "Integer"
+                <> help "Amount of iterations to run"
+            )
+        )
+
+compareOpts :: Parser CompareOpts
+compareOpts =
+  CompareOpts
+    <$> argument str (metavar "<FILE>" <> help "Internal representation of SoN IR graph")
+    <*> argument str (metavar "<FILE>" <> help "Internal representation of SoN IR graph")
     <*> ( option
             auto
             ( long "iter"
@@ -97,6 +119,9 @@ commandParser =
     ( command
         "verify"
         (info (Verify <$> verifyOpts) (progDesc "Verify Java file(s)"))
+        <> command
+          "compare"
+          (info (Compare <$> compareOpts) (progDesc "Compares if the two given graphs are semantically equivalent"))
         <> command
           "fuzz"
           (info (Fuzz <$> fuzzOpts) (progDesc "Run the fuzzer"))

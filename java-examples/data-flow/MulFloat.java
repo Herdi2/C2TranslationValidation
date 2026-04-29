@@ -1,10 +1,10 @@
 public class MulFloat {
   public static void main(String[] args) {
-    float f = mulfloat(1);
+    float f = method(-0.0f);
     System.out.println(f);
   }
 
-  static float mulfloat(float x) {
+  static float method(float x) {
     return 0.0f * x;
   }
 }

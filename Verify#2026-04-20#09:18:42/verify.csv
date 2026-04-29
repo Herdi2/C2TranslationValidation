@@ -1,0 +1,2 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-20 07:18:42.246370492 UTC,/home/herdi/work/C2TranslationValidation/java-examples/data-flow/MulFloat.java,0,ParseError,"Graph not found: After Parsing",0s,0s

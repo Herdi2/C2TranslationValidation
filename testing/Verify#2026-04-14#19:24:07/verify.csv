@@ -1,0 +1,11 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-14 17:24:07.07245302 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.027729348s,0.087699742s
+2026-04-14 17:24:12.019391745 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.030256848s,0.077954624s
+2026-04-14 17:24:16.970049388 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.028376774s,0.080680134s
+2026-04-14 17:24:21.821563225 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.028588508s,0.07989914s
+2026-04-14 17:24:26.643255475 UTC,/home/herdi/work/C2TranslationValidation/testing/Test2.java,0,Unsat,,0.029264593s,0.091054223s
+2026-04-14 17:24:31.535479462 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,Z3,0.716459084s,0.789495718s
+2026-04-14 17:24:37.233209181 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,Z3,0.68654338s,0.755924656s
+2026-04-14 17:24:42.719807807 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,Z3,0.693185757s,0.764308022s
+2026-04-14 17:24:48.217195402 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,Z3,0.731827212s,0.793492672s
+2026-04-14 17:24:53.759577175 UTC,/home/herdi/work/C2TranslationValidation/testing/Test.java,0,Sat,Z3,0.729187568s,0.792183518s

@@ -15,6 +15,7 @@ import Data.SBV
 import Data.SBV.Control
 import Data.Time
 import Data.Time.Clock
+import Debug.Trace
 import Options.Applicative
 import System.Clock
 import System.Directory
@@ -23,6 +24,8 @@ import System.FilePath
 import System.Random
 import Utils
 import Verifier.ErrorHandler
+import Verifier.Graph
+import Verifier.Verify (runVerification)
 
 -- Main
 
@@ -44,11 +47,11 @@ main = do
   globalOpts <- execParser (info (globalParser <**> helper) fullDesc)
   let javaBin = globalJavaBin globalOpts
   case (globalCommand globalOpts) of
-    Verify opts -> verify javaBin opts -- verify javaBin opts
+    Verify opts -> verify javaBin opts
+    Compare opts -> compareGraphs opts
     Fuzz opts -> fuzz opts
     Campaign opts -> campaign javaBin opts
 
--- -- NEEDS TO BE FIXEd
 verify :: FilePath -> VerifyOpts -> IO ()
 verify javaBin opts =
   do
@@ -73,22 +76,62 @@ verify javaBin opts =
     when (isFile) $
       replicateM_ (verifyIteration opts) $
         do
-          logInfo <- verifyProgram javaInput javaBin 0 (60 * 1000) True True
+          logInfo <- verifyProgram javaInput (verifyMethod opts) javaBin 0 (60 * 1000) True True
           appendFile logfile (show logInfo <> "\n")
     when (isDir) $
       do
         -- We wish to verify all java files in a directory
         entries <- listDirectory javaInput
-        let javaFiles = [dir </> file | file <- entries, takeExtension file == ".java"]
+        let javaFiles = [javaInput </> file | file <- entries, takeExtension file == ".java"]
         forM_ javaFiles $ \javaFile ->
-          forM_ [1 .. verifyIteration opts] $ \testCount ->
+          replicateM_ (verifyIteration opts) $
             do
-              logInfo <- verifyProgram javaFile javaBin 0 (60 * 1000) True True
+              logInfo <- verifyProgram javaFile (verifyMethod opts) javaBin 0 (60 * 1000) True True
               appendFile logfile (show logInfo <> "\n")
     when (not isDir && not isFile) $ putStrLn $ (red "ERROR") <> " : " <> javaInput <> " is not a file or directory"
 
 red :: String -> String
 red s = "\ESC[31m" ++ s ++ "\ESC[0m"
+
+compareGraphs :: CompareOpts -> IO ()
+compareGraphs opts =
+  do
+    (t1, n1, c1) <-
+      read <$> readFile (compareBefore opts) ::
+        IO (JType, [(NodeId, Node)], [(NodeId, [NodeId])])
+    (t2, n2, c2) <-
+      read <$> readFile (compareAfter opts) ::
+        IO (JType, [(NodeId, Node)], [(NodeId, [NodeId])])
+    let before = mkGraph t1 n1 c1
+        after = mkGraph t2 n2 c2
+        resFile = (dropExtension (compareBefore opts)) <.> "res"
+    appendFile resFile "time-stamp,graph-before,graph-after,smt-result,error-message,smt-time\n"
+    forM_ [1 .. compareIteration opts] $ \iterCount ->
+      do
+        timeStamp <- getDate
+        smtTiming <- newIORef 0
+        let smtConfig = mkConfig Nothing (60 * 1000) smtTiming
+        satRes <- runVerification smtConfig before after
+        let (smtResult, errorMessage) =
+              case satRes of
+                Left (VerifyException err) ->
+                  (show (_errorType err), show (_errorMessage err))
+                Right (SatResult res) ->
+                  case res of
+                    (Satisfiable _ model) ->
+                      ("Sat", show (show satRes))
+                    (Unsatisfiable {}) ->
+                      ("Unsat", "")
+                    (Unknown _ reason) ->
+                      ("Unknown", show reason)
+                    _ -> ("Error", "Unsupported SMT result")
+        smtTime <- readIORef smtTiming
+        putStrLn $ "[" <> timeStamp <> "] " <> show smtTime <> " " <> smtResult
+        appendFile resFile $
+          intercalate
+            ","
+            [show timeStamp, compareBefore opts, compareAfter opts, smtResult, errorMessage, show smtTime]
+        appendFile resFile "\n"
 
 fuzz :: FuzzOpts -> IO ()
 fuzz opts =
@@ -139,7 +182,7 @@ campaign javaBin opts =
           Left err -> putStrLn $ show err
           Right _ ->
             do
-              logInfo <- verifyProgram javafile javaBin seed (campaignZ3Timeout opts) True True
+              logInfo <- verifyProgram javafile "method" javaBin seed (campaignZ3Timeout opts) True True
               appendFile logfile (show logInfo <> "\n")
 
 deleteIfExists :: FilePath -> IO ()
@@ -178,6 +221,8 @@ csvHeaders = "time-stamp,java-file,seed,smt-result,error-message,smt-time,total-
 verifyProgram ::
   -- | Java file
   FilePath ->
+  -- | Java method
+  String ->
   -- | Java binary
   FilePath ->
   -- | Seed (-1 if no seed used)
@@ -189,7 +234,7 @@ verifyProgram ::
   -- | Print information to stdout?
   Bool ->
   IO LogInfo
-verifyProgram javaFile javaBin seed z3Timeout deleteFiles printInfo =
+verifyProgram javaFile javaMethod javaBin seed z3Timeout deleteFiles printInfo =
   do
     smtTiming <- newIORef 0
     totalTiming <- newIORef 0
@@ -199,8 +244,7 @@ verifyProgram javaFile javaBin seed z3Timeout deleteFiles printInfo =
     satRes <-
       runErrorM
         ( do
-            -- NOTE: Fuzzer always generates methods with name "method"
-            xmlContent <- compileJavaProgram javaBin javaFile "method" deleteFiles
+            xmlContent <- compileJavaProgram javaBin javaFile javaMethod deleteFiles
             start <- liftIO $ getTime Monotonic
             res <- verifyXML campaignConfig xmlContent
             end <- liftIO $ getTime Monotonic

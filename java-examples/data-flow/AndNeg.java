@@ -1,10 +1,10 @@
 public class AndNeg{
     public static void main(String[] args) {
-        int x = andneg(-3, -4);
-        System.out.println(x);
+      AndNeg andneg = new AndNeg();
+      System.out.println(andneg.method(-2, -2));
     }
 
-    static int andneg(int x, int y){
+    int method(int x, int y){
         return (-x) & (-y);
     }
 }

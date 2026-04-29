@@ -1,0 +1,2 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-20 09:10:43.57624769 UTC,/home/herdi/work/C2TranslationValidation/java-examples/data-flow/MulAsso.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 8.635234 :: Float",0.456350314s,0.496756573s

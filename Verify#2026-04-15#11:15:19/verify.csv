@@ -1,0 +1,21 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-15 09:15:19.255946411 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test13.java,0,Unsat,,0.032768193s,0.099943642s
+2026-04-15 09:15:24.155353799 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test4.java,0,Unsat,,0.035332555s,0.724289838s
+2026-04-15 09:15:30.150969066 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test1.java,0,Unsat,,0.058723454s,0.92301121s
+2026-04-15 09:15:36.13451663 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test6.java,0,Unsat,,0.036430983s,0.528483118s
+2026-04-15 09:15:41.823360137 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test2.java,0,BuilderError,"findMethodType: Did not find terminal node (Return, Rethrow)",0s,0s
+2026-04-15 09:15:47.17504335 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test10.java,0,BuilderError,"findMethodType: Did not find terminal node (Return, Rethrow)",0s,0s
+2026-04-15 09:15:52.616235341 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test9.java,0,Unsat,,0.061131751s,0.332396854s
+2026-04-15 09:15:58.107694359 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test12.java,0,Unsat,,0.255518565s,0.687720923s
+2026-04-15 09:16:03.798846707 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test16.java,0,Unsat,,0.053324731s,1.223379737s
+2026-04-15 09:16:10.393584747 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test11.java,0,Unsat,,0.042222166s,0.119527631s
+2026-04-15 09:16:15.435948017 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test7.java,0,Unsat,,0.258871803s,0.748315616s
+2026-04-15 09:16:21.24844122 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test8.java,0,BuilderError,"findMethodType: Did not find terminal node (Return, Rethrow)",0s,0s
+2026-04-15 09:16:26.449797024 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test20.java,0,Unsat,,0.022628156s,0.048305056s
+2026-04-15 09:16:31.300667783 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test18.java,0,BuilderError,"findMethodType: Did not find terminal node (Return, Rethrow)",0s,0s
+2026-04-15 09:16:37.318041417 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test14.java,0,BuilderError,"findMethodType: Did not find terminal node (Return, Rethrow)",0s,0s
+2026-04-15 09:16:43.029738343 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test17.java,0,BuilderError,"findMethodType: Did not find terminal node (Return, Rethrow)",0s,0s
+2026-04-15 09:16:48.354865196 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test19.java,0,BuilderError,"findMethodType: Did not find terminal node (Return, Rethrow)",0s,0s
+2026-04-15 09:16:53.905869832 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test5.java,0,Unsat,,0.062290958s,0.642519117s
+2026-04-15 09:16:59.800072977 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test3.java,0,Unsat,,0.068215712s,0.425392114s
+2026-04-15 09:17:05.40849888 UTC,/home/herdi/work/c2-translation-validation/ons-15-apr-2026-06:16:19-CEST/Test15.java,0,Unsat,,0.023627082s,0.056878266s

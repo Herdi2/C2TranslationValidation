@@ -39,9 +39,11 @@ data Comp
     Le
   | -- | Less than
     Lt
+  | -- | Greater than
+    Gt
   | -- | Equal
     Ee
-  deriving (Show, Eq)
+  deriving (Show, Read, Eq)
 
 data Node
   = -- | Parameters carry their own nodeId for parameter handling (see @createParams@)
@@ -152,7 +154,7 @@ data Node
     AddP SValue NodeId NodeId NodeId
   | -- | CastPP <ptr>
     CastPP NodeId
-  deriving (Show, Eq)
+  deriving (Show, Read, Eq)
 
 data RawNode = RawNode
   { rawNodeId :: String,
@@ -250,7 +252,8 @@ data JType
   | JFLOAT
   | JDOUBLE
   | JPOINTER
-  deriving (Show, Eq)
+  | ERROR
+  deriving (Show, Read, Eq)
 
 mkRetValue :: JType -> SValue
 mkRetValue JINT = JInt 0
@@ -276,6 +279,18 @@ data SValue
   | -- | Represent null pointers
     NullPtr
   deriving (Show, Eq)
+
+instance Read SValue where
+  readsPrec _ input =
+    case words input of
+      ("JInt" : jint : rest) -> [(JInt (literal (read jint :: Int32)), unwords rest)]
+      ("JLong" : jlong : rest) -> [(JLong (literal (read jlong :: Int64)), unwords rest)]
+      ("JFloat" : jfloat : rest) -> [(JFloat (literal (read jfloat :: Float)), unwords rest)]
+      ("JDouble" : jdouble : rest) -> [(JDouble (literal (read jdouble :: Double)), unwords rest)]
+      ("JPointer" : memIndex : ptrRef : objStatus : rest) ->
+        [(JPointer (read memIndex :: MemIndex) (read ptrRef :: PtrRefinement) (read objStatus :: ObjectStatus) Nothing, unwords rest)]
+      ("NullPtr" : rest) -> [(NullPtr, unwords rest)]
+      _ -> error "invalid svalue read"
 
 instance EqSymbolic SValue where
   (.==) a b =
@@ -305,11 +320,11 @@ instance EqSymbolic SValue where
       (JPointer memIdx1 ptrRef1 objStat1 x, JPointer memIdx2 ptrRef2 objStat2 y) ->
         fromBool (memIdx1 == memIdx2 && ptrRefEq ptrRef1 ptrRef2 && objStat1 == objStat2)
           .&& x .=== y
-      (JPointer memIdx1 ptrRef1 objStat1 x, NullPtr) ->
+      (JPointer _ _ _ x, NullPtr) ->
         x .=== Nothing
-      (NullPtr, JPointer memIdx1 ptrRef1 objStat1 x) ->
+      (NullPtr, JPointer _ _ _ x) ->
         x .=== Nothing
-      (v1, v2) -> error $ "Tried to compare different SValue types :" <> show v1 <> " and " <> show v2
+      (_, _) -> sFalse
 
 instance Mergeable SValue where
   symbolicMerge force test left right = case (left, right) of
@@ -333,16 +348,16 @@ instance OrdSymbolic SValue where
 {- MEMORY REPRESENTATION -}
 
 -- | Refinement level of pointers
-data PtrRefinement = InstPtr | Ptr deriving (Show, Eq)
+data PtrRefinement = InstPtr | Ptr | ExceptionPtr deriving (Show, Read, Eq)
 
 ptrRefEq :: PtrRefinement -> PtrRefinement -> Bool
 ptrRefEq p1 p2 = p1 == p2
 
 -- | Status of the object pointer to, either Null, NotNull or BotPTR (unknown if null or not)
-data ObjectStatus = Null | NotNull | BotPTR deriving (Show, Eq)
+data ObjectStatus = Null | NotNull | BotPTR deriving (Show, Read, Eq)
 
 -- | Models the memory lattice, which is Bot (Whole memory) or a slice (one field/memory address)
-data MemLattice = Bot | Slice Integer deriving (Show, Eq)
+data MemLattice = Bot | Slice Integer deriving (Show, Read, Eq)
 
 -- | In our assumptions about the memory subgraph, we have three different types of memory we read from:
 -- 1. A slice, which is what we assume every store node creates

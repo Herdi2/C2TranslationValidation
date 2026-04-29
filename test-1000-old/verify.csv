@@ -1,0 +1,1001 @@
+time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time
+2026-04-20 21:29:07.154001399 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test925.java,0,Unsat,,4.7168208s,6.078174379s
+2026-04-20 21:29:19.143896441 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test395.java,0,Unsat,,0.022700123s,0.050525081s
+2026-04-20 21:29:24.707544136 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test318.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:29:27.411694018 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test502.java,0,Unsat,,0.203474414s,0.410558897s
+2026-04-20 21:29:33.383376209 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test886.java,0,Unsat,,0.025816691s,0.059384929s
+2026-04-20 21:29:38.832684311 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test813.java,0,Unsat,,1.537859814s,2.224719059s
+2026-04-20 21:29:46.683259474 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test109.java,0,Unsat,,0.451372909s,0.57308379s
+2026-04-20 21:29:52.669434936 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test13.java,0,Unknown,timeout,61.905682004s,62.031540001s
+2026-04-20 21:31:00.096077901 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test767.java,0,Unsat,,0.121681539s,0.326084643s
+2026-04-20 21:31:05.976880283 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test103.java,0,Unsat,,0.02673226s,0.051992576s
+2026-04-20 21:31:11.505690052 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test584.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:31:14.204784409 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test666.java,0,Unknown,timeout,63.994825884s,64.120047311s
+2026-04-20 21:32:23.792380666 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test853.java,0,Unsat,,0.053419586s,0.979873744s
+2026-04-20 21:32:30.506380711 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test51.java,0,Unsat,,0.961615031s,2.34002128s
+2026-04-20 21:32:38.663864226 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test588.java,0,Unsat,,0.244182701s,0.628597751s
+2026-04-20 21:32:44.857422679 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test60.java,0,Unsat,,0.545037994s,0.816058292s
+2026-04-20 21:32:51.288998628 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test427.java,0,Unsat,,0.863670548s,1.310872058s
+2026-04-20 21:32:58.126182782 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test432.java,0,Unsat,,0.192637945s,0.675500192s
+2026-04-20 21:33:04.496405574 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test403.java,0,Unsat,,0.120213622s,0.505957073s
+2026-04-20 21:33:10.670660259 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test405.java,0,Unsat,,0.104709446s,0.5735465s
+2026-04-20 21:33:16.949557124 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test298.java,0,Unsat,,0.195821177s,0.522922747s
+2026-04-20 21:33:23.099468703 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test958.java,0,Unsat,,0.059900274s,0.190056867s
+2026-04-20 21:33:28.816981564 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test744.java,0,Unsat,,0.043289541s,0.195717195s
+2026-04-20 21:33:34.645145975 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test765.java,0,Unsat,,0.665576505s,1.273757306s
+2026-04-20 21:33:41.595996837 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test101.java,0,Unsat,,0.038106637s,0.406300073s
+2026-04-20 21:33:47.802517046 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test855.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:33:50.53224766 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test671.java,0,Unsat,,0.026926321s,0.312133088s
+2026-04-20 21:33:56.507117706 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test212.java,0,Unsat,,0.031793811s,0.308988369s
+2026-04-20 21:34:02.833481046 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test174.java,0,Unsat,,0.057800342s,0.717323045s
+2026-04-20 21:34:09.345324059 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test503.java,0,Unsat,,0.117856045s,0.422119122s
+2026-04-20 21:34:15.77899669 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test444.java,0,Unsat,,0.023198989s,0.087365215s
+2026-04-20 21:34:21.455596855 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test292.java,0,Unsat,,0.053317727s,0.329551821s
+2026-04-20 21:34:27.438798103 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test248.java,0,Unknown,timeout,60.08640961s,60.130125046s
+2026-04-20 21:35:32.999317421 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test862.java,0,Unsat,,14.195096316s,17.121934468s
+2026-04-20 21:35:56.078554362 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test507.java,0,Unsat,,0.023421595s,0.045396596s
+2026-04-20 21:36:01.550648479 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test412.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =          0 :: Int64\n  parm12 =          0 :: Int64\n  parm14 =        256 :: Int64\n  parm16 =          0 :: Int64\n  parm18 = 8589934592 :: Int64\n  parm20 =          0 :: Int64\n  parm24 =          0 :: Int64\n  parm26 =          0 :: Int64\n  parm30 =          0 :: Int64",0.123193868s,0.285809681s
+2026-04-20 21:36:07.379354391 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test743.java,0,Unsat,,0.034515445s,0.526932484s
+2026-04-20 21:36:13.760504466 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test230.java,0,Unsat,,0.021421586s,0.102444591s
+2026-04-20 21:36:19.447285396 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test822.java,0,Unsat,,0.043342908s,1.058331716s
+2026-04-20 21:36:26.294734097 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test251.java,0,Unsat,,0.023979408s,0.056887466s
+2026-04-20 21:36:31.829462068 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test520.java,0,Unsat,,0.04803193s,0.701426882s
+2026-04-20 21:36:38.35536622 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test129.java,0,Unsat,,0.022602965s,0.142319944s
+2026-04-20 21:36:44.332246363 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test163.java,0,Unsat,,0.10528346s,0.407050787s
+2026-04-20 21:36:50.321400582 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test25.java,0,Unsat,,0.269072268s,0.710277464s
+2026-04-20 21:36:56.651276498 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test724.java,0,Unsat,,0.024538734s,0.050769913s
+2026-04-20 21:37:02.226064823 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test447.java,0,Unsat,,0.043013772s,0.124776858s
+2026-04-20 21:37:07.82069417 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test197.java,0,Unsat,,0.420410819s,0.707618222s
+2026-04-20 21:37:14.100328974 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test880.java,0,Unsat,,0.099102264s,0.195705141s
+2026-04-20 21:37:19.777870826 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test394.java,0,Unsat,,0.22233379s,0.907570758s
+2026-04-20 21:37:26.387239503 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test910.java,0,Unsat,,4.859248906s,4.904023177s
+2026-04-20 21:37:36.771949401 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test903.java,0,Unsat,,5.264301288s,5.35947875s
+2026-04-20 21:37:47.594967007 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test860.java,0,Unknown,timeout,60.324929888s,61.315628601s
+2026-04-20 21:38:54.615913647 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test844.java,0,Unsat,,0.023475139s,0.055355239s
+2026-04-20 21:39:00.084101234 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test4.java,0,Unsat,,0.176109172s,0.351912649s
+2026-04-20 21:39:05.936482075 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test28.java,0,Unsat,,0.201563459s,0.432807853s
+2026-04-20 21:39:11.988146217 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test902.java,0,Unsat,,0.024688071s,0.058446187s
+2026-04-20 21:39:17.522438948 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test540.java,0,Unknown,timeout,61.110253376s,61.362936035s
+2026-04-20 21:40:24.391924444 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test761.java,0,Unsat,,0.022201721s,0.047464611s
+2026-04-20 21:40:29.851542895 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test1.java,0,Unsat,,6.476803598s,7.105982941s
+2026-04-20 21:40:42.596351118 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test943.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:40:45.352464147 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test141.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:40:48.234099881 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test580.java,0,Unsat,,14.478940563s,15.461897056s
+2026-04-20 21:41:09.403111562 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test960.java,0,Unknown,timeout,62.121759187s,63.061659184s
+2026-04-20 21:42:18.114606953 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test33.java,0,Unsat,,6.634036102s,7.234353332s
+2026-04-20 21:42:31.125365263 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test92.java,0,Unsat,,0.025439423s,0.193248682s
+2026-04-20 21:42:36.98935845 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test54.java,0,Unsat,,0.043397327s,0.504580341s
+2026-04-20 21:42:43.13704076 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test500.java,0,Unsat,,0.023603355s,0.054296382s
+2026-04-20 21:42:48.725261967 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test229.java,0,Unknown,timeout,60.215657291s,60.516541515s
+2026-04-20 21:43:54.757326646 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test552.java,0,Unsat,,0.022086752s,0.048289289s
+2026-04-20 21:44:00.224071271 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test711.java,0,Unsat,,0.02514328s,0.052788114s
+2026-04-20 21:44:05.708467413 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test772.java,0,Unsat,,0.026773302s,0.155891432s
+2026-04-20 21:44:11.536172335 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test46.java,0,Unsat,,0.025671902s,0.057504485s
+2026-04-20 21:44:17.255232841 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test612.java,0,Unsat,,0.092924347s,0.760877469s
+2026-04-20 21:44:23.715586611 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test258.java,0,Unsat,,1.274732797s,1.589061429s
+2026-04-20 21:44:30.966507576 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test523.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:44:33.663758957 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test644.java,0,Unsat,,0.162886548s,0.348963093s
+2026-04-20 21:44:39.514185367 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test650.java,0,Unsat,,2.712450194s,2.811641928s
+2026-04-20 21:44:47.785898256 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test660.java,0,Unsat,,0.05063808s,0.212460691s
+2026-04-20 21:44:53.609758378 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test676.java,0,Unsat,,0.046152772s,0.289745253s
+2026-04-20 21:44:59.723835855 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test937.java,0,Unsat,,0.023222986s,0.122296508s
+2026-04-20 21:45:05.460185572 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test83.java,0,Unsat,,54.634734897s,54.88226752s
+2026-04-20 21:46:05.83736773 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test91.java,0,Unsat,,0.027205324s,0.054283448s
+2026-04-20 21:46:11.360762258 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test613.java,0,Unknown,timeout,60.136929114s,60.496860242s
+2026-04-20 21:47:17.576829333 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test773.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:47:20.4695926 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test190.java,0,Unsat,,0.107563382s,0.674776858s
+2026-04-20 21:47:26.744873603 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test211.java,0,Unsat,,0.025564786s,0.086994485s
+2026-04-20 21:47:32.361187305 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test494.java,0,Unsat,,0.02498587s,0.054562884s
+2026-04-20 21:47:37.837767947 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test430.java,0,Unsat,,0.023859556s,0.144575312s
+2026-04-20 21:47:43.764974829 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test209.java,0,Unsat,,0.022140346s,0.049657313s
+2026-04-20 21:47:49.24603244 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test322.java,0,Unsat,,0.034796133s,0.696047902s
+2026-04-20 21:47:55.617152082 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test956.java,0,Unsat,,0.029193619s,0.061967737s
+2026-04-20 21:48:01.22646432 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test840.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:48:04.064815535 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test361.java,0,Unsat,,0.226755853s,0.413707797s
+2026-04-20 21:48:10.008020887 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test408.java,0,Unsat,,0.025178019s,0.054371988s
+2026-04-20 21:48:15.519099575 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test895.java,0,Unsat,,0.263134736s,0.531525731s
+2026-04-20 21:48:21.596937887 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test460.java,0,Unsat,,0.023155727s,0.106272937s
+2026-04-20 21:48:27.366821017 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test728.java,0,Unsat,,0.023286635s,0.057487446s
+2026-04-20 21:48:32.905494911 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test106.java,0,Unsat,,0.27318293s,0.596529293s
+2026-04-20 21:48:39.036937342 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test327.java,0,Unsat,,0.022836413s,0.048671816s
+2026-04-20 21:48:44.551359111 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test235.java,0,Unsat,,3.185966348s,3.91415018s
+2026-04-20 21:48:54.16677944 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test739.java,0,Unsat,,0.080244836s,0.296716692s
+2026-04-20 21:48:59.948363663 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test256.java,0,Unsat,,0.457711254s,1.043999183s
+2026-04-20 21:49:06.589570335 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test578.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:49:09.356300724 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test738.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:49:12.07207483 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test413.java,0,Unsat,,0.447213483s,1.17635726s
+2026-04-20 21:49:18.939721797 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test720.java,0,Unsat,,0.043728796s,0.09881848s
+2026-04-20 21:49:24.519567998 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test929.java,0,Unsat,,0.02672407s,0.178233051s
+2026-04-20 21:49:30.326445956 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test885.java,0,Unsat,,0.027142863s,0.145479074s
+2026-04-20 21:49:36.11770821 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test196.java,0,Unsat,,0.118228674s,0.375947902s
+2026-04-20 21:49:42.249731604 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test297.java,0,Unsat,,1.06729802s,1.618997598s
+2026-04-20 21:49:49.566791936 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test234.java,0,Unsat,,0.25999519s,0.771886693s
+2026-04-20 21:49:56.039637964 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test665.java,0,Unsat,,0.688811443s,1.297660969s
+2026-04-20 21:50:02.927811121 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test57.java,0,Unsat,,1.935185753s,3.028244528s
+2026-04-20 21:50:11.741089237 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test790.java,0,Unsat,,0.023784395s,0.108359244s
+2026-04-20 21:50:17.491814811 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test586.java,0,Unsat,,0.022754252s,0.049960802s
+2026-04-20 21:50:23.026399727 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test417.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:50:25.725277292 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test345.java,0,Unsat,,0.090632997s,0.236058119s
+2026-04-20 21:50:31.4218327 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test797.java,0,Unsat,,0.585280628s,0.967812299s
+2026-04-20 21:50:38.009485113 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test454.java,0,Unsat,,0.027307894s,0.061496366s
+2026-04-20 21:50:43.470454736 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test257.java,0,Unsat,,0.02829764s,0.058257106s
+2026-04-20 21:50:48.977858512 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test63.java,0,Unsat,,0.246563775s,0.531320131s
+2026-04-20 21:50:55.107921324 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test703.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:50:57.860016246 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test750.java,0,Unsat,,0.023730877s,0.052643332s
+2026-04-20 21:51:03.36513964 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test792.java,0,Unsat,,2.117243286s,3.188332433s
+2026-04-20 21:51:12.574139476 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test337.java,0,Unsat,,1.492953388s,1.719277255s
+2026-04-20 21:51:19.852376141 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test888.java,0,Unsat,,0.161938199s,0.309187533s
+2026-04-20 21:51:25.623326238 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test571.java,0,Unsat,,0.02989273s,0.369951447s
+2026-04-20 21:51:31.694580831 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test6.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:51:34.46384162 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test441.java,0,Unsat,,1.18543562s,1.229114688s
+2026-04-20 21:51:41.078539956 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test547.java,0,Unsat,,0.074634498s,0.209343034s
+2026-04-20 21:51:46.745724296 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test865.java,0,Unsat,,0.023342011s,0.164117504s
+2026-04-20 21:51:52.806159521 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test136.java,0,Unsat,,0.027719983s,0.170812065s
+2026-04-20 21:51:58.557636976 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test156.java,0,Unsat,,0.021722589s,0.111965636s
+2026-04-20 21:52:04.393128496 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test718.java,0,Unsat,,0.044918656s,0.253292481s
+2026-04-20 21:52:10.43590257 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test117.java,0,Unsat,,0.021910528s,0.053342245s
+2026-04-20 21:52:16.088994456 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test619.java,0,Unsat,,0.026019374s,0.057285034s
+2026-04-20 21:52:21.533878481 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test294.java,0,Unsat,,0.034879204s,0.655668588s
+2026-04-20 21:52:28.088106038 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test605.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =   0 :: Int64\n  parm12 =   0 :: Int32\n  parm14 =   0 :: Int32\n  parm15 =   0 :: Int64\n  parm17 =   0 :: Int64\n  parm19 = 256 :: Int64",0.14252286s,0.231021829s
+2026-04-20 21:52:33.845496875 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test440.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:52:36.840105108 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test105.java,0,Unsat,,0.024481063s,0.057631033s
+2026-04-20 21:52:42.485743188 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test446.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:52:45.279696076 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test308.java,0,Unsat,,0.10834639s,0.296590655s
+2026-04-20 21:52:51.070712413 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test378.java,0,Unsat,,0.363355398s,0.906623609s
+2026-04-20 21:52:57.657421018 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test70.java,0,Unknown,timeout,60.440056423s,61.903069284s
+2026-04-20 21:54:05.355418766 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test629.java,0,Unsat,,0.13224713s,0.324267704s
+2026-04-20 21:54:11.213471088 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test431.java,0,Unsat,,0.024521667s,0.055690567s
+2026-04-20 21:54:16.929199834 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test35.java,0,BuilderError,"buildNode: Unsupported node  (374, URShiftL)",0s,0s
+2026-04-20 21:54:23.497937691 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test538.java,0,Unsat,,0.088998487s,0.296940327s
+2026-04-20 21:54:29.43691639 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test170.java,0,Unsat,,0.022094391s,0.128595493s
+2026-04-20 21:54:35.201089618 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test625.java,0,Unsat,,0.032375533s,0.202155489s
+2026-04-20 21:54:40.914416695 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test272.java,0,Unsat,,0.02698604s,0.063065233s
+2026-04-20 21:54:46.416624394 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test243.java,0,Unknown,timeout,60.126028569s,60.405666706s
+2026-04-20 21:55:52.413781177 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test493.java,0,Unsat,,0.026261815s,0.053779793s
+2026-04-20 21:55:57.877644122 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test335.java,0,Unsat,,0.192135209s,0.509334381s
+2026-04-20 21:56:04.072255637 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test95.java,0,Unsat,,0.028574912s,0.236795341s
+2026-04-20 21:56:09.961667275 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test802.java,0,Unsat,,0.039255914s,0.464803341s
+2026-04-20 21:56:16.153135546 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test80.java,0,Unknown,timeout,60.877674446s,61.400992873s
+2026-04-20 21:57:23.242373649 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test975.java,0,Unsat,,0.057325808s,0.817539133s
+2026-04-20 21:57:29.962288553 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test921.java,0,Unsat,,0.024049531s,0.155414939s
+2026-04-20 21:57:35.942251468 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test847.java,0,Unsat,,0.022354409s,0.100548704s
+2026-04-20 21:57:41.70015865 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test861.java,0,Unsat,,0.024822416s,0.055947543s
+2026-04-20 21:57:47.157802744 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test203.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:57:49.945264661 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test41.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:57:52.768781059 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test210.java,0,Unsat,,0.027787999s,0.161084847s
+2026-04-20 21:57:58.553736235 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test690.java,0,Unsat,,0.020677847s,0.045652001s
+2026-04-20 21:58:04.003400669 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test710.java,0,Unsat,,0.024860173s,0.24842158s
+2026-04-20 21:58:09.897747646 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test410.java,0,Unsat,,0.031005732s,0.121908055s
+2026-04-20 21:58:15.490588232 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test139.java,0,Unsat,,0.039460659s,0.390420628s
+2026-04-20 21:58:21.575680738 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test242.java,0,Unsat,,0.23674686s,0.285192201s
+2026-04-20 21:58:27.3495593 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test573.java,0,Unsat,,0.026867804s,0.165365408s
+2026-04-20 21:58:33.321778439 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test144.java,0,Unsat,,0.138789842s,0.282977886s
+2026-04-20 21:58:39.141868585 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test868.java,0,Unsat,,0.186070533s,0.3973853s
+2026-04-20 21:58:45.261244188 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test198.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:58:48.181868596 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test466.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 21:58:50.921728449 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test50.java,0,Unsat,,0.022970066s,0.100040035s
+2026-04-20 21:58:56.571535733 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test692.java,0,Unsat,,0.030208775s,0.340485792s
+2026-04-20 21:59:02.714367711 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test381.java,0,Unsat,,0.045379007s,0.342426287s
+2026-04-20 21:59:08.815471226 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test602.java,0,Unsat,,0.186155784s,1.293164297s
+2026-04-20 21:59:15.858028505 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test906.java,0,Unsat,,0.022520842s,0.047741165s
+2026-04-20 21:59:21.445373056 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test225.java,0,Unknown,timeout,61.428034177s,61.593032703s
+2026-04-20 22:00:28.489639231 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test249.java,0,Unknown,timeout,60.114238045s,60.17928443s
+2026-04-20 22:01:34.092108079 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test126.java,0,Unsat,,0.240837715s,0.450636146s
+2026-04-20 22:01:40.155013237 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test959.java,0,Unsat,,0.481963543s,0.892630619s
+2026-04-20 22:01:46.756075827 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test968.java,0,Unsat,,0.387765381s,0.695456023s
+2026-04-20 22:01:53.058931646 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test469.java,0,Unsat,,0.025645149s,0.057424945s
+2026-04-20 22:01:58.573144038 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test770.java,0,Unsat,,0.846002731s,1.689175291s
+2026-04-20 22:02:05.950704279 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test233.java,0,Unsat,,0.026803489s,0.230089442s
+2026-04-20 22:02:11.871587876 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test391.java,0,Unsat,,0.397794461s,0.853248698s
+2026-04-20 22:02:18.382705286 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test747.java,0,Unsat,,1.672577527s,2.148197893s
+2026-04-20 22:02:26.285197905 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test321.java,0,Unsat,,0.022679064s,0.180976071s
+2026-04-20 22:02:32.252734824 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test483.java,0,Unsat,,0.022398878s,0.116860768s
+2026-04-20 22:02:37.964884829 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test869.java,0,Unsat,,0.125693699s,0.391539798s
+2026-04-20 22:02:43.914780594 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test696.java,0,Unsat,,0.295776038s,1.086569578s
+2026-04-20 22:02:50.750358257 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test232.java,0,Unsat,,0.025739928s,0.05552446s
+2026-04-20 22:02:56.440959547 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test726.java,0,Unsat,,0.108299527s,0.83079703s
+2026-04-20 22:03:02.951150069 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test706.java,0,Unsat,,1.055647723s,2.115965596s
+2026-04-20 22:03:10.767180781 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test275.java,0,Unsat,,0.110104554s,0.777206652s
+2026-04-20 22:03:17.277197489 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test423.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:03:20.010831117 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test283.java,0,Unsat,,0.706436421s,0.89176658s
+2026-04-20 22:03:26.416697999 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test199.java,0,Unsat,,6.232350541s,6.474979386s
+2026-04-20 22:03:38.482120499 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test388.java,0,Unsat,,0.021939311s,0.161863088s
+2026-04-20 22:03:44.443515742 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test816.java,0,Unsat,,0.02385694s,0.047458581s
+2026-04-20 22:03:49.82871087 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test548.java,0,Unknown,timeout,63.096661467s,64.785442271s
+2026-04-20 22:05:00.41739536 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test919.java,0,Unsat,,0.224631673s,0.467323579s
+2026-04-20 22:05:06.440510957 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test471.java,0,Unsat,,0.295173222s,0.978883819s
+2026-04-20 22:05:13.15016288 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test964.java,0,Unsat,,0.03410726s,0.069922846s
+2026-04-20 22:05:18.650891126 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test45.java,0,Unsat,,0.038328675s,0.115053956s
+2026-04-20 22:05:24.206015389 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test114.java,0,Unsat,,0.044277349s,0.371593317s
+2026-04-20 22:05:30.238167518 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test484.java,0,Unsat,,0.030806982s,0.2005204s
+2026-04-20 22:05:35.994316711 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test808.java,0,Unsat,,0.023131504s,0.092084547s
+2026-04-20 22:05:41.700664045 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test778.java,0,Unsat,,0.142910118s,0.451314572s
+2026-04-20 22:05:47.769114014 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test53.java,0,Unsat,,0.021437245s,0.14720877s
+2026-04-20 22:05:53.809614264 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test927.java,0,Unknown,timeout,62.276669666s,62.997323238s
+2026-04-20 22:07:02.497371454 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test67.java,0,Unsat,,0.265122488s,0.455696828s
+2026-04-20 22:07:08.515568123 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test787.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:07:11.229168199 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test607.java,0,Unsat,,0.043405178s,0.554333841s
+2026-04-20 22:07:17.466921418 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test652.java,0,Unsat,,0.023143548s,0.049708327s
+2026-04-20 22:07:22.961985098 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test377.java,0,Unsat,,0.06430374s,0.754805341s
+2026-04-20 22:07:29.471316809 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test700.java,0,Unsat,,0.048808582s,0.637039678s
+2026-04-20 22:07:35.812284017 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test332.java,0,Unsat,,0.0244251s,0.055153799s
+2026-04-20 22:07:41.293057766 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test277.java,0,Unsat,,0.036306826s,0.252700151s
+2026-04-20 22:07:47.224983119 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test2.java,0,Unsat,,0.024101366s,0.050426471s
+2026-04-20 22:07:52.784324873 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test200.java,0,Unsat,,0.042467183s,0.294804453s
+2026-04-20 22:07:58.839379291 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test527.java,0,Unsat,,1.47963244s,2.611849986s
+2026-04-20 22:08:07.284421775 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test392.java,0,Unsat,,0.029931546s,0.058707981s
+2026-04-20 22:08:12.744713513 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test152.java,0,Unsat,,0.036265826s,0.262757615s
+2026-04-20 22:08:18.594797197 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test169.java,0,Unsat,,0.126053178s,0.298348213s
+2026-04-20 22:08:24.476160856 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test873.java,0,Unsat,,0.036117695s,0.128439996s
+2026-04-20 22:08:30.124120524 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test661.java,0,Unsat,,0.100817055s,0.420769702s
+2026-04-20 22:08:36.125581602 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test85.java,0,Unsat,,0.298419631s,0.860009191s
+2026-04-20 22:08:42.689022063 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test947.java,0,Unsat,,1.251183978s,2.317698517s
+2026-04-20 22:08:50.92220739 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test556.java,0,Unsat,,0.050727527s,0.271371199s
+2026-04-20 22:08:56.697005816 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test143.java,0,Unsat,,0.028722027s,0.062375766s
+2026-04-20 22:09:02.207858724 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test442.java,0,Unsat,,1.623180462s,1.688447574s
+2026-04-20 22:09:09.501098696 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test936.java,0,Unsat,,0.022027168s,0.047627866s
+2026-04-20 22:09:14.944356046 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test581.java,0,Unsat,,0.03874362s,0.294590113s
+2026-04-20 22:09:20.881769721 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test288.java,0,Unsat,,0.453376724s,0.783273526s
+2026-04-20 22:09:27.556698478 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test679.java,0,Unsat,,0.086290095s,0.451947378s
+2026-04-20 22:09:33.795925974 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test811.java,0,Unsat,,0.042288965s,0.419592659s
+2026-04-20 22:09:40.144600232 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test647.java,0,Unsat,,0.024370361s,0.055586962s
+2026-04-20 22:09:45.776728576 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test948.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:09:48.51304813 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test837.java,0,Unsat,,0.023520728s,0.146614891s
+2026-04-20 22:09:54.331056464 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test996.java,0,Unsat,,0.024799148s,0.175108563s
+2026-04-20 22:10:00.087019823 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test651.java,0,Unsat,,0.1561809s,0.290159773s
+2026-04-20 22:10:05.946232516 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test562.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:10:08.754622105 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test923.java,0,Unsat,,0.045394757s,1.348705594s
+2026-04-20 22:10:16.0097032 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test286.java,0,BuilderError,"buildNode: Unsupported node  (464, URShiftL)",0s,0s
+2026-04-20 22:10:22.757842327 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test315.java,0,Unsat,,0.037326258s,0.419400931s
+2026-04-20 22:10:29.016583282 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test913.java,0,Unsat,,0.024529956s,0.061121298s
+2026-04-20 22:10:34.604480934 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test741.java,0,Unsat,,0.030751483s,0.276216609s
+2026-04-20 22:10:40.612253529 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test382.java,0,Unsat,,0.067475517s,0.178249522s
+2026-04-20 22:10:46.244041272 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test624.java,0,Unsat,,0.263020609s,0.47995682s
+2026-04-20 22:10:52.166684442 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test577.java,0,Unsat,,0.022837633s,0.150902098s
+2026-04-20 22:10:58.019826361 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test32.java,0,Unknown,timeout,60.16009817s,60.399309873s
+2026-04-20 22:12:04.085497097 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test667.java,0,Unsat,,0.024638254s,0.057365647s
+2026-04-20 22:12:09.586527613 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test852.java,0,Unsat,,2.929434884s,3.177292247s
+2026-04-20 22:12:18.266924408 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test800.java,0,Unsat,,0.028982256s,0.190144264s
+2026-04-20 22:12:24.222062737 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test786.java,0,Unsat,,37.341628322s,39.743454015s
+2026-04-20 22:13:10.025820432 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test271.java,0,Unsat,,0.034822315s,0.319574871s
+2026-04-20 22:13:16.004606101 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test931.java,0,Unsat,,0.026891081s,0.069262797s
+2026-04-20 22:13:21.71075854 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test804.java,0,Unsat,,0.879977362s,1.15234214s
+2026-04-20 22:13:28.64106632 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test646.java,0,Unsat,,0.231260536s,0.563766364s
+2026-04-20 22:13:34.759652722 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test75.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:13:37.470386419 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test589.java,0,Unsat,,0.043922353s,0.251870793s
+2026-04-20 22:13:43.284452484 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test697.java,0,Unsat,,0.047538642s,0.245245953s
+2026-04-20 22:13:49.216712767 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test317.java,0,Unsat,,0.025730767s,0.052458401s
+2026-04-20 22:13:54.886289662 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test592.java,0,Unsat,,0.124117938s,0.298619573s
+2026-04-20 22:14:00.777953074 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test434.java,0,Unsat,,0.085321995s,0.159128171s
+2026-04-20 22:14:06.606473466 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test645.java,0,Unsat,,0.022562082s,0.048618785s
+2026-04-20 22:14:12.064058841 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test532.java,0,Unsat,,0.021007017s,0.049278074s
+2026-04-20 22:14:17.515087046 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test462.java,0,Unsat,,0.024135879s,0.057917928s
+2026-04-20 22:14:23.009969901 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test821.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:14:25.798933806 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test320.java,0,Unsat,,0.054977986s,0.739793907s
+2026-04-20 22:14:32.300179713 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test979.java,0,Unsat,,0.05467148s,0.366937408s
+2026-04-20 22:14:38.665126512 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test848.java,0,Unsat,,0.143944601s,0.506874045s
+2026-04-20 22:14:44.81934047 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test658.java,0,Unsat,,0.024219972s,0.050368641s
+2026-04-20 22:14:50.346350422 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test935.java,0,Unsat,,1.240734365s,1.8357145s
+2026-04-20 22:14:57.923599048 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test798.java,0,Unsat,,0.029276224s,0.402401318s
+2026-04-20 22:15:03.991660373 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test373.java,0,Unsat,,0.023686974s,0.156353271s
+2026-04-20 22:15:09.928829842 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test99.java,0,Unsat,,0.058350854s,0.288470013s
+2026-04-20 22:15:15.816458087 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test433.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:15:18.499520045 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test301.java,0,Unsat,,1.220529941s,1.786141603s
+2026-04-20 22:15:26.027033329 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test122.java,0,Unsat,,0.481405301s,0.990551672s
+2026-04-20 22:15:32.578206822 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test123.java,0,Unsat,,5.868159945s,6.026866104s
+2026-04-20 22:15:44.122717411 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test826.java,0,Unsat,,0.029904709s,0.156562495s
+2026-04-20 22:15:50.025408728 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test302.java,0,Sat,"Right Satisfiable",0.026589356s,0.059241397s
+2026-04-20 22:15:55.524224496 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test546.java,0,Unsat,,0.180745045s,0.31922249s
+2026-04-20 22:16:01.443917292 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test23.java,0,Unsat,,0.025101492s,0.053830011s
+2026-04-20 22:16:06.873898085 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test407.java,0,Unknown,timeout,60.204050893s,60.699201492s
+2026-04-20 22:17:13.207601157 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test609.java,0,Unsat,,0.037368754s,0.504772544s
+2026-04-20 22:17:19.392905979 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test376.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = -6773113652107925400 :: Int64\n  parm12 =          -1082891138 :: Int32\n  parm13 =                    0 :: Int64\n  parm15 = -9223372036854775807 :: Int64\n  parm17 =                    0 :: Int64\n  parm19 =   432908601154621502 :: Int64\n  parm21 =  3127749953643000868 :: Int64\n  parm25 =             44435976 :: Int32\n  parm26 =            402305003 :: Int32\n  parm27 =           -356516120 :: Int32\n  parm28 =                    0 :: Int32\n  parm29 =                99877 :: Int32\n  parm30 =                    0 :: Int32\n  parm31 =                    0 :: Int32\n  parm32 =           1210056704 :: Int32",1.467954176s,2.341863856s
+2026-04-20 22:17:27.527587914 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test993.java,0,Unknown,timeout,60.934882126s,61.560957234s
+2026-04-20 22:18:34.837448283 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test912.java,0,Unsat,,0.054004435s,0.222225838s
+2026-04-20 22:18:40.68646231 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test260.java,0,Unsat,,0.022842055s,0.114630635s
+2026-04-20 22:18:46.583678451 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test181.java,0,Unsat,,0.032960512s,0.276748819s
+2026-04-20 22:18:52.584529066 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test977.java,0,Unsat,,0.219601836s,0.790750436s
+2026-04-20 22:18:59.022515618 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test657.java,0,Unsat,,0.141976192s,0.247357697s
+2026-04-20 22:19:04.803454324 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test976.java,0,Unsat,,0.025823457s,0.055665012s
+2026-04-20 22:19:10.481787518 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test59.java,0,Unsat,,0.023646633s,0.059115465s
+2026-04-20 22:19:16.144051467 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test768.java,0,Unsat,,0.043448414s,0.616504516s
+2026-04-20 22:19:22.432575994 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test436.java,0,Unsat,,2.48943091s,3.478540572s
+2026-04-20 22:19:31.711451675 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test732.java,0,Unsat,,0.025026931s,0.18491627s
+2026-04-20 22:19:37.566230868 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test30.java,0,Unknown,timeout,62.430236817s,63.369929344s
+2026-04-20 22:20:46.674317167 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test231.java,0,Unsat,,0.027190808s,0.061826346s
+2026-04-20 22:20:52.133512486 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test311.java,0,Unknown,timeout,65.128473757s,66.263772536s
+2026-04-20 22:22:04.220850224 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test137.java,0,Unsat,,0.049930418s,0.116893328s
+2026-04-20 22:22:09.769756145 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test815.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:22:12.518815951 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test228.java,0,Unsat,,0.028033537s,0.061133057s
+2026-04-20 22:22:18.001961029 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test583.java,0,Unsat,,0.257302056s,0.559363673s
+2026-04-20 22:22:24.088545335 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test712.java,0,Unsat,,0.169430713s,0.466034914s
+2026-04-20 22:22:30.142950617 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test891.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:22:32.947502186 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test486.java,0,Unsat,,0.248892341s,0.455608029s
+2026-04-20 22:22:38.920803632 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test379.java,0,Unsat,,0.047943048s,0.301313927s
+2026-04-20 22:22:44.827612941 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test887.java,0,Unsat,,5.214903196s,5.327169189s
+2026-04-20 22:22:55.671982599 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test10.java,0,Unsat,,0.026382952s,0.054101125s
+2026-04-20 22:23:01.193651271 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test411.java,0,Unknown,timeout,60.304026643s,60.730425684s
+2026-04-20 22:24:07.567268484 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test477.java,0,Unsat,,0.055585767s,1.470998582s
+2026-04-20 22:24:14.923198808 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test236.java,0,Unsat,,0.023309249s,0.047755468s
+2026-04-20 22:24:20.437990634 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test749.java,0,Unsat,,0.53108758s,1.378680244s
+2026-04-20 22:24:27.674874428 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test820.java,0,Unknown,timeout,60.280004557s,60.926584145s
+2026-04-20 22:25:34.288547741 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test43.java,0,Unsat,,0.026499889s,0.052367483s
+2026-04-20 22:25:39.754356333 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test560.java,0,Unsat,,0.022579142s,0.045564118s
+2026-04-20 22:25:45.413591749 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test213.java,0,Unsat,,0.492721039s,0.802464011s
+2026-04-20 22:25:51.862625006 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test731.java,0,Unsat,,0.023437815s,0.098696237s
+2026-04-20 22:25:57.617864483 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test146.java,0,Unsat,,0.023469286s,0.129530174s
+2026-04-20 22:26:03.48699351 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test766.java,0,Unsat,,0.023981179s,0.046770958s
+2026-04-20 22:26:09.128983714 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test287.java,0,Unsat,,0.031011636s,0.08413386s
+2026-04-20 22:26:14.613502215 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test214.java,0,Unsat,,0.050653048s,0.566158284s
+2026-04-20 22:26:20.882329707 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test215.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:26:23.616837534 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test386.java,0,Unsat,,0.033244594s,0.290354691s
+2026-04-20 22:26:29.675464945 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test806.java,0,Unsat,,0.029985184s,0.244983865s
+2026-04-20 22:26:35.617713535 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test406.java,0,Unsat,,0.089319056s,0.268718394s
+2026-04-20 22:26:41.483354767 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test829.java,0,Unsat,,0.232502577s,0.437878533s
+2026-04-20 22:26:47.555280223 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test201.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:26:50.226749089 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test154.java,0,Unsat,,0.023017549s,0.10251592s
+2026-04-20 22:26:55.876886973 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test107.java,0,Unsat,,0.054587934s,1.047365026s
+2026-04-20 22:27:02.592259103 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test9.java,0,Unsat,,0.053748254s,0.343840007s
+2026-04-20 22:27:08.727862349 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test77.java,0,Unsat,,0.497928501s,0.841662715s
+2026-04-20 22:27:15.257516821 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test598.java,0,Unsat,,0.400923343s,0.800118696s
+2026-04-20 22:27:21.595971212 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test642.java,0,Unsat,,0.030984922s,0.192963159s
+2026-04-20 22:27:27.410545989 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test631.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:27:30.143337317 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test970.java,0,Unsat,,2.271754723s,3.211874316s
+2026-04-20 22:27:39.184381681 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test269.java,0,Unsat,,0.065967356s,0.194873258s
+2026-04-20 22:27:44.873786958 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test329.java,0,Unsat,,0.024190212s,0.126377638s
+2026-04-20 22:27:50.57859814 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test693.java,0,Unsat,,0.030424914s,0.354541908s
+2026-04-20 22:27:56.823657575 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test93.java,0,Unsat,,0.255732019s,0.503440125s
+2026-04-20 22:28:02.936756636 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test938.java,0,BuilderError,"buildNode: Unsupported node  (273, URShiftL)",0s,0s
+2026-04-20 22:28:08.823571071 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test134.java,0,Unsat,,0.024068256s,0.049175728s
+2026-04-20 22:28:14.333499553 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test621.java,0,Unknown,timeout,60.893610891s,62.533637388s
+2026-04-20 22:29:22.696731375 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test145.java,0,Unsat,,0.048625441s,0.625893204s
+2026-04-20 22:29:29.368974767 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test458.java,0,Unknown,timeout,60.301555852s,60.771822837s
+2026-04-20 22:30:36.07703898 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test176.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:30:38.793606316 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test807.java,0,Unsat,,0.144652486s,0.300552153s
+2026-04-20 22:30:44.652410629 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test455.java,0,Unsat,,0.035895223s,0.293577436s
+2026-04-20 22:30:50.613737018 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test479.java,0,Unsat,,0.032552407s,0.170828042s
+2026-04-20 22:30:56.600029325 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test204.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 8 :: Int32\n  parm16 = 0 :: Int64\n  parm18 = 0 :: Int32",0.059018162s,0.138012473s
+2026-04-20 22:31:02.143547351 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test764.java,0,Unsat,,0.025894587s,0.050435179s
+2026-04-20 22:31:07.531454016 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test291.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:31:10.284465807 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test823.java,0,Unsat,,0.172514374s,0.593065391s
+2026-04-20 22:31:16.657340169 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test748.java,0,Unknown,timeout,60.096437863s,60.587186859s
+2026-04-20 22:32:23.003409382 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test71.java,0,Unsat,,0.025490134s,0.057145427s
+2026-04-20 22:32:28.56225474 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test986.java,0,Unknown,timeout,64.703371046s,65.004817382s
+2026-04-20 22:33:39.14045445 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test279.java,0,Unsat,,0.866827438s,1.180552605s
+2026-04-20 22:33:46.019605072 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test648.java,0,Unsat,,0.025730363s,0.061272328s
+2026-04-20 22:33:51.540460392 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test157.java,0,Unsat,,0.20763056s,0.646843757s
+2026-04-20 22:33:57.727632786 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test331.java,0,Unsat,,0.025165805s,0.192956221s
+2026-04-20 22:34:03.674407552 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test268.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:34:06.391113536 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test259.java,0,Unsat,,0.022136531s,0.126998301s
+2026-04-20 22:34:12.129978944 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test159.java,0,Unsat,,0.110346285s,0.192763567s
+2026-04-20 22:34:17.727714882 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test641.java,0,Unsat,,0.023573945s,0.113495368s
+2026-04-20 22:34:23.450726063 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test561.java,0,Unsat,,0.132858081s,0.365833335s
+2026-04-20 22:34:29.490156442 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test901.java,0,Unsat,,0.024253944s,0.058866265s
+2026-04-20 22:34:35.04738401 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test166.java,0,Unsat,,0.032747204s,0.568355182s
+2026-04-20 22:34:41.288597379 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test470.java,0,Unsat,,1.532744283s,2.197104893s
+2026-04-20 22:34:49.220362525 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test164.java,0,Unsat,,0.030691625s,0.300158896s
+2026-04-20 22:34:55.254493651 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test541.java,0,Unsat,,19.762654886s,20.039192123s
+2026-04-20 22:35:20.961724362 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test542.java,0,Unsat,,0.042359s,0.097331732s
+2026-04-20 22:35:26.508848167 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test687.java,0,Unsat,,0.026666604s,0.122647027s
+2026-04-20 22:35:32.214226949 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test784.java,0,Unsat,,0.162438525s,0.319609046s
+2026-04-20 22:35:38.184431874 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test514.java,0,Unsat,,0.075254431s,0.234009869s
+2026-04-20 22:35:43.900800321 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test716.java,0,Unsat,,0.263269098s,0.568669023s
+2026-04-20 22:35:50.102737213 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test133.java,0,Unsat,,0.033799366s,0.675779033s
+2026-04-20 22:35:56.573390758 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test96.java,0,Unsat,,0.552312683s,1.231825832s
+2026-04-20 22:36:03.576870929 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test26.java,0,Unknown,timeout,60.492321894s,61.46296987s
+2026-04-20 22:37:10.861066353 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test673.java,0,Unsat,,0.029299075s,0.34196119s
+2026-04-20 22:37:17.186752655 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test397.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:37:19.910027498 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test553.java,0,Unsat,,0.024750071s,0.074017333s
+2026-04-20 22:37:25.383600091 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test349.java,0,Unsat,,0.067836058s,0.517620655s
+2026-04-20 22:37:31.613539127 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test834.java,0,Unsat,,0.027395762s,0.197254924s
+2026-04-20 22:37:37.605387537 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test474.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:37:40.302090253 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test522.java,0,Unsat,,0.023500191s,0.048582253s
+2026-04-20 22:37:45.700702879 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test513.java,0,Unsat,,0.06485026s,0.348478753s
+2026-04-20 22:37:51.658664611 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test281.java,0,Unsat,,0.025980406s,0.057440325s
+2026-04-20 22:37:57.167306545 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test924.java,0,Unsat,,0.057953633s,0.653588415s
+2026-04-20 22:38:03.636051384 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test608.java,0,Unsat,,0.073417054s,0.552958347s
+2026-04-20 22:38:09.875501472 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test364.java,0,Unsat,,0.02402626s,0.145147683s
+2026-04-20 22:38:15.707477609 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test79.java,0,Unsat,,0.150643525s,0.616014183s
+2026-04-20 22:38:22.077160432 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test184.java,0,Unsat,,0.026010239s,0.054546492s
+2026-04-20 22:38:27.818506019 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test216.java,0,Unsat,,0.890648857s,1.219430326s
+2026-04-20 22:38:35.01243633 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test316.java,0,Unsat,,0.079336917s,0.319415588s
+2026-04-20 22:38:40.896778081 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test319.java,0,Unsat,,0.034974448s,0.267573692s
+2026-04-20 22:38:47.040146421 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test293.java,0,Unsat,,0.023037833s,0.047868406s
+2026-04-20 22:38:52.599939846 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test762.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:38:55.312089216 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test416.java,0,Unsat,,0.034248253s,0.538958252s
+2026-04-20 22:39:01.551867536 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test48.java,0,Unknown,timeout,60.30998631s,61.769183061s
+2026-04-20 22:40:09.15108705 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test350.java,0,Unsat,,0.135181799s,0.585051801s
+2026-04-20 22:40:15.292456145 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test899.java,0,Unsat,,0.027639312s,0.254741124s
+2026-04-20 22:40:21.525503585 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test31.java,0,Unsat,,0.024844469s,0.055230826s
+2026-04-20 22:40:27.058248746 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test263.java,0,Unsat,,18.264181174s,19.468271172s
+2026-04-20 22:40:52.466147614 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test594.java,0,Unsat,,0.041961318s,0.484420039s
+2026-04-20 22:40:58.626775905 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test926.java,0,Unsat,,0.058798199s,0.138952867s
+2026-04-20 22:41:04.254947994 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test870.java,0,Unsat,,0.110701096s,0.262486234s
+2026-04-20 22:41:10.093782554 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test707.java,0,Unsat,,0.023075888s,0.057607291s
+2026-04-20 22:41:15.579863335 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test549.java,0,Unsat,,0.03567138s,0.193648313s
+2026-04-20 22:41:21.466599294 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test626.java,0,Unsat,,0.023815997s,0.049130921s
+2026-04-20 22:41:26.946898734 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test858.java,0,Unsat,,0.021239167s,0.094814017s
+2026-04-20 22:41:32.694667475 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test355.java,0,Unsat,,0.02577583s,0.051632s
+2026-04-20 22:41:38.165653052 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test859.java,0,Unsat,,0.746021334s,1.058817072s
+2026-04-20 22:41:44.820102857 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test737.java,0,Unsat,,0.024614338s,0.266455046s
+2026-04-20 22:41:50.749361922 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test563.java,0,Unsat,,0.027879667s,0.198436552s
+2026-04-20 22:41:56.605879134 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test52.java,0,Unsat,,0.033563783s,0.371960519s
+2026-04-20 22:42:02.723361775 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test640.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:42:05.47984004 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test313.java,0,Unsat,,0.0770143s,0.199988342s
+2026-04-20 22:42:11.113995994 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test915.java,0,Unsat,,0.081244365s,0.442455817s
+2026-04-20 22:42:17.204976748 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test501.java,0,Unsat,,0.06031683s,0.141019682s
+2026-04-20 22:42:23.131902537 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test369.java,0,Unsat,,0.026707756s,0.05250731s
+2026-04-20 22:42:28.8106237 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test559.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:42:31.55318237 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test729.java,0,Unsat,,0.023496488s,0.049789132s
+2026-04-20 22:42:37.001323204 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test810.java,0,Unsat,,0.093208911s,0.258417933s
+2026-04-20 22:42:42.787208309 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test74.java,0,Unsat,,0.226844842s,0.49907796s
+2026-04-20 22:42:49.043662747 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test102.java,0,Unsat,,0.027797816s,0.145847501s
+2026-04-20 22:42:55.01844797 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test429.java,0,Unsat,,0.135905276s,0.311378504s
+2026-04-20 22:43:00.816511135 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test12.java,0,Unsat,,0.026857624s,0.065437646s
+2026-04-20 22:43:06.375439328 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test636.java,0,Unsat,,0.110244737s,0.660881416s
+2026-04-20 22:43:12.722809167 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test515.java,0,Unsat,,0.137926468s,0.275662065s
+2026-04-20 22:43:18.576325171 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test362.java,0,Unsat,,0.056408629s,0.532545997s
+2026-04-20 22:43:24.887548613 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test779.java,0,Unsat,,0.468528946s,1.203922236s
+2026-04-20 22:43:31.787298307 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test569.java,0,Unsat,,0.022102271s,0.184746315s
+2026-04-20 22:43:37.858396636 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test751.java,0,Unsat,,0.03656399s,0.156045736s
+2026-04-20 22:43:43.777428075 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test509.java,0,Unsat,,0.022503783s,0.144207166s
+2026-04-20 22:43:49.733295106 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test168.java,0,Unsat,,0.026075009s,0.073696384s
+2026-04-20 22:43:55.271295686 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test663.java,0,Unsat,,2.226460963s,2.537561014s
+2026-04-20 22:44:03.475766743 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test393.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:44:06.210658917 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test344.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =  0 :: Int64\n  parm12 =  0 :: Int32\n  parm13 =  0 :: Int32\n  parm14 =  0 :: Int32\n  parm15 = 32 :: Int64\n  parm17 =  0 :: Int64\n  parm21 =  0 :: Int64\n  parm28 =  0 :: Int64",0.146998328s,0.255710023s
+2026-04-20 22:44:11.965164818 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test158.java,0,Unsat,,0.126752017s,0.281460388s
+2026-04-20 22:44:17.738791801 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test963.java,0,Unsat,,0.045968331s,0.213285419s
+2026-04-20 22:44:23.563134018 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test884.java,0,Unknown,timeout,66.351189606s,66.414308386s
+2026-04-20 22:45:35.611273369 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test965.java,0,Unknown,timeout,60.310660074s,61.052349687s
+2026-04-20 22:46:42.434065524 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test632.java,0,Unsat,,0.026945111s,0.05788414s
+2026-04-20 22:46:47.912698093 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test669.java,0,Unsat,,2.608347203s,3.655467134s
+2026-04-20 22:46:57.25784423 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test518.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 32768 :: Int64\n  parm13 =     0 :: Int32\n  parm14 =     0 :: Int64",0.101673057s,0.196157513s
+2026-04-20 22:47:02.872210067 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test893.java,0,Unsat,,0.575778854s,0.741915287s
+2026-04-20 22:47:09.23705143 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test504.java,0,Unknown,timeout,63.046135197s,64.121397265s
+2026-04-20 22:48:19.072696562 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test695.java,0,Unsat,,1.055626333s,2.107725331s
+2026-04-20 22:48:27.097122477 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test863.java,0,Unsat,,0.13367848s,0.251850806s
+2026-04-20 22:48:32.887323934 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test753.java,0,Unsat,,0.024419655s,0.050608815s
+2026-04-20 22:48:38.525635301 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test348.java,0,Unsat,,0.057741228s,0.790547047s
+2026-04-20 22:48:45.362263718 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test207.java,0,Unsat,,0.066979033s,1.111438105s
+2026-04-20 22:48:52.257554872 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test555.java,0,Unsat,,0.368258788s,0.78536781s
+2026-04-20 22:48:58.686251815 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test351.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:49:01.410830262 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test280.java,0,Unsat,,0.023819385s,0.092118473s
+2026-04-20 22:49:07.060380581 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test16.java,0,Unsat,,0.026978486s,0.295220386s
+2026-04-20 22:49:12.940378265 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test911.java,0,Unsat,,0.057581594s,0.497678832s
+2026-04-20 22:49:19.230936269 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test639.java,0,Unsat,,0.038573489s,0.161197574s
+2026-04-20 22:49:25.059594124 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test900.java,0,Unsat,,0.226071195s,0.556358063s
+2026-04-20 22:49:31.131447732 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test171.java,0,Unsat,,0.028318228s,0.252317045s
+2026-04-20 22:49:37.13328039 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test360.java,0,Unsat,,30.639062643s,31.122087339s
+2026-04-20 22:50:13.84659812 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test714.java,0,Unsat,,3.520953549s,4.096686549s
+2026-04-20 22:50:23.693580268 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test516.java,0,Unsat,,0.695808802s,1.733333599s
+2026-04-20 22:50:31.236181512 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test183.java,0,Unsat,,0.0262813s,0.060268229s
+2026-04-20 22:50:36.911795219 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test367.java,0,Unsat,,0.036758648s,1.259819375s
+2026-04-20 22:50:43.998172815 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test112.java,0,Unsat,,0.036859415s,0.090179811s
+2026-04-20 22:50:49.657290783 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test499.java,0,Unsat,,0.02204346s,0.099795824s
+2026-04-20 22:50:55.382046499 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test999.java,0,Unsat,,0.023682287s,0.154028251s
+2026-04-20 22:51:01.305804457 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test972.java,0,Unsat,,0.025064174s,0.056377568s
+2026-04-20 22:51:06.846600456 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test525.java,0,Unsat,,0.229762197s,0.43773438s
+2026-04-20 22:51:12.844792282 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test38.java,0,Unsat,,0.022379085s,0.09598412s
+2026-04-20 22:51:18.55932102 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test854.java,0,Unsat,,0.047485433s,0.746032068s
+2026-04-20 22:51:25.0997579 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test11.java,0,Unsat,,0.164713574s,0.486437378s
+2026-04-20 22:51:31.213740883 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test399.java,0,Unknown,timeout,60.479640459s,61.043637094s
+2026-04-20 22:52:37.780282456 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test90.java,0,Unsat,,0.023438064s,0.055221537s
+2026-04-20 22:52:43.322330102 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test904.java,0,Unsat,,0.06613947s,0.191589673s
+2026-04-20 22:52:49.044887062 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test730.java,0,Unsat,,0.023442063s,0.05084973s
+2026-04-20 22:52:54.572911221 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test65.java,0,Unsat,,0.051033186s,1.411717406s
+2026-04-20 22:53:01.897675597 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test330.java,0,Unsat,,4.191697746s,4.852245387s
+2026-04-20 22:53:12.577419266 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test775.java,0,Unsat,,0.392281201s,0.982976525s
+2026-04-20 22:53:19.294795128 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test601.java,0,Unknown,timeout,60.830483824s,61.450518314s
+2026-04-20 22:54:26.475485206 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test475.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:54:29.192486056 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test699.java,0,Unsat,,0.176830929s,0.362830621s
+2026-04-20 22:54:35.017783644 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test838.java,0,Unsat,,7.255537449s,7.752400141s
+2026-04-20 22:54:48.423318132 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test7.java,0,Unsat,,0.075343498s,0.271360406s
+2026-04-20 22:54:54.237611775 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test227.java,0,Unsat,,43.253260173s,44.13419019s
+2026-04-20 22:55:44.043639855 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test138.java,0,Unsat,,1.608829479s,2.07985835s
+2026-04-20 22:55:51.819019947 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test467.java,0,Unsat,,11.794173432s,12.701577224s
+2026-04-20 22:56:10.286047054 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test788.java,0,Unsat,,0.074078784s,0.183740321s
+2026-04-20 22:56:16.032939908 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test127.java,0,Unsat,,0.054143737s,0.103235822s
+2026-04-20 22:56:21.636445231 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test84.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:56:24.39152015 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test8.java,0,Unknown,timeout,60.509375204s,62.128501361s
+2026-04-20 22:57:32.476308712 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test314.java,0,Unsat,,32.75940852s,32.977242453s
+2026-04-20 22:58:11.019155504 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test524.java,0,Unsat,,0.176899947s,0.409116175s
+2026-04-20 22:58:16.991645879 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test481.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:58:19.702684416 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test290.java,0,Unsat,,0.030730006s,0.215791127s
+2026-04-20 22:58:25.622494279 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test116.java,0,Unsat,,0.249414017s,0.484963034s
+2026-04-20 22:58:31.635318689 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test254.java,0,Unsat,,0.025883518s,0.187506873s
+2026-04-20 22:58:37.558111647 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test984.java,0,Unsat,,0.049441374s,0.115248067s
+2026-04-20 22:58:43.136561568 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test953.java,0,Unsat,,0.127581922s,0.299603246s
+2026-04-20 22:58:48.916835344 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test550.java,0,Unsat,,0.041173634s,0.187605725s
+2026-04-20 22:58:54.758431597 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test274.java,0,Unsat,,0.144644771s,0.616191556s
+2026-04-20 22:59:00.961031536 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test414.java,0,Unsat,,0.05824228s,0.153411724s
+2026-04-20 22:59:06.588402274 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test678.java,0,Unsat,,0.112515123s,0.177793122s
+2026-04-20 22:59:12.239016995 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test189.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 22:59:15.113427979 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test638.java,0,Unsat,,0.023994949s,0.150372734s
+2026-04-20 22:59:20.896249962 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test162.java,0,Unsat,,1.784744591s,2.472855894s
+2026-04-20 22:59:29.066802485 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test534.java,0,Unsat,,0.029969296s,0.329264837s
+2026-04-20 22:59:35.147015964 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test819.java,0,Unsat,,0.114312741s,0.233315935s
+2026-04-20 22:59:40.968478199 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test702.java,0,Unsat,,0.21234432s,1.782142171s
+2026-04-20 22:59:48.575385207 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test37.java,0,Unsat,,0.03823944s,0.148656565s
+2026-04-20 22:59:54.341022502 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test713.java,0,Unsat,,0.05201277s,0.359072539s
+2026-04-20 23:00:00.529854096 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test576.java,0,Unsat,,0.035774085s,0.198638767s
+2026-04-20 23:00:06.352595648 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test492.java,0,Unsat,,0.070656948s,0.141998173s
+2026-04-20 23:00:12.03890169 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test878.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:00:14.846929631 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test485.java,0,Unsat,,0.967621489s,1.31830451s
+2026-04-20 23:00:21.884930741 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test384.java,0,BuilderError,"buildNode: Unsupported node  (285, URShiftL)",0s,0s
+2026-04-20 23:00:27.673272174 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test914.java,0,Unsat,,0.040374518s,0.125641181s
+2026-04-20 23:00:33.251670613 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test334.java,0,Unsat,,0.028963675s,0.069650944s
+2026-04-20 23:00:38.77590769 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test108.java,0,Unsat,,1.701919579s,2.893738276s
+2026-04-20 23:00:47.780033379 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test299.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:00:50.470427163 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test980.java,0,Unsat,,0.025509767s,0.220615091s
+2026-04-20 23:00:56.502651309 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test845.java,0,Unsat,,0.027451984s,0.055809241s
+2026-04-20 23:01:02.02255357 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test179.java,0,Unsat,,5.835660106s,6.735447372s
+2026-04-20 23:01:14.397252158 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test877.java,0,Unsat,,0.184324554s,0.323266804s
+2026-04-20 23:01:20.189167243 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test1000.java,0,Unsat,,0.041976606s,0.470164606s
+2026-04-20 23:01:26.513644587 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test824.java,0,Unsat,,0.023994283s,0.048664154s
+2026-04-20 23:01:32.106506357 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test934.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:01:34.838587298 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test296.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:01:37.505995629 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test401.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 1 :: Int64\n  parm12 = 0 :: Int32\n  parm13 = 0 :: Int64\n  parm15 = 0 :: Int64\n  parm19 = 0 :: Int64\n  parm21 = 0 :: Int64\n  parm23 = 0 :: Int32\n  parm25 = 0 :: Int32",0.215138616s,0.318133442s
+2026-04-20 23:01:43.462078124 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test404.java,0,Unsat,,0.045708034s,0.47973759s
+2026-04-20 23:01:49.595458439 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test752.java,0,Unsat,,0.022057859s,0.094649824s
+2026-04-20 23:01:55.48069486 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test567.java,0,Unsat,,0.03333312s,0.431555979s
+2026-04-20 23:02:01.611005199 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test449.java,0,Unsat,,0.033003687s,0.092192781s
+2026-04-20 23:02:07.213495584 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test61.java,0,Unsat,,4.182391039s,5.408044077s
+2026-04-20 23:02:18.513696001 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test480.java,0,Unsat,,0.042430105s,0.165307598s
+2026-04-20 23:02:24.309714206 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test849.java,0,Unsat,,12.083799221s,12.862937548s
+2026-04-20 23:02:43.253266725 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test104.java,0,Unsat,,0.039147081s,0.679144142s
+2026-04-20 23:02:49.586978886 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test22.java,0,Unsat,,0.118045068s,0.211732791s
+2026-04-20 23:02:55.35993101 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test851.java,0,Unsat,,0.028968054s,0.089793298s
+2026-04-20 23:03:01.085121249 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test100.java,0,Unsat,,0.177731517s,0.336773141s
+2026-04-20 23:03:07.021309749 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test945.java,0,Unsat,,0.032825984s,0.393007603s
+2026-04-20 23:03:13.222340523 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test167.java,0,Unsat,,0.024683488s,0.050478103s
+2026-04-20 23:03:18.74764864 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test222.java,0,Unknown,timeout,60.421021258s,61.064423256s
+2026-04-20 23:04:25.479671639 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test226.java,0,Unsat,,0.064286384s,0.164128378s
+2026-04-20 23:04:31.072938035 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test69.java,0,Unsat,,0.065952293s,0.589033059s
+2026-04-20 23:04:37.410918487 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test241.java,0,Unsat,,0.364322144s,0.727647934s
+2026-04-20 23:04:43.750857995 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test874.java,0,Unsat,,0.392692175s,0.842834637s
+2026-04-20 23:04:50.196810281 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test944.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:04:52.892185042 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test722.java,0,Unsat,,0.03497162s,0.386646017s
+2026-04-20 23:04:58.98036166 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test894.java,0,Unsat,,0.034270055s,0.428549183s
+2026-04-20 23:05:05.388263419 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test614.java,0,Unsat,,0.058092739s,0.579044772s
+2026-04-20 23:05:11.649440571 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test833.java,0,Unsat,,0.025547171s,0.053150097s
+2026-04-20 23:05:17.231529393 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test827.java,0,Unsat,,0.023138416s,0.099577894s
+2026-04-20 23:05:22.965672116 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test119.java,0,Unsat,,0.025005506s,0.050545861s
+2026-04-20 23:05:28.408823484 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test777.java,0,Unsat,,0.044356126s,0.136742975s
+2026-04-20 23:05:34.030460535 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test333.java,0,Unsat,,0.371977402s,0.579464985s
+2026-04-20 23:05:40.107771752 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test262.java,0,Unsat,,0.025287181s,0.119865826s
+2026-04-20 23:05:45.799699542 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test857.java,0,Unsat,,1.152289197s,1.430913093s
+2026-04-20 23:05:52.988139741 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test830.java,0,Unsat,,0.075206781s,0.218687155s
+2026-04-20 23:05:58.797901796 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test994.java,0,Unsat,,0.062859298s,0.195324987s
+2026-04-20 23:06:04.493310647 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test793.java,0,Unsat,,1.330145684s,2.69995073s
+2026-04-20 23:06:12.958646146 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test922.java,0,Unsat,,0.084920869s,0.338600589s
+2026-04-20 23:06:18.907122862 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test217.java,0,Unsat,,0.143716129s,0.301660799s
+2026-04-20 23:06:24.769148994 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test508.java,0,Unsat,,0.054492112s,0.328803978s
+2026-04-20 23:06:30.709142201 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test488.java,0,Unsat,,0.352719042s,0.772343396s
+2026-04-20 23:06:37.20383616 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test363.java,0,Unsat,,0.02650107s,0.064457717s
+2026-04-20 23:06:42.860583234 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test521.java,0,Unsat,,0.02986801s,0.208431383s
+2026-04-20 23:06:48.801513342 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test754.java,0,Unsat,,2.60849087s,3.232481358s
+2026-04-20 23:06:57.78417296 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test909.java,0,Unsat,,0.024659147s,0.048023025s
+2026-04-20 23:07:03.264805187 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test940.java,0,Unsat,,0.145778516s,0.289005215s
+2026-04-20 23:07:09.069586469 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test954.java,0,Unsat,,0.023638717s,0.055233278s
+2026-04-20 23:07:14.567200736 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test618.java,0,Unsat,,0.026561869s,0.243073159s
+2026-04-20 23:07:20.582586611 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test506.java,0,Unsat,,0.142250262s,0.510660647s
+2026-04-20 23:07:26.802701469 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test402.java,0,Unsat,,0.026272655s,0.061819215s
+2026-04-20 23:07:32.375502609 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test649.java,0,Unsat,,0.275485303s,0.536821297s
+2026-04-20 23:07:38.487632565 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test193.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:07:41.224897767 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test445.java,0,Unsat,,0.024308784s,0.133527127s
+2026-04-20 23:07:47.043254813 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test237.java,0,Unsat,,0.025143965s,0.161719779s
+2026-04-20 23:07:53.132479298 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test796.java,0,Unsat,,0.023450169s,0.047864161s
+2026-04-20 23:07:58.66607857 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test40.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 0 :: Int32",0.025449765s,0.064193142s
+2026-04-20 23:08:04.197966033 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test622.java,0,Unsat,,0.043431662s,0.581520226s
+2026-04-20 23:08:10.553190454 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test543.java,0,Unsat,,0.029669874s,0.091810457s
+2026-04-20 23:08:16.205699548 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test616.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:08:18.979749134 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test371.java,0,Unsat,,0.024234357s,0.146781957s
+2026-04-20 23:08:24.720589756 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test717.java,0,Unsat,,4.921320953s,5.716696133s
+2026-04-20 23:08:36.258794279 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test73.java,0,BuilderError,"buildNode: Unsupported node  (367, URShiftI)",0s,0s
+2026-04-20 23:08:43.26693694 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test756.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:08:46.103539439 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test670.java,0,Unsat,,0.162292738s,0.56888676s
+2026-04-20 23:08:52.271701675 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test289.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:08:54.970797975 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test400.java,0,Unsat,,0.02218092s,0.141868168s
+2026-04-20 23:09:00.757207028 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test606.java,0,Unsat,,0.11293943s,0.363540846s
+2026-04-20 23:09:06.718127186 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test147.java,0,Unsat,,0.028639394s,0.078746489s
+2026-04-20 23:09:12.232644943 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test871.java,0,Unsat,,0.216632464s,0.460638555s
+2026-04-20 23:09:18.536569644 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test825.java,0,Unsat,,0.080379165s,0.226463177s
+2026-04-20 23:09:24.231567624 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test897.java,0,Unsat,,0.424406152s,0.588690955s
+2026-04-20 23:09:30.350692058 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test496.java,0,Unsat,,0.246678741s,0.599069242s
+2026-04-20 23:09:36.503552326 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test531.java,0,Unsat,,0.023577805s,0.136273966s
+2026-04-20 23:09:42.289276068 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test908.java,0,Unsat,,0.026707697s,0.056085259s
+2026-04-20 23:09:47.954173419 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test497.java,0,Unknown,timeout,60.115864356s,61.048064284s
+2026-04-20 23:10:54.751439343 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test372.java,0,BuilderError,"buildNode: Unsupported node  (406, URShiftL)",0s,0s
+2026-04-20 23:11:01.512808597 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test111.java,0,Unsat,,0.085689077s,0.167400938s
+2026-04-20 23:11:07.317989095 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test476.java,0,Unsat,,0.089739425s,0.37150963s
+2026-04-20 23:11:13.322861354 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test668.java,0,Unsat,,0.024597185s,0.056747791s
+2026-04-20 23:11:18.889836162 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test366.java,0,Unsat,,0.042444522s,0.182214495s
+2026-04-20 23:11:24.69065836 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test530.java,0,Unknown,timeout,60.623105404s,62.021966074s
+2026-04-20 23:12:32.518948626 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test957.java,0,Unsat,,0.150183663s,0.237637641s
+2026-04-20 23:12:38.251220408 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test463.java,0,Unsat,,0.023502679s,0.049191419s
+2026-04-20 23:12:43.77893202 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test142.java,0,Unsat,,0.768349176s,1.192647857s
+2026-04-20 23:12:50.717546133 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test842.java,0,Unsat,,0.185959562s,0.328248553s
+2026-04-20 23:12:56.640326606 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test932.java,0,Unsat,,0.035076353s,0.622052313s
+2026-04-20 23:13:03.017731777 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test459.java,0,Unsat,,0.054848299s,0.126693655s
+2026-04-20 23:13:08.686015855 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test130.java,0,Unknown,timeout,60.672934545s,62.185285971s
+2026-04-20 23:14:16.775837105 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test828.java,0,Unsat,,0.070801041s,0.215499493s
+2026-04-20 23:14:22.52005329 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test835.java,0,Unsat,,0.036543164s,0.082210861s
+2026-04-20 23:14:28.235153165 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test338.java,0,Unsat,,0.103098308s,0.238598933s
+2026-04-20 23:14:34.028009211 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test866.java,0,Unsat,,0.042652034s,0.906748019s
+2026-04-20 23:14:40.773625241 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test153.java,0,Unsat,,0.359000771s,0.960223921s
+2026-04-20 23:14:47.535392696 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test701.java,0,Unsat,,0.125700202s,1.261995516s
+2026-04-20 23:14:54.597639278 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test88.java,0,Unsat,,0.021507039s,0.117034194s
+2026-04-20 23:15:00.445852058 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test615.java,0,Unsat,,0.179563473s,0.342281606s
+2026-04-20 23:15:06.358547915 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test933.java,0,Unsat,,0.025084342s,0.055508862s
+2026-04-20 23:15:11.905533262 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test55.java,0,Unsat,,0.19828711s,0.441371334s
+2026-04-20 23:15:17.843683035 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test489.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =      -620689932288 :: Int64\n  parm12 =        -2147483648 :: Int32\n  parm13 =                  2 :: Int32\n  parm14 =                  0 :: Int32\n  parm15 =               -348 :: Int32\n  parm18 = 211386301405069312 :: Int64\n  parm22 =                  0 :: Int32\n  parm23 =                  0 :: Int32\n  parm24 =                  0 :: Int64",20.409583361s,20.558438142s
+2026-04-20 23:15:43.864242493 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test981.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:15:46.615338025 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test151.java,0,Unsat,,0.114801315s,0.331349505s
+2026-04-20 23:15:52.356533845 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test150.java,0,Unsat,,0.773278749s,1.200793574s
+2026-04-20 23:15:59.306039604 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test178.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:16:01.982425813 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test653.java,0,Unsat,,0.031421436s,0.340442818s
+2026-04-20 23:16:07.976317988 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test205.java,0,Unsat,,0.032574419s,0.104895848s
+2026-04-20 23:16:13.650623697 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test177.java,0,Unsat,,0.022767134s,0.054087634s
+2026-04-20 23:16:19.1833415 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test973.java,0,Unsat,,0.226682833s,0.397449868s
+2026-04-20 23:16:25.102446248 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test955.java,0,Unsat,,0.026824797s,0.05826639s
+2026-04-20 23:16:30.616993688 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test309.java,0,Unsat,,0.145514076s,0.367713611s
+2026-04-20 23:16:36.553044555 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test533.java,0,Unsat,,0.031502048s,0.163304045s
+2026-04-20 23:16:42.482312478 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test512.java,0,Unsat,,0.022879532s,0.121517886s
+2026-04-20 23:16:48.337062459 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test396.java,0,Unknown,timeout,62.516562842s,62.979450263s
+2026-04-20 23:17:56.86871175 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test68.java,0,Unsat,,0.171583456s,0.831641742s
+2026-04-20 23:18:03.500150105 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test677.java,0,Unsat,,0.0227915s,0.048605031s
+2026-04-20 23:18:08.979936116 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test774.java,0,Unsat,,0.243509926s,0.713243963s
+2026-04-20 23:18:15.546670879 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test185.java,0,Unsat,,0.034520018s,0.259154179s
+2026-04-20 23:18:21.562282203 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test132.java,0,Unsat,,0.107036383s,0.203018352s
+2026-04-20 23:18:27.455231006 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test760.java,0,Unsat,,0.022289604s,0.096423622s
+2026-04-20 23:18:33.160862115 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test270.java,0,Unsat,,0.294053033s,0.501352175s
+2026-04-20 23:18:39.222929705 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test42.java,0,Unsat,,0.1325748s,0.294813202s
+2026-04-20 23:18:45.134762234 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test324.java,0,Unsat,,0.042277254s,0.154578228s
+2026-04-20 23:18:50.734656357 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test20.java,0,Unsat,,0.03372383s,0.098273342s
+2026-04-20 23:18:56.524184416 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test803.java,0,Unsat,,0.024670739s,0.055442707s
+2026-04-20 23:19:02.063886243 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test704.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:19:04.741408544 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test253.java,0,Unsat,,0.074160089s,0.191939947s
+2026-04-20 23:19:10.492017076 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test791.java,0,Unsat,,0.023455008s,0.127542008s
+2026-04-20 23:19:16.368128466 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test451.java,0,Unsat,,0.247848618s,0.516771263s
+2026-04-20 23:19:22.458756448 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test44.java,0,Unsat,,0.024605316s,0.055374382s
+2026-04-20 23:19:27.859069746 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test128.java,0,Unsat,,0.141555837s,0.33964528s
+2026-04-20 23:19:33.650307131 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test557.java,0,Unsat,,0.14812295s,0.586396191s
+2026-04-20 23:19:39.783551229 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test356.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:19:42.442560955 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test946.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:19:45.324518391 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test627.java,0,Unsat,,0.024169661s,0.052173193s
+2026-04-20 23:19:50.865570673 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test780.java,0,Unsat,,0.742220531s,1.269270737s
+2026-04-20 23:19:57.755330818 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test282.java,0,Unsat,,0.030273413s,0.103843825s
+2026-04-20 23:20:03.365802895 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test535.java,0,Unsat,,0.414496748s,0.783086051s
+2026-04-20 23:20:09.749240937 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test191.java,0,Unsat,,0.025172301s,0.054934473s
+2026-04-20 23:20:15.312550028 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test358.java,0,Unsat,,0.023298057s,0.160267421s
+2026-04-20 23:20:21.181354389 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test628.java,0,Unsat,,0.022430391s,0.048820621s
+2026-04-20 23:20:26.892262515 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test536.java,0,Unsat,,0.026619455s,0.06279119s
+2026-04-20 23:20:32.408498493 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test305.java,0,Unsat,,0.047955091s,0.112627583s
+2026-04-20 23:20:38.115009735 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test186.java,0,Unsat,,0.062690069s,0.584489609s
+2026-04-20 23:20:44.391278272 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test118.java,0,Unsat,,0.091952159s,0.217218502s
+2026-04-20 23:20:50.038094425 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test385.java,0,Unsat,,0.781058009s,1.177345663s
+2026-04-20 23:20:57.114315961 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test278.java,0,Unsat,,0.054944015s,0.500564788s
+2026-04-20 23:21:03.291319447 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test419.java,0,Unsat,,0.071852167s,1.080207816s
+2026-04-20 23:21:10.298873477 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test380.java,0,Unsat,,4.336556466s,5.000764459s
+2026-04-20 23:21:21.033913907 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test990.java,0,Unsat,,0.276274326s,0.704942417s
+2026-04-20 23:21:27.221720704 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test565.java,0,Unsat,,1.691736457s,2.162089919s
+2026-04-20 23:21:35.059463233 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test505.java,0,Unsat,,0.029972604s,0.325021832s
+2026-04-20 23:21:41.169521469 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test574.java,0,Unsat,,0.613836485s,1.502624708s
+2026-04-20 23:21:48.365748046 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test604.java,0,Unsat,,1.496886129s,2.103506403s
+2026-04-20 23:21:56.044444882 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test708.java,0,Unsat,,0.022650472s,0.045202465s
+2026-04-20 23:22:01.695444639 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test267.java,0,Unsat,,1.528260641s,1.577537331s
+2026-04-20 23:22:08.744698499 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test173.java,0,Unsat,,0.036046179s,0.099815084s
+2026-04-20 23:22:14.34795242 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test252.java,0,Unsat,,34.429728174s,34.611111167s
+2026-04-20 23:22:54.547409978 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test195.java,0,Unsat,,0.062386968s,0.38187004s
+2026-04-20 23:23:00.601063746 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test368.java,0,Unsat,,0.100913277s,0.309954046s
+2026-04-20 23:23:06.415082286 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test883.java,0,Unsat,,0.022534501s,0.047537994s
+2026-04-20 23:23:11.900805644 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test353.java,0,Unsat,,0.095221332s,0.282126949s
+2026-04-20 23:23:17.746622841 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test864.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:23:20.523375745 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test785.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =        0 :: Int64\n  parm12 =        0 :: Int64\n  parm14 =        0 :: Int64\n  parm16 =        0 :: Int32\n  parm17 =        0 :: Int32\n  parm18 =     4096 :: Int64\n  parm25 = 16777216 :: Int32",0.090931327s,0.215312388s
+2026-04-20 23:23:26.20744608 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test115.java,0,Unsat,,0.037492687s,0.098074553s
+2026-04-20 23:23:31.710167266 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test528.java,0,Unsat,,0.087885684s,0.56814596s
+2026-04-20 23:23:38.013000655 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test617.java,0,Unsat,,0.02265108s,0.153868186s
+2026-04-20 23:23:43.928072657 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test566.java,0,Unsat,,0.056702693s,0.316530743s
+2026-04-20 23:23:49.842737668 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test390.java,0,Unsat,,0.031630358s,0.28752059s
+2026-04-20 23:23:56.023848856 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test478.java,0,Unknown,timeout,60.675168781s,60.883554707s
+2026-04-20 23:25:02.614926472 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test683.java,0,Unsat,,0.578009179s,1.002569272s
+2026-04-20 23:25:09.366512627 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test809.java,0,Unsat,,0.076710684s,0.402953718s
+2026-04-20 23:25:15.613402643 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test284.java,0,Unsat,,0.813988923s,1.184029864s
+2026-04-20 23:25:22.397334529 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test347.java,0,Unsat,,0.201252267s,0.455006873s
+2026-04-20 23:25:28.303871242 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test437.java,0,Unsat,,0.023929653s,0.055206999s
+2026-04-20 23:25:33.920482388 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test149.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =         32 :: Int32\n  parm11 =          0 :: Int32\n  parm12 =          0 :: Int64\n  parm14 =          0 :: Int32\n  parm15 =          0 :: Int64\n  parm17 =          0 :: Int64\n  parm19 = 2147483648 :: Int64\n  parm24 =          0 :: Int32",0.234960496s,0.395165745s
+2026-04-20 23:25:39.824440102 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test685.java,0,Unsat,,0.074170614s,0.220077622s
+2026-04-20 23:25:45.545248683 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test898.java,0,BuilderError,"buildNode: Unsupported node  (249, URShiftL)",0s,0s
+2026-04-20 23:25:51.470381884 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test876.java,0,Unsat,,3.127490316s,3.460773218s
+2026-04-20 23:26:00.521185735 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test698.java,0,Unsat,,0.145484166s,0.418443675s
+2026-04-20 23:26:06.539124056 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test18.java,0,Unsat,,0.25387655s,0.428374436s
+2026-04-20 23:26:12.597240112 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test585.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:26:15.223982036 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test579.java,0,Unsat,,0.023006454s,0.141077194s
+2026-04-20 23:26:21.106816678 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test36.java,0,Unsat,,0.034086518s,0.958591329s
+2026-04-20 23:26:27.969913798 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test464.java,0,Unsat,,0.203841744s,0.361026725s
+2026-04-20 23:26:33.888991243 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test757.java,0,Unsat,,0.022378527s,0.136295136s
+2026-04-20 23:26:39.730378067 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test664.java,0,Unsat,,0.065708184s,0.515425604s
+2026-04-20 23:26:45.904526488 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test300.java,0,Unsat,,0.265183899s,0.661014442s
+2026-04-20 23:26:52.184290581 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test342.java,0,Unsat,,0.029725484s,0.066974583s
+2026-04-20 23:26:57.688977624 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test219.java,0,Unknown,timeout,60.395787364s,61.385104268s
+2026-04-20 23:28:04.788768481 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test599.java,0,Unsat,,2.126976438s,2.18485758s
+2026-04-20 23:28:12.488721311 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test582.java,0,Unsat,,0.091150588s,0.293427515s
+2026-04-20 23:28:18.489970054 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test597.java,0,Unsat,,0.281821094s,0.816617549s
+2026-04-20 23:28:25.018912984 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test261.java,0,Unsat,,11.081883106s,12.626545984s
+2026-04-20 23:28:43.440112407 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test421.java,0,Unsat,,0.041386565s,0.517286392s
+2026-04-20 23:28:49.607014395 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test758.java,0,Unsat,,0.072296739s,0.622210233s
+2026-04-20 23:28:56.061783565 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test587.java,0,Unsat,,0.097398361s,0.296421973s
+2026-04-20 23:29:01.992009108 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test64.java,0,Unsat,,0.022766345s,0.061429357s
+2026-04-20 23:29:07.597883058 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test452.java,0,Unsat,,0.025529855s,0.057210959s
+2026-04-20 23:29:13.078494439 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test250.java,0,Unsat,,0.140380478s,0.429519267s
+2026-04-20 23:29:19.175352533 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test175.java,0,Unsat,,0.041824371s,0.471517412s
+2026-04-20 23:29:25.420725947 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test686.java,0,Unsat,,0.022400741s,0.047573085s
+2026-04-20 23:29:31.093803765 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test453.java,0,Unsat,,27.049316231s,28.123221727s
+2026-04-20 23:30:05.052405613 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test920.java,0,Unsat,,0.042271896s,0.178804215s
+2026-04-20 23:30:10.758529769 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test742.java,0,Unsat,,0.240049809s,0.912277002s
+2026-04-20 23:30:17.55703813 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test539.java,0,Unsat,,0.02672664s,0.418893115s
+2026-04-20 23:30:23.947468058 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test245.java,0,Unsat,,0.023374795s,0.127981212s
+2026-04-20 23:30:29.716853889 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test907.java,0,Unsat,,0.138027976s,0.3273493s
+2026-04-20 23:30:35.556120965 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test600.java,0,Unsat,,0.023640018s,0.048900309s
+2026-04-20 23:30:41.037642014 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test952.java,0,Unsat,,0.029938212s,0.63095286s
+2026-04-20 23:30:47.405768465 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test879.java,0,Unsat,,0.022665624s,0.138820521s
+2026-04-20 23:30:53.243581661 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test917.java,0,Unsat,,3.384831357s,3.988835232s
+2026-04-20 23:31:03.047904179 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test14.java,0,Unsat,,0.022117916s,0.048731044s
+2026-04-20 23:31:08.556301096 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test221.java,0,Unsat,,0.035575052s,0.437588565s
+2026-04-20 23:31:14.590710042 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test654.java,0,Unsat,,0.206654189s,0.535876245s
+2026-04-20 23:31:20.814793479 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test240.java,0,Unsat,,1.033600438s,1.277176627s
+2026-04-20 23:31:27.741585688 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test182.java,0,Unsat,,0.02273291s,0.047994475s
+2026-04-20 23:31:33.197338642 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test76.java,0,Unsat,,0.062350103s,0.195422475s
+2026-04-20 23:31:38.926583374 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test575.java,0,Unsat,,0.101908774s,0.262376127s
+2026-04-20 23:31:44.779426483 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test928.java,0,Unsat,,0.041211231s,0.334377166s
+2026-04-20 23:31:50.860410953 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test776.java,0,Unsat,,0.051728046s,0.242795623s
+2026-04-20 23:31:56.846944614 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test971.java,0,Unsat,,0.070377762s,0.472179251s
+2026-04-20 23:32:03.062139136 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test763.java,0,Unsat,,1.864916671s,1.928364775s
+2026-04-20 23:32:10.515403837 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test814.java,0,Unsat,,0.022943162s,0.059118047s
+2026-04-20 23:32:16.026908669 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test438.java,0,Unsat,,0.028694515s,0.06387786s
+2026-04-20 23:32:21.497490221 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test969.java,0,Unsat,,14.445551954s,16.678219507s
+2026-04-20 23:32:44.102508449 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test545.java,0,Unsat,,0.025049356s,0.059674062s
+2026-04-20 23:32:49.69826857 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test346.java,0,Unsat,,0.089865203s,0.158531183s
+2026-04-20 23:32:55.285709846 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test491.java,0,Unsat,,0.601721347s,1.22535536s
+2026-04-20 23:33:02.362939681 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test875.java,0,Unsat,,0.024574377s,0.063816434s
+2026-04-20 23:33:07.799064632 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test966.java,0,Unknown,timeout,60.21713666s,60.972866455s
+2026-04-20 23:34:14.475563012 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test892.java,0,Unsat,,0.024445776s,0.052893176s
+2026-04-20 23:34:20.029812791 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test745.java,0,Unsat,,0.03158135s,0.23023491s
+2026-04-20 23:34:25.811733973 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test688.java,0,Unsat,,0.027248465s,0.065578247s
+2026-04-20 23:34:31.590639741 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test978.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 2097152 :: Int64\n  parm12 =       0 :: Int64\n  parm14 =       0 :: Int32\n  parm15 =       0 :: Int32\n  parm17 =       0 :: Int64\n  parm19 =       0 :: Int32\n  parm20 =       0 :: Int64\n  parm22 =       0 :: Int64\n  parm24 =       0 :: Int32",0.147307266s,0.250110454s
+2026-04-20 23:34:37.635920875 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test468.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = -1616709661 :: Int32",0.060869466s,0.091779034s
+2026-04-20 23:34:43.467484503 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test307.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:34:46.144531344 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test882.java,0,Unsat,,0.022997706s,0.052268691s
+2026-04-20 23:34:51.806435583 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test47.java,0,Unsat,,6.6058148s,6.651356468s
+2026-04-20 23:35:03.890056523 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test49.java,0,Unsat,,0.48492651s,0.900482551s
+2026-04-20 23:35:10.379416665 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test916.java,0,Unknown,timeout,60.364045936s,60.912397798s
+2026-04-20 23:36:16.894049318 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test448.java,0,Unsat,,0.024931187s,0.04890628s
+2026-04-20 23:36:22.371099687 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test482.java,0,Unsat,,0.077854428s,0.374766716s
+2026-04-20 23:36:28.354691245 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test125.java,0,BuilderError,"buildNode: Unsupported node  (263, URShiftL)",0s,0s
+2026-04-20 23:36:34.47503975 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test517.java,0,Unsat,,0.030851802s,0.302994331s
+2026-04-20 23:36:40.589989599 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test202.java,0,Unsat,,1.706479199s,2.040898667s
+2026-04-20 23:36:48.318925582 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test519.java,0,Unsat,,0.073009182s,0.682734572s
+2026-04-20 23:36:54.694187176 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test218.java,0,Unsat,,3.857069787s,5.008601231s
+2026-04-20 23:37:05.675964289 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test310.java,0,Unsat,,1.547100109s,1.983122834s
+2026-04-20 23:37:13.354755103 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test140.java,0,Unsat,,0.039416446s,0.643648345s
+2026-04-20 23:37:19.79810355 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test113.java,0,Unsat,,0.022037742s,0.087024699s
+2026-04-20 23:37:25.487867847 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test950.java,0,Unsat,,0.023413463s,0.135841671s
+2026-04-20 23:37:31.338217868 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test997.java,0,Unsat,,0.02246536s,0.118604378s
+2026-04-20 23:37:37.298093802 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test987.java,0,Unsat,,0.027090231s,0.07897975s
+2026-04-20 23:37:42.849608371 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test529.java,0,Unsat,,0.274813781s,0.914113381s
+2026-04-20 23:37:49.397256813 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test725.java,0,Unsat,,0.026430173s,0.053631501s
+2026-04-20 23:37:55.001548256 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test991.java,0,Unsat,,0.050791993s,0.425134515s
+2026-04-20 23:38:01.122280853 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test610.java,0,Unsat,,0.03131103s,0.261092305s
+2026-04-20 23:38:07.227997847 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test295.java,0,Unsat,,0.05011406s,0.294649407s
+2026-04-20 23:38:13.195412328 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test472.java,0,Unsat,,0.568987419s,0.830101653s
+2026-04-20 23:38:19.659067584 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test172.java,0,Unsat,,0.022069614s,0.116858928s
+2026-04-20 23:38:25.435999179 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test794.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:38:28.135329665 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test655.java,0,Unsat,,0.633805491s,1.008418224s
+2026-04-20 23:38:34.754232325 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test995.java,0,Unsat,,0.043129762s,0.58322846s
+2026-04-20 23:38:41.143963991 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test220.java,0,Unsat,,0.289855624s,0.855332985s
+2026-04-20 23:38:47.680160328 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test593.java,0,Unknown,timeout,60.261959582s,60.762776612s
+2026-04-20 23:39:54.362091506 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test511.java,0,Unsat,,0.152093755s,0.47713998s
+2026-04-20 23:40:00.389442553 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test426.java,0,Unsat,,0.026074499s,0.053784257s
+2026-04-20 23:40:06.019852568 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test755.java,0,Unsat,,0.023749637s,0.119164537s
+2026-04-20 23:40:11.83446308 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test304.java,0,Unsat,,0.032325014s,0.462616623s
+2026-04-20 23:40:18.073426557 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test238.java,0,Unsat,,0.225404621s,0.733728923s
+2026-04-20 23:40:24.642728858 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test982.java,0,Unsat,,0.177245081s,0.425974302s
+2026-04-20 23:40:30.664106126 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test495.java,0,Unsat,,0.081762525s,0.981995837s
+2026-04-20 23:40:37.357910477 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test727.java,0,Unsat,,0.058240353s,0.546103409s
+2026-04-20 23:40:43.679580786 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test715.java,0,Unsat,,0.030543576s,0.36569211s
+2026-04-20 23:40:49.86638806 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test422.java,0,Unsat,,0.032986838s,0.405766591s
+2026-04-20 23:40:56.082475995 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test818.java,0,Unsat,,0.04914808s,0.622441547s
+2026-04-20 23:41:02.37958983 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test409.java,0,Unsat,,0.085625558s,0.383090553s
+2026-04-20 23:41:08.373576024 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test326.java,0,Unsat,,0.023193547s,0.055866357s
+2026-04-20 23:41:13.967135278 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test634.java,0,Unsat,,0.032548045s,0.104660939s
+2026-04-20 23:41:19.534339761 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test564.java,0,Unsat,,0.601518593s,1.215651097s
+2026-04-20 23:41:26.522053243 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test746.java,0,Unsat,,0.601107881s,1.110661647s
+2026-04-20 23:41:33.463906827 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test336.java,0,Unsat,,0.023719083s,0.052823206s
+2026-04-20 23:41:38.973204215 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test135.java,0,Unsat,,0.026973696s,0.054130355s
+2026-04-20 23:41:44.513091326 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test734.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:41:47.234807161 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test418.java,0,Unsat,,0.465711671s,0.909271657s
+2026-04-20 23:41:53.906499675 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test87.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:41:56.642697542 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test705.java,0,Unsat,,0.024350161s,0.207755041s
+2026-04-20 23:42:02.58336462 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test783.java,0,Unsat,,0.237518353s,0.474797057s
+2026-04-20 23:42:08.546070385 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test224.java,0,Unsat,,0.021710053s,0.046989478s
+2026-04-20 23:42:14.035676259 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test323.java,0,Unsat,,0.028478571s,0.187814605s
+2026-04-20 23:42:19.822430286 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test62.java,0,Unsat,,0.137473441s,0.526531891s
+2026-04-20 23:42:26.048707959 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test264.java,0,Unsat,,0.054957243s,0.351321074s
+2026-04-20 23:42:32.109135373 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test312.java,0,Unsat,,0.03748327s,0.452153843s
+2026-04-20 23:42:38.278613502 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test341.java,0,Unsat,,0.034241764s,0.305416643s
+2026-04-20 23:42:44.43788938 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test56.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =          2147483585 :: Int32\n  parm11 = 2305843009213693952 :: Int64\n  parm13 =                   0 :: Int32\n  parm14 =                   0 :: Int64\n  parm16 =              262144 :: Int32\n  parm17 =                   0 :: Int64\n  parm21 =                   0 :: Int32\n  parm22 =                   0 :: Int64\n  parm26 =     140737488355328 :: Int64\n  parm30 =                   0 :: Int32",0.176746737s,0.415610556s
+2026-04-20 23:42:50.39427001 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test456.java,0,Unsat,,0.021962787s,0.055320505s
+2026-04-20 23:42:55.856476264 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test415.java,0,Unsat,,0.1499989s,0.373875093s
+2026-04-20 23:43:01.80223665 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test81.java,0,Unsat,,0.655945542s,0.845369252s
+2026-04-20 23:43:08.247225524 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test918.java,0,Unsat,,0.031839633s,0.300378289s
+2026-04-20 23:43:14.32854429 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test962.java,0,Unsat,,0.073400108s,0.176467483s
+2026-04-20 23:43:19.941817993 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test850.java,0,Unsat,,0.042874732s,0.159597778s
+2026-04-20 23:43:25.641390342 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test498.java,0,BuilderError,"buildNode: Unsupported node  (462, URShiftL)",0s,0s
+2026-04-20 23:43:32.084617506 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test635.java,0,BuilderError,"buildNode: Unsupported node  (208, URShiftL)",0s,0s
+2026-04-20 23:43:38.502597312 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test354.java,0,Unsat,,0.102275845s,0.234678955s
+2026-04-20 23:43:44.283615196 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test131.java,0,Unsat,,0.061308769s,0.428982755s
+2026-04-20 23:43:50.497907469 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test98.java,0,Unsat,,0.51425015s,1.936731886s
+2026-04-20 23:43:58.47431878 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test591.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:44:01.178293437 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test276.java,0,Unsat,,3.854760703s,3.994596852s
+2026-04-20 23:44:10.639743145 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test544.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:44:13.409053729 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test832.java,0,Unsat,,0.434943054s,1.265577969s
+2026-04-20 23:44:20.445694337 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test733.java,0,Unsat,,0.028175942s,0.265175391s
+2026-04-20 23:44:26.434142203 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test450.java,0,Unsat,,0.047121537s,0.282774486s
+2026-04-20 23:44:32.345406842 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test110.java,0,Unsat,,0.07212155s,0.974840122s
+2026-04-20 23:44:39.10865533 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test570.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:44:41.943335637 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test17.java,0,Unsat,,0.053814259s,0.387350685s
+2026-04-20 23:44:47.998930149 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test383.java,0,Unsat,,0.024209301s,0.159069416s
+2026-04-20 23:44:53.966567951 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test21.java,0,Unsat,,0.024658928s,0.064169079s
+2026-04-20 23:44:59.529583888 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test841.java,0,Unsat,,0.307530677s,0.579243766s
+2026-04-20 23:45:05.709662791 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test473.java,0,Unsat,,0.111719228s,0.6396896s
+2026-04-20 23:45:12.057495036 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test656.java,0,Unsat,,0.09846692s,0.302346901s
+2026-04-20 23:45:17.887447044 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test843.java,0,Unsat,,0.03257957s,0.547552885s
+2026-04-20 23:45:24.125430875 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test949.java,0,Unsat,,0.032642494s,0.106851173s
+2026-04-20 23:45:29.685771601 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test719.java,0,Unsat,,0.119574865s,0.273340544s
+2026-04-20 23:45:35.48718996 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test303.java,0,Unsat,,3.111457172s,3.557816632s
+2026-04-20 23:45:45.105457692 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test194.java,0,Unsat,,0.029708441s,0.421980558s
+2026-04-20 23:45:51.207572871 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test590.java,0,Unknown,timeout,60.09745354s,60.628995133s
+2026-04-20 23:46:57.578555058 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test343.java,0,Unsat,,0.097169069s,0.335909483s
+2026-04-20 23:47:03.381781382 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test165.java,0,Unsat,,18.571155153s,19.032279587s
+2026-04-20 23:47:28.003302988 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test78.java,0,Unsat,,0.027652031s,0.292475509s
+2026-04-20 23:47:33.974098489 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test951.java,0,Unsat,,0.023578701s,0.127954166s
+2026-04-20 23:47:39.790181995 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test941.java,0,Unsat,,0.024269994s,0.05803006s
+2026-04-20 23:47:45.172082419 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test988.java,0,Unsat,,0.065424566s,1.117450359s
+2026-04-20 23:47:52.140345657 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test721.java,0,Unsat,,0.026488909s,0.199460934s
+2026-04-20 23:47:57.968970251 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test846.java,0,Sat,"Right Satisfiable. Model:\n  parm10 = 0 :: Int64\n  parm12 = 0 :: Int64\n  parm16 = 0 :: Int64\n  parm18 = 0 :: Int64\n  parm20 = 0 :: Int32\n  parm21 = 0 :: Int64",0.095830575s,0.144189963s
+2026-04-20 23:48:03.598326228 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test374.java,0,Unsat,,0.027375985s,0.049961273s
+2026-04-20 23:48:09.056792388 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test691.java,0,Unsat,,0.231610311s,0.89096353s
+2026-04-20 23:48:15.576045362 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test674.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:48:18.260882486 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test568.java,0,Unsat,,0.062871979s,0.437620698s
+2026-04-20 23:48:24.480241067 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test424.java,0,Unsat,,0.022698909s,0.050178675s
+2026-04-20 23:48:29.997169752 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test596.java,0,Unknown,timeout,60.776751257s,62.962905061s
+2026-04-20 23:49:38.696031451 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test124.java,0,Unsat,,0.023797185s,0.124668151s
+2026-04-20 23:49:44.393012308 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test352.java,0,Unsat,,0.023044779s,0.04968393s
+2026-04-20 23:49:49.861025507 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test740.java,0,Unsat,,0.023150694s,0.054120769s
+2026-04-20 23:49:55.32192285 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test188.java,0,Unsat,,0.168442524s,0.393465307s
+2026-04-20 23:50:01.207055029 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test160.java,0,Unsat,,0.032139468s,0.220219699s
+2026-04-20 23:50:07.107100731 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test461.java,0,Unsat,,0.030371513s,0.370063588s
+2026-04-20 23:50:13.149068349 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test782.java,0,Unsat,,0.023067702s,0.139604525s
+2026-04-20 23:50:19.171682036 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test839.java,0,Unsat,,52.949932631s,53.937609518s
+2026-04-20 23:51:18.873626862 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test465.java,0,Unsat,,0.149964468s,0.645473263s
+2026-04-20 23:51:25.084292009 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test29.java,0,Unsat,,0.023607748s,0.137113117s
+2026-04-20 23:51:30.935168785 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test255.java,0,Unsat,,3.602147417s,4.296786665s
+2026-04-20 23:51:40.938420872 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test998.java,0,Unsat,,0.026662695s,0.285819822s
+2026-04-20 23:51:46.801236896 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test603.java,0,Unsat,,0.071846978s,0.803331763s
+2026-04-20 23:51:53.453082805 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test680.java,0,Unsat,,0.043287806s,0.906728012s
+2026-04-20 23:52:00.311376325 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test148.java,0,Unsat,,0.169550747s,0.305690686s
+2026-04-20 23:52:06.179684853 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test759.java,0,Unsat,,0.029462478s,0.308818406s
+2026-04-20 23:52:12.293972066 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test223.java,0,Unsat,,0.021983286s,0.135461109s
+2026-04-20 23:52:18.202015835 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test359.java,0,Unsat,,0.021977076s,0.138906038s
+2026-04-20 23:52:24.222388178 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test537.java,0,Unsat,,0.022321429s,0.055902004s
+2026-04-20 23:52:29.761795179 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test82.java,0,Unsat,,0.044403809s,0.099223078s
+2026-04-20 23:52:35.308226854 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test325.java,0,Unsat,,0.052641553s,0.126636658s
+2026-04-20 23:52:40.892475307 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test265.java,0,Unsat,,0.023290215s,0.206332418s
+2026-04-20 23:52:47.053430566 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test121.java,0,Unsat,,0.317826079s,0.561183256s
+2026-04-20 23:52:53.262511778 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test155.java,0,Unsat,,0.027748928s,0.313975748s
+2026-04-20 23:52:59.177608044 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test881.java,0,Unknown,timeout,62.201929038s,62.779490016s
+2026-04-20 23:54:07.730784416 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test659.java,0,Unsat,,0.040301197s,0.169928773s
+2026-04-20 23:54:13.478423293 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test285.java,0,Unsat,,0.178104696s,0.319256207s
+2026-04-20 23:54:19.351832962 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test420.java,0,Unsat,,0.028308563s,0.287953687s
+2026-04-20 23:54:25.374328783 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test24.java,0,Unsat,,0.027076399s,0.071269758s
+2026-04-20 23:54:30.982101491 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test19.java,0,Unsat,,4.044969528s,4.975329006s
+2026-04-20 23:54:41.733194302 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test812.java,0,Unsat,,0.029975718s,0.237024362s
+2026-04-20 23:54:47.601735549 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test836.java,0,Unsat,,0.030602414s,0.097711367s
+2026-04-20 23:54:53.198303302 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test490.java,0,Unsat,,0.15356206s,0.449459802s
+2026-04-20 23:54:59.478636393 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test889.java,0,Unsat,,0.238434219s,0.613301854s
+2026-04-20 23:55:05.668900742 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test5.java,0,Unsat,,0.176585643s,0.405526655s
+2026-04-20 23:55:11.599220515 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test266.java,0,Unsat,,0.065587348s,0.1372747s
+2026-04-20 23:55:17.176560881 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test387.java,0,Unsat,,0.028189554s,0.291117325s
+2026-04-20 23:55:23.182598176 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test623.java,0,Unsat,,0.027682344s,0.050978192s
+2026-04-20 23:55:28.659300762 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test120.java,0,Unsat,,0.300458608s,0.565486545s
+2026-04-20 23:55:34.82013785 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test831.java,0,Unsat,,0.196323729s,0.364324132s
+2026-04-20 23:55:40.792416355 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test339.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:55:43.434783034 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test510.java,0,Unsat,,0.026302995s,0.048986937s
+2026-04-20 23:55:48.900704135 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test439.java,0,Unknown,timeout,60.16537216s,60.611487599s
+2026-04-20 23:56:55.242610887 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test370.java,0,Unsat,,0.235042437s,0.438778851s
+2026-04-20 23:57:01.240576914 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test736.java,0,Unsat,,0.021893376s,0.153231534s
+2026-04-20 23:57:07.13659043 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test930.java,0,Unsat,,0.024341217s,0.059312706s
+2026-04-20 23:57:12.809488261 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test66.java,0,Unsat,,0.147126452s,0.301814445s
+2026-04-20 23:57:18.608314368 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test3.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:57:21.304135895 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test735.java,0,Unsat,,0.033622562s,0.226833302s
+2026-04-20 23:57:27.169127301 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test789.java,0,Unsat,,0.218290934s,0.827594605s
+2026-04-20 23:57:33.665836693 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test856.java,0,Unsat,,0.04902999s,0.278335327s
+2026-04-20 23:57:39.504484485 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test974.java,0,Unsat,,0.024112389s,0.123625273s
+2026-04-20 23:57:45.374046757 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test180.java,0,Unsat,,0.358774958s,0.761932047s
+2026-04-20 23:57:51.8261606 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test273.java,0,Unsat,,0.078404432s,0.907657304s
+2026-04-20 23:57:58.537207227 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test34.java,0,Unsat,,0.026489422s,0.258479435s
+2026-04-20 23:58:04.557027245 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test805.java,0,Unsat,,0.027618971s,0.067695954s
+2026-04-20 23:58:10.099433083 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test989.java,0,Unsat,,0.121937482s,0.525061786s
+2026-04-20 23:58:16.162180992 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test328.java,0,Unsat,,0.285157721s,0.611271781s
+2026-04-20 23:58:22.366500974 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test709.java,0,Unsat,,0.030331794s,0.147444763s
+2026-04-20 23:58:28.117495794 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test637.java,0,Unsat,,4.318946989s,4.66526377s
+2026-04-20 23:58:38.291279976 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test398.java,0,Unsat,,0.322133765s,0.549812527s
+2026-04-20 23:58:44.374415697 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test611.java,0,Unsat,,0.025046965s,0.094339894s
+2026-04-20 23:58:49.997481411 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test630.java,0,Unsat,,0.093418499s,0.967052011s
+2026-04-20 23:58:56.722077856 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test967.java,0,Unsat,,0.11148391s,0.182465711s
+2026-04-20 23:59:02.409231585 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test672.java,0,Unsat,,0.031415185s,0.113904058s
+2026-04-20 23:59:08.021625811 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test457.java,0,Unsat,,0.050808632s,0.1644437s
+2026-04-20 23:59:13.639821182 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test983.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-20 23:59:16.617416383 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test961.java,0,Unsat,,0.027782359s,0.060508163s
+2026-04-20 23:59:22.155955065 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test684.java,0,Unsat,,0.025755492s,0.059551303s
+2026-04-20 23:59:27.901829074 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test247.java,0,Unsat,,0.027695811s,0.065125902s
+2026-04-20 23:59:33.434094007 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test425.java,0,Unsat,,0.034135504s,0.077972957s
+2026-04-20 23:59:38.904991629 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test443.java,0,Unsat,,0.03281536s,0.450426173s
+2026-04-20 23:59:45.273625697 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test795.java,0,Unsat,,0.070177065s,0.347665652s
+2026-04-20 23:59:51.379162031 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test58.java,0,Sat,"Right Satisfiable. Model:\n  parm10 =             0 :: Int32\n  parm11 =             0 :: Int64\n  parm13 =             0 :: Int32\n  parm14 = 4398046511104 :: Int64\n  parm16 =             0 :: Int32\n  parm17 =             0 :: Int64",0.149098211s,0.244411895s
+2026-04-20 23:59:57.158319491 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test896.java,0,Unsat,,0.026258815s,0.057097849s
+2026-04-21 00:00:02.728086569 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test769.java,0,Unsat,,0.411500654s,0.989881747s
+2026-04-21 00:00:09.492904268 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test206.java,0,Unsat,,0.022204634s,0.118815089s
+2026-04-21 00:00:15.152045625 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test694.java,0,Unsat,,0.031898687s,0.346336764s
+2026-04-21 00:00:21.160113897 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test662.java,0,Unknown,timeout,61.046219162s,61.567013029s
+2026-04-21 00:01:28.465803915 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test675.java,0,Unsat,,0.044506079s,0.499206349s
+2026-04-21 00:01:34.625310762 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test939.java,0,Unsat,,0.027161554s,0.181677031s
+2026-04-21 00:01:40.550498898 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test872.java,0,Unsat,,0.06025966s,0.623613728s
+2026-04-21 00:01:47.056197832 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test595.java,0,Unsat,,0.024730186s,0.057482014s
+2026-04-21 00:01:52.504279109 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test487.java,0,Unsat,,0.025351867s,0.052128253s
+2026-04-21 00:01:57.960362391 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test551.java,0,Unsat,,0.031738812s,0.168799725s
+2026-04-21 00:02:03.787226198 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test781.java,0,Unsat,,0.027116492s,0.059398788s
+2026-04-21 00:02:09.335077394 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test985.java,0,Unsat,,0.070402754s,0.159734379s
+2026-04-21 00:02:15.151047566 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test27.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-21 00:02:18.103066394 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test306.java,0,Unsat,,0.149052214s,0.362743082s
+2026-04-21 00:02:24.061505906 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test365.java,0,Unsat,,0.346458674s,0.399063837s
+2026-04-21 00:02:29.972818607 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test357.java,0,Unsat,,0.036917823s,0.196505758s
+2026-04-21 00:02:35.761738485 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test97.java,0,Unsat,,0.12257811s,0.523518121s
+2026-04-21 00:02:41.904703734 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test389.java,0,Unsat,,0.176347392s,0.451267503s
+2026-04-21 00:02:47.909245686 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test620.java,0,Unknown,timeout,60.384672106s,61.696267348s
+2026-04-21 00:03:55.562023753 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test192.java,0,Unsat,,0.739514542s,1.453125632s
+2026-04-21 00:04:02.884922997 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test244.java,0,Unsat,,0.239185799s,0.290776423s
+2026-04-21 00:04:08.776477925 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test723.java,0,Unsat,,0.072466126s,0.532934889s
+2026-04-21 00:04:14.935290842 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test689.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-21 00:04:17.760715819 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test905.java,0,Unsat,,0.055860215s,0.223416233s
+2026-04-21 00:04:23.648716552 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test239.java,0,Unsat,,0.154841717s,0.318904655s
+2026-04-21 00:04:29.685057758 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test817.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-21 00:04:32.324842083 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test72.java,0,Unsat,,7.473116692s,7.844922886s
+2026-04-21 00:04:45.804625231 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test15.java,0,Unsat,,0.023135795s,0.054597867s
+2026-04-21 00:04:51.34129396 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test890.java,0,Unsat,,23.390257902s,24.16207238s
+2026-04-21 00:05:21.227569596 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test340.java,0,Unsat,,0.236020219s,0.456291566s
+2026-04-21 00:05:27.195578004 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test681.java,0,Unsat,,0.025530542s,0.050431182s
+2026-04-21 00:05:32.708166305 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test572.java,0,Unsat,,0.03951414s,0.566936805s
+2026-04-21 00:05:38.956430606 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test86.java,0,Unknown,timeout,61.048314657s,61.191805445s
+2026-04-21 00:06:45.587192433 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test246.java,0,Unsat,,0.027440291s,0.270794088s
+2026-04-21 00:06:51.594310066 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test428.java,0,Unsat,,0.029935798s,0.073520408s
+2026-04-21 00:06:57.147377963 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test187.java,0,Unsat,,0.028331983s,0.059519322s
+2026-04-21 00:07:02.678964527 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test89.java,0,Unknown,timeout,61.076581534s,61.625545224s
+2026-04-21 00:08:09.934328404 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test799.java,0,Unsat,,1.767744997s,1.822465222s
+2026-04-21 00:08:17.260607963 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test867.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-21 00:08:19.960051471 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test435.java,0,Unsat,,0.122318045s,0.283446242s
+2026-04-21 00:08:25.809230347 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test39.java,0,Unsat,,0.063772789s,0.366072704s
+2026-04-21 00:08:31.796864823 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test633.java,0,Unsat,,0.021837372s,0.11109563s
+2026-04-21 00:08:37.583729312 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test992.java,0,ParseError,"Graph not found: After Parsing",0s,0s
+2026-04-21 00:08:40.27082388 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test801.java,0,Unsat,,6.159997027s,6.537487693s
+2026-04-21 00:08:52.489312157 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test161.java,0,Unsat,,0.045453842s,0.583387755s
+2026-04-21 00:08:58.8539076 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test558.java,0,Unsat,,0.021930257s,0.111950985s
+2026-04-21 00:09:04.868753769 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test682.java,0,Unsat,,0.352053824s,0.399255648s
+2026-04-21 00:09:10.724520406 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test771.java,0,Unsat,,0.024906502s,0.048920759s
+2026-04-21 00:09:16.267275178 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test208.java,0,Unsat,,0.099460874s,0.196061378s
+2026-04-21 00:09:21.932635545 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test643.java,0,Unsat,,0.03046804s,0.524626064s
+2026-04-21 00:09:28.352885489 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test554.java,0,Unsat,,0.026537082s,0.050038124s
+2026-04-21 00:09:33.893654514 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test942.java,0,Unsat,,0.042202165s,0.315381616s
+2026-04-21 00:09:39.944958317 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test375.java,0,Unsat,,0.032008859s,0.081636513s
+2026-04-21 00:09:45.443638887 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test526.java,0,Unknown,timeout,62.343993682s,63.307757182s
+2026-04-21 00:10:54.389897518 UTC,/home/herdi/work/c2-translation-validation/test-1000/Test94.java,0,Unsat,,0.034505379s,0.538821206s
