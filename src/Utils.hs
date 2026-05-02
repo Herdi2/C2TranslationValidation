@@ -32,7 +32,6 @@ runErrorM :: ErrorM a -> IO (Either CustomError a)
 runErrorM = runEff . runErrorNoCallStack
 
 -- | Given a Java file and a method within, return the output of the compiler and the interpreter
--- NOTE: We assume the class who's method we'll compile shared the name with the Java file
 compareOutput :: String -> String -> IO (Either String (String, String))
 compareOutput javaFile methodName =
   case extractClassName javaFile of

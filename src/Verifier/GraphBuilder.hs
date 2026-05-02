@@ -78,6 +78,16 @@ findMethodType (RawGraph rNodes rEdges) =
             | "double" `isPrefixOf` typ -> Right JDOUBLE
             | "fltcon" `isPrefixOf` typ -> Right JFLOAT
             | "dblcon" `isPrefixOf` typ -> Right JDOUBLE
+            | "bool" `isPrefixOf` typ ->
+                -- NOTE: Special case on CMoveX and Phi nodes, as their return types are marked as bool
+                case M.lookup "type" dataProps of
+                  Just typeName
+                    | "int" `isPrefixOf` typeName -> Right JINT
+                    | "long" `isPrefixOf` typeName -> Right JLONG
+                    | "float" `isPrefixOf` typeName -> Right JFLOAT
+                    | "double" `isPrefixOf` typeName -> Right JDOUBLE
+                    | otherwise -> Left $ builderError $ "findMethodType: Unrecognized special case " <> typeName
+                  Nothing -> Left $ builderError $ "findMethodType: Internal error, could not find \"type\" property"
             | otherwise -> Left $ builderError $ "findMethodType: Unsupported return type " <> typ
           Nothing -> Left $ builderError $ "findMethodType: Data node had no \"bottom_type\""
 
@@ -213,6 +223,7 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
     "CmpL" -> arithmeticNode "CmpL" CmpL nodeId rEdges
     "CmpF" -> arithmeticNode "CmpF" CmpF nodeId rEdges
     "CmpD" -> arithmeticNode "CmpD" CmpD nodeId rEdges
+    "CmpU" -> arithmeticNode "CmpU" CmpU nodeId rEdges
     -- These <CMP>3 nodes are special, as they are used
     -- for comparisons going into `unstable_if`
     -- Semantically, they are equivalent to their Cmp
@@ -236,6 +247,11 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
       case (findNodePred nodeId rEdges) of
         (regionId : preds) | length preds > 1 -> Parsed (nodeId, Phi regionId preds)
         preds -> Unsupported $ "Phi: Phi node got less than two predecessors"
+    "CMoveI" -> arithmeticNode "CMoveI" CMoveI nodeId rEdges
+    "CMoveL" -> arithmeticNode "CMoveL" CMoveL nodeId rEdges
+    "CMoveF" -> arithmeticNode "CMoveF" CMoveF nodeId rEdges
+    "CMoveD" -> arithmeticNode "CMoveD" CMoveD nodeId rEdges
+    "Binary" -> arithmeticNode "Binary" Binary nodeId rEdges
     -- \| CONTROL FLOW
     "Region" ->
       -- NOTE: A region always has an edge to itself, which is the first predecessor
@@ -310,7 +326,7 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
           case (find ((==) nid . read . rawNodeId) rNodes) of
             Just n -> (==) "Con" $ rawNodeName n
             Nothing -> True
-    _ -> Unsupported $ "buildNode: Unsupported node  (" <> show nodeId <> ", " <> nodeName <> ")"
+    _ -> Unsupported $ "buildNode: Unsupported node (" <> show nodeId <> ", " <> nodeName <> ")"
 
 -- | Given the data constructor of a store node, find the node id of its predecessors to create
 -- the corresponding @Node@.

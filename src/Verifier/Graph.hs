@@ -114,6 +114,14 @@ data Node
   | CmpF NodeId NodeId
   | CmpD NodeId NodeId
   | CmpP NodeId NodeId
+  | CmpU NodeId NodeId
+  | -- | Move nodes
+    -- CMoveX <Binary node (Bool)> <Binary node (Branches)>
+    CMoveI NodeId NodeId
+  | CMoveL NodeId NodeId
+  | CMoveF NodeId NodeId
+  | CMoveD NodeId NodeId
+  | Binary NodeId NodeId
   | -- | Bool node
     Bool Comp NodeId
   | -- | Starting point of the control flow subgraph, with own Id

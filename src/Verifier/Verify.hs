@@ -54,6 +54,20 @@ sComp x y =
         (literal 0)
     )
 
+-- | Symbolic unsigned comparison function
+uComp :: SValue -> SValue -> SInt32
+uComp (getInt -> x) (getInt -> y) =
+  let ux = sFromIntegral x :: SWord32
+      uy = sFromIntegral y :: SWord32
+   in ite
+        (ux .< uy)
+        (literal (-1))
+        ( ite
+            (ux .> uy)
+            (literal 1)
+            (literal 0)
+        )
+
 -- | (SIDE_EFFECT, RET_VAL)
 -- SIDE_EFFECT will be the node id in which the side effect happens.
 -- Side effect nodes are either the return node or any `CallStatic` node.
@@ -110,7 +124,7 @@ evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
         [a, b] -> return [a, b]
         other -> raiseException $ "Ifnode " <> show nid <> ": Expected 2 successors but got " <> show other
     -- NOTE: Boolean guards require predecessor to be either 0 (false) or 1 (true)
-    boolGuard <- ((.== 1) . getInt) <$> evalDataNode graph (nodes !!! boolGuardId)
+    boolGuard <- ((.== JInt 1)) <$> evalDataNode graph (nodes !!! boolGuardId)
     ifBranch <- evalControlNode graph $ nodes !!! ifNode
     elseBranch <- evalControlNode graph $ nodes !!! elseNode
     return $
@@ -140,7 +154,7 @@ evalControlNode _ node = raiseException $ "Not a control node: " <> show node
 
 -- | Symbolically executed the data flow subgraph using denotational semantics
 -- NOTE: Very important regarding floating point and doubles.
--- Using e.g. `fpAdd` with explicit roundingmodes to capture the correct semantics
+-- Using e.g. `fpAdd` with explicit rounding modes to capture the correct semantics
 -- of floating point operations generates SMT formulas that take a very long time.
 -- I do not see why I shouldn't simply use (+) instead.
 -- No false positives yet.
@@ -333,6 +347,11 @@ evalDataNode graph@(nodeInfo -> nodes) (CmpD n1 n2) =
     v1 <- evalDataNode graph (nodes !!! n1)
     v2 <- evalDataNode graph (nodes !!! n2)
     return $ JInt $ sComp v1 v2
+evalDataNode graph@(nodeInfo -> nodes) (CmpU n1 n2) =
+  do
+    v1 <- evalDataNode graph (nodes !!! n1)
+    v2 <- evalDataNode graph (nodes !!! n2)
+    return $ JInt $ uComp v1 v2
 evalDataNode graph@(nodeInfo -> nodes) (CmpP n1 n2) =
   do
     v1 <- evalDataNode graph (nodes !!! n1)
@@ -349,6 +368,10 @@ evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
       Le -> return $ JInt $ ite (v .== -1 .|| v .== 0) (literal 1) (literal 0)
       Lt -> return $ JInt $ ite (v .== -1) (literal 1) (literal 0)
       Gt -> return $ JInt $ ite (v .== 1) (literal 1) (literal 0)
+evalDataNode graph (CMoveI n1 n2) = handleCMove graph n1 n2
+evalDataNode graph (CMoveL n1 n2) = handleCMove graph n1 n2
+evalDataNode graph (CMoveF n1 n2) = handleCMove graph n1 n2
+evalDataNode graph (CMoveD n1 n2) = handleCMove graph n1 n2
 evalDataNode graph (Phi rid preds) =
   -- The phi node's value depends on the corresponding region node
   let dataIdx = (regionPredecessor graph) !!! rid
@@ -442,6 +465,16 @@ handleLoad :: Graph -> JType -> NodeId -> NodeId -> Symbolic SValue
 handleLoad graph@(nodeInfo -> nodes) jtype memId addrId =
   let jpointer@(JPointer memIndex _ _ _) = readAddress (nodes !!! addrId)
    in evalMemoryNode graph addrId memIndex jtype (nodes !!! memId)
+
+handleCMove :: Graph -> NodeId -> NodeId -> Symbolic SValue
+handleCMove graph@(nodeInfo -> nodes) n1 n2 =
+  do
+    let Binary boolGuardId _ = nodes !!! n1
+        Binary trueBranch falseBranch = nodes !!! n2
+    boolGuard <- ((.== JInt 1)) <$> evalDataNode graph (nodes !!! boolGuardId)
+    trueVal <- evalDataNode graph (nodes !!! trueBranch)
+    falseVal <- evalDataNode graph (nodes !!! falseBranch)
+    return $ ite boolGuard falseVal trueVal
 
 -- | @evalMemoryNode@ will return the possible values that
 -- are written to the slice the given memory subgraph
