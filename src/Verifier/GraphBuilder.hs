@@ -241,6 +241,7 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
             Just "[le]" -> mkBool Le
             Just "[lt]" -> mkBool Lt
             Just "[eq]" -> mkBool Ee
+            Just "[gt]" -> mkBool Gt
             Just other -> Unsupported $ "Bool: Unrecognised dump_spec: " <> other
             Nothing -> Unsupported "Bool: Missing dump_spec"
     "Phi" ->

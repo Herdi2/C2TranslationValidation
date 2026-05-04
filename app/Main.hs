@@ -266,6 +266,7 @@ verifyProgram javaFile javaMethod javaBin seed z3Timeout deleteFiles printInfo =
                 (Unknown _ reason) ->
                   ("Unknown", show reason)
                 _ -> ("Error", "Unsupported SMT result")
+    putStrLn $ resFile
     when deleteFiles $ deleteIfExists resFile
     when printInfo $
       putStrLn $
