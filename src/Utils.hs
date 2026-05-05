@@ -129,7 +129,8 @@ compileJavaProgram javaBin javaFile methodName deleteXML =
             "-Xbatch", -- Makes sure compilation finishes
             -- "-XX:+NoCMove",
             -- Compile with C2 only
-            "-XX:ControlBugs=30",
+            -- "-XX:+NoCMove",
+            "-XX:ControlBugs=10",
             "-XX:-TieredCompilation", -- C2 only
             -- Compile only `javaClass::method`
             "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName,

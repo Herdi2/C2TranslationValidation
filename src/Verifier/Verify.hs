@@ -117,16 +117,21 @@ evalControlNode graph (Rethrow nid) =
    in return $ (literal nid, mkRetValue retType)
 evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
   do
-    [elseNode, ifNode] <-
+    (elseNode, ifNode) <-
       -- NOTE: Node Id of the false branch is always greater than the true branch
       case (controlSuccessors graph) !!! nid of
-        [a, b] | b > a -> return [b, a]
-        [a, b] -> return [a, b]
+        [a, b] ->
+          let (a', b') = (nodes !!! a, nodes !!! b)
+              isTrueBranch (IfTrue _) = True
+              isTrueBranch _ = False
+           in if isTrueBranch a'
+                then return (b', a')
+                else return (a', b')
         other -> raiseException $ "Ifnode " <> show nid <> ": Expected 2 successors but got " <> show other
     -- NOTE: Boolean guards require predecessor to be either 0 (false) or 1 (true)
     boolGuard <- ((.== JInt 1)) <$> evalDataNode graph (nodes !!! boolGuardId)
-    ifBranch <- evalControlNode graph $ nodes !!! ifNode
-    elseBranch <- evalControlNode graph $ nodes !!! elseNode
+    ifBranch <- evalControlNode graph $ ifNode
+    elseBranch <- evalControlNode graph $ elseNode
     return $
       ite
         boolGuard
