@@ -1,6 +1,7 @@
 module Fuzzer.Grammar where
 
 import Data.Char
+import Data.List (nub)
 import Data.Word
 import Prettyprinter
 
@@ -13,6 +14,7 @@ data JType
   | JFloat
   | JDouble
   | JBool
+  | JClass String [(String, JType)]
   -- JVar, "var" keyword, think C++ auto
   deriving (Show, Ord, Eq)
 
@@ -24,7 +26,7 @@ instance Pretty JType where
   pretty JBool = pretty "bool"
 
 -- | Program <className> <compiled method>
-data JProgram = JProgram Word64 String JMethod deriving (Show)
+data JProgram = JProgram Word64 String [LValue] JMethod deriving (Show)
 
 -- | Loop 10_000 times calling method to trigger C2 compiler
 -- for (int i = 0; i < 10_000, i++) {
@@ -64,7 +66,7 @@ optoLoop methodName params =
         <> rbrace
 
 instance Pretty JProgram where
-  pretty (JProgram seed className method@(JMethod methodName methodType params _ _)) =
+  pretty (JProgram seed className fields method@(JMethod methodName methodType params _ _)) =
     pretty "// Generated with seed"
       <+> pretty seed
       <> line
@@ -77,23 +79,58 @@ instance Pretty JProgram where
         ( pretty "public static void main(String[] args)"
             <+> lbrace
             <> line
-            <> indent 4 (optoLoop methodName params)
+            <> indent
+              4
+              ( pretty className
+                  <+> pretty "obj"
+                  <+> pretty "="
+                  <+> pretty "new"
+                  <+> pretty className
+                  <> lparen
+                  <> rparen
+                  <> semi
+                  <> line
+                  <> optoLoop ("obj." <> methodName) params
+              )
             <> line
             <> rbrace
         )
+      <> line
+      <> line
+      <> indent 4 (prettyFields fields)
       <> line
       <> line
       <> indent 4 (pretty method)
       <> line
       <> rbrace
 
+prettyFields :: [LValue] -> Doc ann
+prettyFields fields =
+  let classes = nub $ map (\(JObject klass _) -> klass) $ filter isClass fields
+   in align (vsep $ prettyClass <$> classes)
+        <> line
+        <> align (vsep $ prettyField <$> fields)
+  where
+    isClass (JObject _ _) = True
+    isClass _ = False
+    prettyClass (JClass className fields) =
+      pretty "class"
+        <+> pretty className
+        <+> lbrace
+        <> line
+        <> indent 4 (align (vsep $ (\(fieldName, jtype) -> pretty jtype <+> pretty fieldName <> semi) <$> fields))
+        <> line
+        <> rbrace
+    prettyField (JVar jtype varName) = pretty jtype <+> pretty varName <> semi
+    prettyField (JObject (JClass className fields) objName) =
+      pretty className <+> pretty objName <+> pretty "=" <+> pretty "new" <+> pretty className <> lparen <> rparen <> semi
+
 -- | Method <methodName> <retType> <parameters> <body> <return expr>
 data JMethod = JMethod String JType [(String, JType)] [JStmt] JExpr deriving (Show, Eq)
 
 instance Pretty JMethod where
   pretty (JMethod methodName retType params body ret) =
-    pretty "static"
-      <+> pretty retType
+    pretty retType
       <+> pretty methodName
       <> encloseSep lparen rparen (comma <> space) ((\(varName, varType) -> pretty varType <+> pretty varName) <$> params)
       <+> lbrace
@@ -103,6 +140,14 @@ instance Pretty JMethod where
       <> indent 4 (align $ pretty "return" <+> pretty ret <> semi)
       <> line
       <> rbrace
+
+data LValue
+  = -- | Variable with type and name
+    JVar JType String
+  | -- | Field variable, Object instance and name of field
+    JField JType String String
+  | JObject JType String
+  deriving (Show, Eq)
 
 data JStmt
   = JDecl JType String JExpr

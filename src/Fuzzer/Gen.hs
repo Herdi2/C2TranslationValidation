@@ -12,6 +12,7 @@ module Fuzzer.Gen where
 import Control.Monad
 import qualified Data.Map as M
 import Data.Word
+import Debug.Trace
 import Effectful
 import Effectful.Labeled
 import qualified Effectful.Labeled.Reader as LR
@@ -35,24 +36,26 @@ type GenEffects =
      State Integer, -- Used for fresh identifiers
      ExprDepth,
      StmtDepth,
+     Reader [LValue],
      NonDet -- Allows for generators to fail, which allows a generator to back track and try another one
    ]
 
 type Gen a = Eff GenEffects a
 
 maxExprDepth :: Integer
-maxExprDepth = 3
+maxExprDepth = 5
 
 maxStmtDepth :: Integer
-maxStmtDepth = 1
+maxStmtDepth = 2
 
 runGen :: Word64 -> Gen a -> Either CallStack a
 runGen seed =
   runPureEff
     . runNonDet OnEmptyRollback
+    . runReader []
     . LR.runReader @"StmtFuel" maxStmtDepth
     . LR.runReader @"ExprFuel" maxExprDepth
-    . evalState 0
+    . evalState maxStmtDepth
     . evalState [M.empty]
     . runReader Nothing
     . runRNG seed
@@ -82,6 +85,25 @@ getVars jtyp =
     when (null scopes) (error "getVars: Tried to get variables of an empty scope")
     return $ join $ M.findWithDefault [] jtyp <$> scopes
 
+-- | Get all fields of a given type in the current scope.
+getFields :: (Reader [LValue] :> es) => JType -> Eff es [LValue]
+getFields jtype =
+  do
+    fields <- ask
+    return $ go fields
+  where
+    go [] = []
+    go (field : rest) =
+      case field of
+        JVar jtyp varName | jtyp == jtype -> JField jtyp varName "this" : go rest
+        f@(JField jtyp _ _) | jtyp == jtype -> f : go rest
+        JObject (JClass _ fields) objName ->
+          go
+            ( ((\(fieldName, jtyp) -> JField jtyp fieldName objName) <$> fields)
+                ++ rest
+            )
+        _ -> go rest
+
 -- | Get the type of the expression we are currently generating.
 -- NOTE: Partial function.
 getType :: (Reader (Maybe JType) :> es) => Eff es JType
@@ -98,8 +120,8 @@ freshIdent =
     put (curr + 1)
     return curr
 
-freshVar :: (State Integer :> es) => Eff es String
-freshVar = ((++) "v_" . show) <$> freshIdent
+freshVar :: (State Integer :> es) => String -> Eff es String
+freshVar prefix = ((++) prefix . show) <$> freshIdent
 
 allVars :: (State VarScope :> es) => Eff es [(String, JType)]
 allVars = go [JInt, JLong, JFloat, JDouble]
@@ -120,29 +142,83 @@ guardType wantedType =
     t <- getType
     when (t /= wantedType) empty
 
-program :: Word64 -> String -> String -> Either String JProgram
-program seed className methodName =
-  let prog =
-        runGen seed $
-          (method methodName)
-            >>= return . JProgram seed className
-   in case prog of
-        Left _ -> Left "Failed to generate program"
-        Right p -> Right p
+{-
+ - Generators
+ -}
 
-method :: String -> Gen JMethod
-method methodName =
+-- Some magic numbers, control expression depth, statment count etc.
+fieldCount :: (Int, Int)
+fieldCount = (0, 4)
+
+objFields :: (Int, Int)
+objFields = (1, 3)
+
+-- | Generates types that the fields can have.
+-- (primitive field types, object field type)
+genFieldTypes :: Gen ([JType], [JType])
+genFieldTypes =
+  do
+    primitiveFields <-
+      sequence $ replicate 3 $ genArithmeticType
+    objectFields <-
+      sequence $
+        replicate 2 $
+          do
+            className <- freshVar "Klass"
+            fieldC <- randR objFields
+            fieldTypes <-
+              sequence $
+                replicate fieldC $
+                  (,) <$> freshVar "f" <*> genArithmeticType
+            return $ JClass className fieldTypes
+    return (primitiveFields, objectFields)
+
+genFields :: Gen [LValue]
+genFields =
+  do
+    (primitives, classes) <- genFieldTypes
+    fieldC <- randR fieldCount
+    sequence $
+      replicate fieldC $
+        weightedM
+          [ (genObject classes, 0.4),
+            (genField primitives, 0.6)
+          ]
+  where
+    genObject classes =
+      do
+        klass <- choose classes
+        objectName <- freshVar "obj"
+        return $ JObject klass objectName
+    genField primitives =
+      (JVar <$> choose primitives <*> freshVar "f")
+
+genProgram :: Word64 -> String -> String -> Either String JProgram
+genProgram seed className methodName =
+  do
+    let prog =
+          runGen seed $
+            do
+              fields <- genFields
+              method <- local (const fields) $ genMethod methodName
+              return $ JProgram seed className fields method
+     in case prog of
+          Left _ -> Left "Failed to generate program"
+          Right p -> Right p
+
+genMethod :: String -> Gen JMethod
+genMethod methodName =
   do
     paramCount <- randR (1, 4)
     params <-
       sequence $
         replicate paramCount $
           do
-            varName <- freshVar
+            varName <- freshVar "p"
             varType <- genArithmeticType
             return (varName, varType)
     mapM_ (uncurry declareVar) params
-    stmtCount <- randR (2, 5)
+    stmtCount <- randR (2, 10)
     methodBody <-
       putStmtFuel maxStmtDepth $
         sequence $
@@ -265,7 +341,7 @@ genArithmeticType =
 declare :: Gen JStmt
 declare =
   do
-    varName <- freshVar
+    varName <- freshVar "l"
     varTyp <- genArithmeticType
     varExpr <- withType varTyp $ expr
     declareVar varName varTyp
@@ -283,7 +359,8 @@ assign =
 expr :: Gen JExpr
 expr =
   weightedM
-    [ (var, 0.15),
+    [ (var, 0.10),
+      (memExpr, 0.05),
       (constExpr, 0.40),
       (arithmeticExpr, 0.30)
     ]
@@ -291,13 +368,34 @@ expr =
 var :: Gen JExpr
 var =
   do
-    jtyp <- getType
-    vars <- getVars jtyp
+    jtype <- getType
+    chooseVar <-
+      do
+        vars <- getVars jtype
+        choose vars
+    chosenField <-
+      do
+        fields <- getFields jtype
+        field <- choose fields
+        case field of
+          JField _ fieldName objName -> return $ objName <> "." <> fieldName
+          _ -> empty
     chosenVar <-
-      if null vars
-        then empty
-        else choose vars
-    return $ JVariable jtyp chosenVar
+      weighted
+        [ (chooseVar, 0.9),
+          (chosenField, 0.1)
+        ]
+    return $ JVariable jtype chosenVar
+
+memExpr :: Gen JExpr
+memExpr =
+  do
+    jtyp <- getType
+    fields <- getFields jtyp
+    chosenField <- choose fields
+    case chosenField of
+      JField _ fieldName objName ->
+        return $ JVariable jtyp (objName <> "." <> fieldName)
 
 -- | Generates a constant expression
 -- NOTE: Reader env has to contain a type for the constant to be generated
@@ -310,8 +408,9 @@ constExpr =
       Just JInt ->
         do
           -- Integers in Java are 32 bit
-          lit <- IntLit <$> randR (-2 ^ 31, 2 ^ 31 - 1)
-          return $ JConst JInt lit
+          normalLit <- IntLit <$> randR (-2 ^ 31, 2 ^ 31 - 1)
+          edgeLit <- IntLit <$> choose [(-2) ^ 31, 2 ^ 31 - 1, 0]
+          JConst JInt <$> weighted [(normalLit, 0.90), (edgeLit, 0.10)]
       Just JLong ->
         do
           -- Longs in Java are 64 bit
@@ -320,8 +419,10 @@ constExpr =
       Just JFloat ->
         do
           -- Floating point values are generated in binary representation
-          lit <- FloatLit <$> randR (-100.0, 100.0)
-          return $ JConst JFloat lit
+          normalLit <- FloatLit <$> randR (-100.0, 100.0)
+          -- Need to add more special cases (-INF, +INF)
+          specialLit <- FloatLit <$> choose [-0.0, 0.0]
+          JConst JFloat <$> weighted [(normalLit, 0.90), (specialLit, 0.10)]
       Just JDouble ->
         do
           -- Floating point values are generated in binary representation

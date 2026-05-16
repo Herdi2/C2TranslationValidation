@@ -97,11 +97,13 @@ updateRegionPredecessors _ _ g = g
 -- This check is done for @ParmCtrl@, @IfTrue@, @IfFalse@
 evalControlNode :: Graph -> Node -> Symbolic Ret
 evalControlNode graph (ParmCtrl nid) =
-  let [suc] = (controlSuccessors graph) !!! nid
-      succNode = (nodeInfo graph) !!! suc
-   in evalControlNode
-        (updateRegionPredecessors succNode nid graph)
-        succNode
+  case controlSuccessors graph !!! nid of
+    [suc] ->
+      let succNode = (nodeInfo graph) !!! suc
+       in evalControlNode
+            (updateRegionPredecessors succNode nid graph)
+            succNode
+    succs -> raiseException $ "ParmCtrl: Expected one succesor but got " <> show (length succs)
 evalControlNode graph@(nodeInfo -> nodes) (Return nid dataId) =
   do
     retVal <- evalDataNode graph (nodes !!! dataId)
@@ -138,23 +140,35 @@ evalControlNode graph@(nodeInfo -> nodes) (If nid boolGuardId) =
         ifBranch
         elseBranch
 evalControlNode graph (IfTrue nid) =
-  let [suc] = (controlSuccessors graph) !!! nid
-      succNode = (nodeInfo graph) !!! suc
-   in evalControlNode
-        (updateRegionPredecessors succNode nid graph)
-        succNode
+  case (controlSuccessors graph) !!! nid of
+    [suc] ->
+      let succNode = (nodeInfo graph) !!! suc
+       in evalControlNode
+            (updateRegionPredecessors succNode nid graph)
+            succNode
+    succs ->
+      raiseException $
+        "IfTrue: expected one successor but got: "
+          <> show (length succs)
 evalControlNode graph (IfFalse nid) =
-  let [suc] = (controlSuccessors graph) !!! nid
-      succNode = (nodeInfo graph) !!! suc
-   in evalControlNode
-        (updateRegionPredecessors succNode nid graph)
-        succNode
+  case (controlSuccessors graph) !!! nid of
+    [suc] ->
+      let succNode = (nodeInfo graph) !!! suc
+       in evalControlNode
+            (updateRegionPredecessors succNode nid graph)
+            succNode
+    succs ->
+      raiseException $
+        "IfFalse: expected one successor but got: "
+          <> show (length succs)
 evalControlNode graph (Region nid _) =
-  let [suc] = (controlSuccessors graph) !!! nid
-      succNode = (nodeInfo graph) !!! suc
-   in evalControlNode
-        (updateRegionPredecessors succNode nid graph)
-        succNode
+  case (controlSuccessors graph) !!! nid of
+    [suc] ->
+      let succNode = (nodeInfo graph) !!! suc
+       in evalControlNode
+            (updateRegionPredecessors succNode nid graph)
+            succNode
+    succs -> raiseException $ "Region node: expected one successor, got: " <> show (length succs)
 evalControlNode _ node = raiseException $ "Not a control node: " <> show node
 
 -- | Symbolically executed the data flow subgraph using denotational semantics
@@ -168,12 +182,13 @@ evalDataNode (params -> parms) (ParmI var) = return $ parms !!! var
 evalDataNode (params -> parms) (ParmL var) = return $ parms !!! var
 evalDataNode (params -> parms) (ParmF var) = return $ parms !!! var
 evalDataNode (params -> parms) (ParmD var) = return $ parms !!! var
-evalDataNode (params -> parms) (ParmMemPtr var _) = return $ parms !!! var
+evalDataNode _ (ParmMemPtr _ base) = return $ base
+evalDataNode _ (CastII val) = return val
 evalDataNode _ (ConI n) = pure $ JInt $ literal n
 evalDataNode _ (ConL n) = pure $ JLong $ literal n
 evalDataNode _ (ConF n) = pure $ JFloat $ literal n
 evalDataNode _ (ConD n) = pure $ JDouble $ literal n
-evalDataNode _ (ConP NullPtr) = pure $ NullPtr
+evalDataNode _ (ConP _) = raiseException "evalDataNode: Independently evaluated ConP node"
 evalDataNode graph@(nodeInfo -> nodes) (AddI n1 n2) =
   do
     v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
@@ -298,9 +313,20 @@ evalDataNode graph@(nodeInfo -> nodes) (OrL n1 n2) =
     v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
     v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 .|. v2)
+evalDataNode graph@(nodeInfo -> nodes) (XorI n1 n2) =
+  do
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
+    return $ JInt (v1 `xor` v2)
+evalDataNode graph@(nodeInfo -> nodes) (XorL n1 n2) =
+  do
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getLong <$> evalDataNode graph (nodes !!! n2)
+    return $ JLong (v1 `xor` v2)
 evalDataNode graph@(nodeInfo -> nodes) (LShiftI n1 n2) =
   -- NOTE: LShift has special semantics in the JVM
   -- int: n1 << (0x1f & n2)
+  -- 12669110630253530122
   do
     v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
     v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
@@ -357,13 +383,27 @@ evalDataNode graph@(nodeInfo -> nodes) (CmpU n1 n2) =
     v1 <- evalDataNode graph (nodes !!! n1)
     v2 <- evalDataNode graph (nodes !!! n2)
     return $ JInt $ uComp v1 v2
-evalDataNode graph@(nodeInfo -> nodes) (CmpP n1 n2) =
+evalDataNode graph@(nodeInfo -> nodes) (CmpUL n1 n2) =
   do
     v1 <- evalDataNode graph (nodes !!! n1)
     v2 <- evalDataNode graph (nodes !!! n2)
-    -- NOTE: When comparing two pointers, only
-    -- equality checks (==, !=) are allowed.
-    return $ JInt $ ite (v1 .== v2) (literal 0) (literal 1)
+    return $ JInt $ uComp v1 v2
+evalDataNode graph@(nodeInfo -> nodes) (CmpP n1 n2) =
+  do
+    -- Since we do not use objects other than when comparing to null
+    -- pointers, we will always assume exactly one input is null
+    -- Therefore, we let the object's "nullness" be determined by
+    -- the SMT solver, to allow for faulty control flow related to null-checking.
+    nonNullNode <-
+      case (nodes !!! n1, nodes !!! n2) of
+        (ConP _, ConP _) -> raiseException "Malformed graph, two ConP into CmpP"
+        (ConP "null", nonNull) -> return nonNull
+        (nonNull, ConP "null") -> return nonNull
+        (_, _) -> raiseException "Malformed graph, two non-null into CmpP"
+    address <- evalDataNode graph nonNullNode
+    let nullness = (_pointerMem graph) (literal $ showptr address)
+    -- Recall, if its null then CmpP returns equality, which is 0. Otherwise, 1.
+    return $ JInt $ ite (nullness) (literal 0) (literal 1)
 evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
   do
     v <- getInt <$> evalDataNode graph (nodes !!! n)
@@ -373,6 +413,7 @@ evalDataNode graph@(nodeInfo -> nodes) (Bool cmp n) =
       Le -> return $ JInt $ ite (v .== -1 .|| v .== 0) (literal 1) (literal 0)
       Lt -> return $ JInt $ ite (v .== -1) (literal 1) (literal 0)
       Gt -> return $ JInt $ ite (v .== 1) (literal 1) (literal 0)
+      Ge -> return $ JInt $ ite (v .== 1 .|| v .== 0) (literal 1) (literal 0)
 evalDataNode graph (CMoveI n1 n2) = handleCMove graph n1 n2
 evalDataNode graph (CMoveL n1 n2) = handleCMove graph n1 n2
 evalDataNode graph (CMoveF n1 n2) = handleCMove graph n1 n2
@@ -448,28 +489,34 @@ evalDataNode graph (LoadI _ memId addrId) = handleLoad graph JINT memId addrId
 evalDataNode graph (LoadL _ memId addrId) = handleLoad graph JLONG memId addrId
 evalDataNode graph (LoadF _ memId addrId) = handleLoad graph JFLOAT memId addrId
 evalDataNode graph (LoadD _ memId addrId) = handleLoad graph JDOUBLE memId addrId
-evalDataNode graph@(nodeInfo -> nodes) (LoadP _ ptr _ addrId) =
-  let JPointer memIndex ptrRef objStatus _ = ptr
-      aliasFunc = (M.!) (_aliasClasses graph) memIndex
-      JPointer midx _ _ _ = readAddress (nodes !!! addrId)
-   in return $
-        JPointer memIndex ptrRef objStatus $
-          case objStatus of
-            Null -> Just $ fromBool True
-            NotNull -> Just $ fromBool False
-            BotPTR ->
-              Just $
-                (_initialPointerMem graph $ (_aliasClasses graph M.! midx) $ literal addrId)
-evalDataNode graph@(nodeInfo -> nodes) (CastPP addrId) =
+evalDataNode graph@(nodeInfo -> nodes) node@(LoadP _ objStatus _ctrl memId addrId) =
+  -- LoadP is a special case.
+  -- We do not support object allocation, assignment nor any other modification.
+  -- As such, we always load an object from unknown memory
   do
-    JPointer memIndex ptrRef _ _ <- evalDataNode graph (nodes !!! addrId)
-    return $ JPointer memIndex ptrRef NotNull (Just $ fromBool False)
+    address <- evalDataNode graph (nodes !!! addrId)
+    unless (objStatus == BotPTR) (raiseException $ "evalDataNode: " <> show node <> " did not load BotPTR")
+    unless (nodes !!! memId == ParmMem) (raiseException $ "evalDataNode: " <> show node <> " did not read mem from parmmem")
+    return $ Load address
+-- NOTE: CastPP casts a pointer from BotPTR to NotNull, i.e.
+-- ensures that the object it points to is not null.
+-- However, since these are removed and the object status is not updated in the
+-- graph after optimizations, it will here be seen as an identity function.
+-- TODO: Potentially add path conditions to remedy this
+evalDataNode graph@(nodeInfo -> nodes) (CastPP addrId) = evalDataNode graph (nodes !!! addrId)
+evalDataNode graph@(nodeInfo -> nodes) (AddP addrId offsetId) =
+  do
+    address <- evalDataNode graph (nodes !!! addrId)
+    case (nodes !!! offsetId) of
+      ConL offset -> return $ Offset offset address
+      offsetNode -> raiseException $ "AddP: Expected offset to be ConL, got " <> show offsetNode
 evalDataNode _ n = raiseException $ "Not a data node:" <> show n
 
 handleLoad :: Graph -> JType -> NodeId -> NodeId -> Symbolic SValue
 handleLoad graph@(nodeInfo -> nodes) jtype memId addrId =
-  let jpointer@(JPointer memIndex _ _ _) = readAddress (nodes !!! addrId)
-   in evalMemoryNode graph addrId memIndex jtype (nodes !!! memId)
+  do
+    address <- evalDataNode graph (nodes !!! addrId)
+    evalMemoryNode graph address jtype memId
 
 handleCMove :: Graph -> NodeId -> NodeId -> Symbolic SValue
 handleCMove graph@(nodeInfo -> nodes) n1 n2 =
@@ -500,101 +547,61 @@ handleCMove graph@(nodeInfo -> nodes) n1 n2 =
 -- ite (aliasclass_Object1$A_12 12 == aliasclass_Object1$A 13) 10 (initial_mem 13)
 evalMemoryNode ::
   Graph ->
-  -- | The Id of the AddP node, representing the Instance Id.
-  NodeId ->
-  -- | The address (Object pointer) we are reading from.
-  MemIndex ->
-  -- | The type of value stored in the memroy
+  -- | The address we are looking for
+  SValue ->
+  -- | The value type we're looking for, mainly to use the correct initial memory
+  -- if we cannot find a store that uses the address.
   JType ->
-  -- | The memory node.
-  Node ->
+  -- | The memory node's ID
+  NodeId ->
+  -- | The value read from memory
   Symbolic SValue
-evalMemoryNode graph@(nodeInfo -> nodes) instanceId address jtype =
-  \case
+evalMemoryNode graph@(nodeInfo -> nodes) address jtype memId =
+  case nodes !!! memId of
     ParmMem ->
-      let aliasfunc = (_aliasClasses graph) M.! address
-       in --  NOTE: We use the alias Id given from the initial AddP node
-          --  to get the unknown memory.
-          case jtype of
-            JINT ->
-              return . JInt . (_initialIntMem graph) $ (aliasfunc $ literal instanceId)
-            JLONG ->
-              return . JLong . (_initialLongMem graph) $ (aliasfunc $ literal instanceId)
-            JFLOAT ->
-              return . JFloat . (_initialFloatMem graph) $ (aliasfunc $ literal instanceId)
-            JDOUBLE ->
-              return . JDouble . (_initialDoubleMem graph) $ (aliasfunc $ literal instanceId)
-    (Phi rid preds) ->
+      -- Base case, we couldn't find any stores that directly wrote to memory,
+      -- meaning this memory is unknown.
+      case jtype of
+        JINT ->
+          return . JInt . (_intMem graph) . literal $ showptr address
+        JLONG ->
+          return . JLong . (_longMem graph) . literal $ showptr address
+        JFLOAT ->
+          return . JFloat . (_floatMem graph) . literal $ showptr address
+        JDOUBLE ->
+          return . JDouble . (_doubleMem graph) . literal $ showptr address
+    Phi regionId preds ->
       -- Phi nodes may be used by the memory subgraph as well.
       -- The phi node's value depends on the corresponding region node
-      let memIdx = (regionPredecessor graph) !!! rid
-          chosenMemNode = (nodeInfo graph) !!! (preds !! fromIntegral memIdx)
-       in evalMemoryNode graph instanceId address jtype chosenMemNode
-    (MergeMem botMemNid aliasNids) ->
-      do
-        let aliases = (\nid -> nodes !!! nid) <$> aliasNids
-        let getStoreIds =
-              \case
-                (StoreI _ memId addrNid _) ->
-                  (addrNid, memId)
-                (StoreL _ memId addrNid _) ->
-                  (addrNid, memId)
-                (StoreF _ memId addrNid _) ->
-                  (addrNid, memId)
-                (StoreD _ memId addrNid _) ->
-                  (addrNid, memId)
-                _ -> error "Found non-store in slices of MergeMem"
-        let findSlice =
-              \case
-                [] -> Nothing
-                ((getStoreIds -> (addrNid, memId)) : xs) ->
-                  let JPointer addrMemIndex _ _ _ = readAddress (nodes !!! addrNid)
-                   in if (addrMemIndex == address)
-                        then Just (nodes !!! memId)
-                        else findSlice xs
-        case findSlice aliases of
-          Nothing ->
-            evalMemoryNode graph instanceId address jtype (nodes !!! botMemNid)
-          Just sliceMemNode ->
-            evalMemoryNode graph instanceId address jtype sliceMemNode
-    (StoreI slice memNid addrNid dataNid) ->
-      handleStore slice memNid addrNid dataNid
-    (StoreL slice memNid addrNid dataNid) ->
-      handleStore slice memNid addrNid dataNid
-    (StoreF slice memNid addrNid dataNid) ->
-      handleStore slice memNid addrNid dataNid
-    (StoreD slice memNid addrNid dataNid) ->
-      handleStore slice memNid addrNid dataNid
-    (StoreP slice memNid addrNid dataNid) ->
-      handleStore slice memNid addrNid dataNid
-    node -> raiseException $ "evalMemoryNode: non-memory node " <> show node
+      let memIdx = (regionPredecessor graph) !!! regionId
+          chosenMemId = (preds !! fromIntegral memIdx)
+       in evalMemoryNode graph address jtype chosenMemId
+    -- All stores are handled with short-circuiting behavior
+    (StoreI _ memId' addrId dataId) ->
+      unless (jtype == JINT) (raiseException $ "StoreI: Wrong type " <> show jtype)
+        >> handleStore memId' addrId dataId
+    (StoreL _ memId' addrId dataId) ->
+      unless (jtype == JLONG) (raiseException $ "StoreI: Wrong type " <> show jtype)
+        >> handleStore memId' addrId dataId
+    (StoreF _ memId' addrId dataId) ->
+      unless (jtype == JFLOAT) (raiseException $ "StoreI: Wrong type " <> show jtype)
+        >> handleStore memId' addrId dataId
+    (StoreD _ memId' addrId dataId) ->
+      unless (jtype == JDOUBLE) (raiseException $ "StoreI: Wrong type " <> show jtype)
+        >> handleStore memId' addrId dataId
+    (MergeMem _ _) ->
+      -- \| Strong assumption here
+      raiseException $ "ASSUMPTION BROKEN: Read from MergeMem"
+    node -> raiseException $ "evalMemoryNode: Non-mem node " <> show node
   where
-    handleStore
-      slice
-      memNid
-      addrNid
-      dataNid =
-        -- When encountering the store node we have two options:
-        -- 1. If the AddP node Id is equal to the given instance Id
-        --    when evaluating the memory, they are from the same object.
-        --    We can immediately return from this function then.
-        -- 2. If the AddP node Id does not match the instance Id, then
-        --    they are potentially different objects. Therefore,
-        --    we continue evaluating the memory coming into the Store
-        --    node.
-        do
-          when (slice == Bot) (raiseException $ "ASSUMPTION BROKEN: Store node returned Bot")
-          val <- evalDataNode graph (nodes !!! dataNid)
-          let aliasClass = (M.!) (_aliasClasses graph) address
-          restOfMemory <- evalMemoryNode graph instanceId address jtype (nodes !!! memNid)
-          if (addrNid == instanceId)
-            then return val
-            else
-              return $
-                ite
-                  (aliasClass (literal addrNid) .== aliasClass (literal instanceId))
-                  (val)
-                  (restOfMemory)
+    handleStore memId' addrId dataId =
+      do
+        address' <- evalDataNode graph (nodes !!! addrId)
+        -- \| Short-circuit behavior, if we find that we write to the same address
+        -- we read from we can immediately return the value.
+        if address' == address
+          then evalDataNode graph (nodes !!! dataId)
+          else evalMemoryNode graph address jtype memId'
 
 -- | Creates a symbolic value for each parameter node.
 -- The symbolic values will be reused in the SMT formulas
@@ -620,64 +627,7 @@ createParams (nodeInfo -> nodes) = go M.empty (map snd $ M.toList nodes)
           do
             param <- JDouble <$> sDouble ("parm" <> show nid)
             go (M.insert nid param paramMap) rest
-        ParmMemPtr nid (JPointer memIndex ptrRefinement objectStatus Nothing) ->
-          do
-            param <- JPointer memIndex ptrRefinement objectStatus <$> (Just <$> (sBool ("parm" <> show nid)))
-            go (M.insert nid param paramMap) rest
-        ParmMemPtr _ (JPointer _ _ _ (Just _)) ->
-          raiseException $ "createParams: JPointer value should not be set"
         _ -> go paramMap rest
-
--- | Creates an uninterpreter function that keeps track of memory aliasing
--- Unless the load and store nodes read the relevant address from the
--- same AddP node, the instances of the objects they read may not be the same.
--- However, if the AddP nodes are the same, then the two objects are guaranteed
--- to be the same instance.
---
--- To illustrate:
--- MemParm 7
---    |
--- StoreI (AddP 12 Object1$A+12) 10
---    |
--- LoadI (AddP 13 Object1$A+12)
---
--- Now, the value of the load is not solely determined by
--- the StoreI above it due to using a different AddP node.
--- This means that the instances of Object1$A used in the store
--- and in the load may differ.
--- Therefore, the loaded value may be 10 (as given by the StoreI)
--- or it may be unknown, given by MemParm.
---
--- To model this, we create an uninterpreted function
--- `alias_class_object1$A_12 :: SInteger -> SInteger`.
--- This function will map each AddP id to an alias Id.
--- In the case above, e.g.
--- AddP 12 Object1$A+12 gets assigned id x
--- AddP 13 Object1$A+12 gets assigned id y.
--- Now, x and y may be equal, which means they alias, or they may be different!
--- Note, these functions are the same for both before and after graphs,
--- to make sure that the same aliasing set-up is used.
-createAliasClass :: Graph -> M.Map MemIndex (SNodeId -> SWord64)
-createAliasClass (nodeInfo -> nodes) = go M.empty (M.toList nodes)
-  where
-    go aliasClasses [] = aliasClasses
-    go aliasClasses ((_, node) : rest) =
-      case node of
-        (LoadI _ memId addrId) -> go (createFunc aliasClasses addrId) rest
-        (LoadL _ memId addrId) -> go (createFunc aliasClasses addrId) rest
-        (LoadF _ memId addrId) -> go (createFunc aliasClasses addrId) rest
-        (LoadD _ memId addrId) -> go (createFunc aliasClasses addrId) rest
-        (LoadP _ _ memId addrId) -> go (createFunc aliasClasses addrId) rest
-        _ -> go aliasClasses rest
-    createFunc aliasClasses addrId =
-      let ptr = readAddress (nodes !!! addrId)
-          (JPointer memIndex@(className, offset) _ _ _) = ptr
-       in M.insert
-            memIndex
-            ( uninterpret $ "aliasclass_" <> className <> "_" <> show offset ::
-                SNodeId -> SWord64
-            )
-            aliasClasses
 
 runVerification :: SMTConfig -> Graph -> Graph -> IO (Either VerifyException SatResult)
 runVerification smtConfig before after =
@@ -685,21 +635,19 @@ runVerification smtConfig before after =
     satWith smtConfig $
       do
         parms <- createParams before
-        let aliasfuncs = createAliasClass before
-        let initialIntMem = (uninterpret $ "initialIntMem" :: SWord64 -> SInt32)
-        let initialLongMem = (uninterpret $ "initialLongMem" :: SWord64 -> SInt64)
-        let initialFloatMem = (uninterpret $ "initialFloatMem" :: SWord64 -> SFloat)
-        let initialDoubleMem = (uninterpret $ "initialDoubleMem" :: SWord64 -> SDouble)
+        let initialIntMem = (uninterpret $ "intMem" :: SString -> SInt32)
+        let initialLongMem = (uninterpret $ "longMem" :: SString -> SInt64)
+        let initialFloatMem = (uninterpret $ "floatMem" :: SString -> SFloat)
+        let initialDoubleMem = (uninterpret $ "doubleMem" :: SString -> SDouble)
         -- traceM (show before)
         res1 <-
           evalControlNode
             ( before
                 { params = parms,
-                  _aliasClasses = aliasfuncs,
-                  _initialIntMem = initialIntMem,
-                  _initialLongMem = initialLongMem,
-                  _initialFloatMem = initialFloatMem,
-                  _initialDoubleMem = initialDoubleMem
+                  _intMem = initialIntMem,
+                  _longMem = initialLongMem,
+                  _floatMem = initialFloatMem,
+                  _doubleMem = initialDoubleMem
                 }
             )
             (ParmCtrl 5)
@@ -707,14 +655,14 @@ runVerification smtConfig before after =
           evalControlNode
             ( after
                 { params = parms,
-                  _aliasClasses = aliasfuncs,
-                  _initialIntMem = initialIntMem,
-                  _initialLongMem = initialLongMem,
-                  _initialFloatMem = initialFloatMem,
-                  _initialDoubleMem = initialDoubleMem
+                  _intMem = initialIntMem,
+                  _longMem = initialLongMem,
+                  _floatMem = initialFloatMem,
+                  _doubleMem = initialDoubleMem
                 }
             )
             (ParmCtrl 5)
         -- NOTE: Strong equality, e.g. NaN == NaN but -0 /= +0
-        -- constrain $ res1 .=== (120, JInt $ 31)
         constrain $ res1 ./== res2
+
+-- constrain $ res1 .=== (65, JInt 27)

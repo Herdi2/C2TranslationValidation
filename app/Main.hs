@@ -7,6 +7,7 @@ import CommandLine
 import Control.Exception (SomeException, try)
 import Control.Monad
 import Control.Monad.IO.Class
+import Data.Either (fromRight)
 import Data.IORef
 import Data.List (intercalate)
 import qualified Data.Map as M
@@ -16,7 +17,9 @@ import Data.SBV.Control
 import Data.Time
 import Data.Time.Clock
 import Debug.Trace
+import Effectful.Error.Static
 import Options.Applicative
+import Prettyprinter (pretty)
 import System.Clock
 import System.Directory
 import System.Exit
@@ -25,7 +28,7 @@ import System.Random
 import Utils
 import Verifier.ErrorHandler
 import Verifier.Graph
-import Verifier.Verify (runVerification)
+import Verifier.Verify
 
 -- Main
 
@@ -51,6 +54,25 @@ main = do
     Compare opts -> compareGraphs opts
     Fuzz opts -> fuzz opts
     Campaign opts -> campaign javaBin opts
+    AST opts -> ast javaBin opts
+
+ast :: FilePath -> AstOpts -> IO ()
+ast javaBin opts =
+  do
+    javaFile <- makeAbsolute $ astFile opts
+    res <-
+      runErrorM $
+        do
+          xmlContent <- compileJavaProgram javaBin javaFile (astMethod opts) True
+          case parseGraphs xmlContent of
+            Left err -> throwError err
+            Right res -> return res
+    case res of
+      Left err -> print err
+      Right (before, after) ->
+        do
+          print (pretty before)
+          print (pretty after)
 
 verify :: FilePath -> VerifyOpts -> IO ()
 verify javaBin opts =
@@ -76,7 +98,7 @@ verify javaBin opts =
     when (isFile) $
       replicateM_ (verifyIteration opts) $
         do
-          logInfo <- verifyProgram javaInput (verifyMethod opts) javaBin 0 (60 * 1000) True True
+          logInfo <- verifyProgram javaInput (verifyMethod opts) javaBin 0 (60 * 1000) False True
           appendFile logfile (show logInfo <> "\n")
     when (isDir) $
       do
@@ -119,7 +141,7 @@ compareGraphs opts =
                 Right (SatResult res) ->
                   case res of
                     (Satisfiable _ model) ->
-                      ("Sat", show (show satRes))
+                      ("Sat", fromRight "" (show <$> satRes))
                     (Unsatisfiable {}) ->
                       ("Unsat", "")
                     (Unknown _ reason) ->

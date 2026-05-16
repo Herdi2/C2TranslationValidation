@@ -127,10 +127,7 @@ compileJavaProgram javaBin javaFile methodName deleteXML =
           [ -- Make sure compilation finishes before execution
             "-Xcomp",
             "-Xbatch", -- Makes sure compilation finishes
-            -- "-XX:+NoCMove",
             -- Compile with C2 only
-            -- "-XX:+NoCMove",
-            "-XX:ControlBugs=10",
             "-XX:-TieredCompilation", -- C2 only
             -- Compile only `javaClass::method`
             "-XX:CompileCommand=compileonly," ++ javaClass ++ "::" ++ methodName,
@@ -170,6 +167,6 @@ compileJavaProgram javaBin javaFile methodName deleteXML =
 -- | Given a seed and name, generates a Java file with the given seed and class name
 fuzzProgram :: Word64 -> String -> ErrorM String
 fuzzProgram seed className =
-  case program seed className "method" of
+  case genProgram seed className "method" of
     Left _ -> throwError $ fuzzError $ "Fuzzer: Failed to generate program with seed: " <> show seed
     Right prog -> return $ show $ pretty prog

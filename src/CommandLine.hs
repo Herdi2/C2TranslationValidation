@@ -14,6 +14,7 @@ data Command
   | Compare CompareOpts
   | Fuzz FuzzOpts
   | Campaign CampaignOpts
+  | AST AstOpts
 
 data VerifyOpts = VerifyOpts
   { verifyPath :: FilePath,
@@ -38,6 +39,17 @@ data CampaignOpts = CampaignOpts
     campaignNum :: Int,
     campaignZ3Timeout :: Integer
   }
+
+data AstOpts = AstOpts
+  { astFile :: FilePath,
+    astMethod :: String
+  }
+
+astOpts :: Parser AstOpts
+astOpts =
+  AstOpts
+    <$> argument str (metavar "<FILE/DIR>" <> help "Java file")
+    <*> argument str (metavar "<METHOD>" <> help "Java method")
 
 verifyOpts :: Parser VerifyOpts
 verifyOpts =
@@ -128,6 +140,9 @@ commandParser =
         <> command
           "campaign"
           (info (Campaign <$> campaignOpts) (progDesc "Run the campaign"))
+        <> command
+          "ast"
+          (info (AST <$> astOpts) (progDesc "Print the internal AST"))
     )
 
 globalParser :: Parser GlobalOpts

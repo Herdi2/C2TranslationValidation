@@ -8,7 +8,7 @@ import Data.Char (isDigit)
 import Data.List (find, isPrefixOf, sortOn)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
-import Data.SBV (SBool, free_, fromBool)
+import Data.SBV (SBool, free_, fromBool, literal)
 import Debug.Trace
 import GHC.Float (castWord32ToFloat, castWord64ToDouble)
 import Numeric (readBin)
@@ -112,12 +112,13 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
             | "double" `isPrefixOf` typ = Parsed (nodeId, ParmD nodeId)
             | "memory" `isPrefixOf` typ = Parsed (nodeId, ParmMem)
             | "inst" `isPrefixOf` typ =
+                -- \| "inst" prefix is "this", i.e. reference to the own class
                 case (readPtrType <$> (M.lookup "bottom_type" nodeProps)) of
                   Nothing ->
                     Unsupported $
                       "Pointer param: Internal error, node property didn't contain \"bottom_type\" or invalid ptr string given"
+                  Just (Right (className, _)) -> Parsed (nodeId, ParmMemPtr nodeId (Base className))
                   Just (Left err) -> Unsupported $ "Pointer param: " <> err
-                  Just (Right memIndex) -> Parsed (nodeId, ParmMemPtr nodeId memIndex)
             | "control" `isPrefixOf` typ = Parsed (nodeId, ParmCtrl nodeId)
             | "abIO" `isPrefixOf` typ = Ignored
             | "rawptr" `isPrefixOf` typ = Ignored
@@ -171,7 +172,8 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
         Nothing ->
           Unsupported $ "Pointer param: Internal error, node property didn't contain \"bottom_type\" or invalid ptr string given"
         Just (Left err) -> Unsupported $ "ConP: " <> err
-        Just (Right memIndex) -> Parsed $ (nodeId, ConP memIndex)
+        Just (Right ("null", _)) -> Parsed $ (nodeId, ConP "null")
+        Just (Right (txt, _)) -> Unsupported $ "ConP: Expected NullPtr but got " <> txt
     -- Addition
     "AddI" -> arithmeticNode "AddI" AddI nodeId rEdges
     "AddL" -> arithmeticNode "AddL" AddL nodeId rEdges
@@ -199,6 +201,9 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
     -- Bitwise or
     "OrI" -> arithmeticNode "OrI" OrI nodeId rEdges
     "OrL" -> arithmeticNode "OrL" OrL nodeId rEdges
+    -- Bitwise xor
+    "XorI" -> arithmeticNode "XorI" XorI nodeId rEdges
+    "XorL" -> arithmeticNode "XorL" XorL nodeId rEdges
     -- Left shifting
     "LShiftI" -> arithmeticNode "LShiftI" LShiftI nodeId rEdges
     "LShiftL" -> arithmeticNode "LShiftL" LShiftL nodeId rEdges
@@ -218,12 +223,47 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
     "ConvL2D" -> convNode ConvL2D nodeId rEdges
     "ConvL2F" -> convNode ConvL2F nodeId rEdges
     "ConvL2I" -> convNode ConvL2I nodeId rEdges
+    -- Cast nodes
+    "CastII" ->
+      let matchType typ
+            | "int" `isPrefixOf` typ =
+                case (readMaybe (drop (length "int:") typ)) of
+                  Nothing -> Unsupported $ "buildNode: Internal error, CastII int, couldn't read value from " <> typ
+                  Just readRes -> Parsed (nodeId, CastII $ JInt $ literal readRes)
+            | "long" `isPrefixOf` typ =
+                case (readMaybe (drop (length "long:") typ)) of
+                  Nothing -> Unsupported $ "buildNode: Internal error, CastII long, couldn't read value from " <> show typ
+                  Just readRes -> Parsed (nodeId, CastII $ JLong $ literal readRes)
+            | "float" `isPrefixOf` typ =
+                case (M.lookup "bottom_type" nodeProps) of
+                  Nothing -> Unsupported $ "buildNode: Internal error, CastII float didn't contain \"bottom_type\""
+                  Just value ->
+                    let floatBin = drop (length "ftcon:") value
+                        binDigit x = x == '0' || x == '1'
+                        bitsToFloat = castWord32ToFloat . fst . head . readBin
+                     in if all binDigit floatBin
+                          then Parsed (nodeId, CastII $ JFloat $ literal $ bitsToFloat floatBin)
+                          else Unsupported $ "Floating point expected in binary, but got " <> floatBin
+            | "double" `isPrefixOf` typ =
+                case (M.lookup "bottom_type" nodeProps) of
+                  Nothing -> Unsupported $ "buildNode: Internal error, ConD didn't contain \"bottom_type\""
+                  Just value ->
+                    let doubleBin = drop (length "dblcon:") value
+                        binDigit x = x == '0' || x == '1'
+                        bitsToDouble = castWord64ToDouble . fst . head . readBin
+                     in if all binDigit doubleBin
+                          then Parsed (nodeId, CastII $ JDouble $ literal $ bitsToDouble doubleBin)
+                          else Unsupported $ "Double expected in binary, but got " <> doubleBin
+       in case (M.lookup "bottom_type" nodeProps) of
+            Nothing -> Unsupported $ "buildNode: Internal error, CastII didn't contain \"bottom_type\""
+            Just typ -> matchType typ
     -- Comparisons
     "CmpI" -> arithmeticNode "CmpI" CmpI nodeId rEdges
     "CmpL" -> arithmeticNode "CmpL" CmpL nodeId rEdges
     "CmpF" -> arithmeticNode "CmpF" CmpF nodeId rEdges
     "CmpD" -> arithmeticNode "CmpD" CmpD nodeId rEdges
     "CmpU" -> arithmeticNode "CmpU" CmpU nodeId rEdges
+    "CmpUL" -> arithmeticNode "CmpUL" CmpUL nodeId rEdges
     -- These <CMP>3 nodes are special, as they are used
     -- for comparisons going into `unstable_if`
     -- Semantically, they are equivalent to their Cmp
@@ -242,6 +282,7 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
             Just "[lt]" -> mkBool Lt
             Just "[eq]" -> mkBool Ee
             Just "[gt]" -> mkBool Gt
+            Just "[ge]" -> mkBool Ge
             Just other -> Unsupported $ "Bool: Unrecognised dump_spec: " <> other
             Nothing -> Unsupported "Bool: Missing dump_spec"
     "Phi" ->
@@ -258,6 +299,8 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
       -- NOTE: A region always has an edge to itself, which is the first predecessor
       case (findNodePred nodeId rEdges) of
         (regionId : preds) | length preds > 1 -> Parsed (nodeId, Region nodeId preds)
+        -- If we have only one predecessor, is is not a reference to itself
+        [regionId] -> Parsed (nodeId, Region nodeId [regionId])
         _ -> Unsupported "Region: Region node got less than two predecessors"
     "If" ->
       case (findNodePred nodeId rEdges) of
@@ -301,22 +344,18 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
         (Nothing, _) -> Unsupported "LoadP: Didn't contain \"bottom_type\""
         (_, Nothing) -> Unsupported "LoadP: Didn't contain \"source\""
         (Just (Left err), _) -> Unsupported $ "LoadP: " <> err
-        (Just (Right ptrType), Just source) ->
+        (Just (Right (_, objStatus)), Just source) ->
           case findNodePred nodeId rEdges of
-            [x, y] -> Parsed (nodeId, LoadP source ptrType x y)
-            [_ctrl, x, y] -> Parsed (nodeId, LoadP source ptrType x y)
+            [x, y] -> Parsed (nodeId, LoadP source objStatus Nothing x y)
+            [ctrl, x, y] -> Parsed (nodeId, LoadP source objStatus (Just ctrl) x y)
             neighbors -> Unsupported $ nodeName <> ": Expected two preds but got: " <> show (length neighbors)
     "AddP" ->
-      -- NOTE: Here we shortcut. The final value calculated by AddP is always* given
-      -- in the "dump_spec", and as such we can immediately store it in the AddP node.
-      -- \*atleast from observation
+      -- NOTE: We assume that the two first inputs two AddP are equal
       case (findNodePred nodeId rEdges) of
-        [ptr1, ptr2, val] ->
-          case (readPtrType <$> M.lookup "bottom_type" nodeProps) of
-            Nothing -> Unsupported $ "AddP: No attribute \"bottom_type\""
-            Just (Left err) -> Unsupported $ "AddP: " <> show err
-            Just (Right memIndex) ->
-              Parsed $ (nodeId, AddP memIndex ptr1 ptr2 val)
+        [ptr1, ptr2, offset]
+          | ptr1 == ptr2 ->
+              Parsed $ (nodeId, AddP ptr1 offset)
+        [ptr1, ptr2, _] -> Unsupported $ "AddP: First two inputs are not equal, " <> show ptr1 <> " " <> show ptr2
         preds -> Unsupported $ "AddP: Expected three predecessors but got " <> show (length preds)
     "MergeMem" ->
       case (findNodePred nodeId rEdges) of
@@ -451,32 +490,21 @@ findNodePred = go []
         then go ((from, idx) : acc) nid rest
         else go acc nid rest
 
--- | Read the pointer type of a pointer node
--- Structure of a pointer: <refinement>:<className>:<ObjectStatus>+<offset>,iid=<something>
--- e.g. instptr:Object3:NotNull+16,iid=bot
--- becomes: JPointer ("Object3", 16) InstPtr NotNull Nothing
--- The `Nothing` is placeholder for a symbolic boolean,
--- which indicates whether the pointer is a nullptr or not.
--- It will be filled during verification.
--- NOTE: The iid (instance id) is ignored for now
-readPtrType :: String -> Either String SValue
+-- | Read the class name and object status of the pointer
+readPtrType :: String -> Either String (String, ObjectStatus)
 readPtrType (takeWhile (/= ',') -> ptrStr) =
   -- NOTE: Here we remove iid
   case parseAttr ptrStr of
     ("instptr", rest) ->
       let (className, rest') = parseAttr rest
        in case parseAttr rest' of
-            (objStatus, '+' : offset) ->
-              Right $ JPointer (className, read offset) InstPtr (parseObjStatus objStatus) Nothing
-            _ ->
-              -- NOTE: Non-memory pointers should never be evaluated,
-              Right $ JPointer ("Unknown", 0) InstPtr (NotNull) Nothing
-    ("ArithmeticException", rest) ->
-      let offset = drop 1 $ dropWhile (/= '+') rest
-       in Right $ JPointer ("ArithmeticException", read offset) ExceptionPtr (NotNull) Nothing
+            (objStatus, _) ->
+              Right $ (className, (parseObjStatus objStatus))
+    ("ArithmeticException", _) ->
+      Right $ ("ArithmeticException", NotNull)
     ("ptr", rest) ->
       case (parseAttr rest) of
-        ("null", _) -> Right NullPtr
+        ("null", _) -> Right ("null", Null)
         (e, _) -> Left $ "readPtrType: Unrecognized ptr value " <> e
     (p, _) -> Left $ "Unrecognized pointer type: " <> p
   where
@@ -491,3 +519,4 @@ readPtrType (takeWhile (/= ',') -> ptrStr) =
         "NotNull" -> NotNull
         "Null" -> Null
         "BotPTR" -> BotPTR
+        status -> error $ "Invalid object status: " <> show status

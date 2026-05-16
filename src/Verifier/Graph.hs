@@ -16,6 +16,7 @@ import Data.SBV
 import qualified Data.SBV.Internals as SI
 import Debug.Trace
 import GHC.Prim
+import Prettyprinter
 
 type NodeId = Word32
 
@@ -41,6 +42,8 @@ data Comp
     Lt
   | -- | Greater than
     Gt
+  | -- | Greater than or equal
+    Ge
   | -- | Equal
     Ee
   deriving (Show, Read, Eq)
@@ -60,7 +63,7 @@ data Node
   | ConL Int64
   | ConF Float
   | ConD Double
-  | ConP SValue
+  | ConP String
   | -- | Addition
     AddI NodeId NodeId
   | AddL NodeId NodeId
@@ -86,6 +89,9 @@ data Node
   | -- | Bitwise and
     AndI NodeId NodeId
   | AndL NodeId NodeId
+  | -- | Bitwise xor
+    XorI NodeId NodeId
+  | XorL NodeId NodeId
   | -- | Bitwise or
     OrI NodeId NodeId
   | OrL NodeId NodeId
@@ -108,6 +114,8 @@ data Node
   | ConvL2D NodeId
   | ConvL2F NodeId
   | ConvL2I NodeId
+  | -- Cast nodes, semantically equivalent to constant nodes
+    CastII SValue
   | -- | Comparisons
     CmpI NodeId NodeId
   | CmpL NodeId NodeId
@@ -115,6 +123,7 @@ data Node
   | CmpD NodeId NodeId
   | CmpP NodeId NodeId
   | CmpU NodeId NodeId
+  | CmpUL NodeId NodeId
   | -- | Move nodes
     -- CMoveX <Binary node (Bool)> <Binary node (Branches)>
     CMoveI NodeId NodeId
@@ -155,11 +164,17 @@ data Node
   | LoadL String NodeId NodeId
   | LoadF String NodeId NodeId
   | LoadD String NodeId NodeId
-  | LoadP String SValue NodeId NodeId
+  | -- LoadP is a special case
+    -- LoadP is in our implementation only used for comparisons, into CmpP.
+    -- As such, we need to keep track of ObjectStatus (maybe it is already guaranteed to be non-null or null)
+    -- Memory we load from (should always be the initial mem since we do support object assignments)
+    -- and the offset as usual
+    -- We also keep track of the control flow, if it exists, to assert a path condition
+    LoadP String ObjectStatus (Maybe NodeId) NodeId NodeId
   | -- | MergeMem <Bot memory> [<Alias memory>]
     MergeMem NodeId [NodeId]
-  | -- | AddP <ptr result> <ptr1> <ptr2> <offset>
-    AddP SValue NodeId NodeId NodeId
+  | -- | AddP <ptr> <offset>
+    AddP NodeId NodeId
   | -- | CastPP <ptr>
     CastPP NodeId
   deriving (Show, Read, Eq)
@@ -200,11 +215,11 @@ data Graph
     _aliasClasses :: M.Map MemIndex (SNodeId -> SWord64),
     -- | Initial memory functions. Maps alias indices
     -- from @_aliasClasses@ to free variables.
-    _initialIntMem :: SWord64 -> SInt32,
-    _initialLongMem :: SWord64 -> SInt64,
-    _initialFloatMem :: SWord64 -> SFloat,
-    _initialDoubleMem :: SWord64 -> SDouble,
-    _initialPointerMem :: SWord64 -> SBool
+    _intMem :: SString -> SInt32,
+    _longMem :: SString -> SInt64,
+    _floatMem :: SString -> SFloat,
+    _doubleMem :: SString -> SDouble,
+    _pointerMem :: SString -> SBool
   }
 
 instance Eq Graph where
@@ -227,6 +242,18 @@ instance Show Graph where
              ]
          )
 
+instance Pretty Graph where
+  pretty graph =
+    let retType = methodType graph
+        nodes = M.toList $ nodeInfo graph
+        controlFlow = M.toList $ controlSuccessors graph
+     in pretty "Return type: "
+          <+> pretty (show retType)
+          <> line
+          <> pretty (map show nodes)
+          <> line
+          <> pretty (map show controlFlow)
+
 -- | Graph with default values (everything empty)
 -- NOTE: The default return type is `int`, since we always want to have a return statement
 defaultGraph :: Graph
@@ -239,11 +266,11 @@ defaultGraph =
     M.empty
     M.empty
     M.empty
-    (uninterpret $ "initialIntMem" :: SWord64 -> SInt32)
-    (uninterpret $ "initialLongMem" :: SWord64 -> SInt64)
-    (uninterpret $ "initialFloatMem" :: SWord64 -> SFloat)
-    (uninterpret $ "initialDoubleMem" :: SWord64 -> SDouble)
-    (uninterpret $ "initialPointerMem" :: SWord64 -> SBool)
+    (uninterpret $ "initialIntMem" :: SString -> SInt32)
+    (uninterpret $ "initialLongMem" :: SString -> SInt64)
+    (uninterpret $ "initialFloatMem" :: SString -> SFloat)
+    (uninterpret $ "initialDoubleMem" :: SString -> SDouble)
+    (uninterpret $ "initialPointerMem" :: SString -> SBool)
 
 mkGraph :: JType -> [(NodeId, Node)] -> [(NodeId, [NodeId])] -> Graph
 mkGraph retType nInfo successors =
@@ -283,10 +310,23 @@ data SValue
     -- We wish to know which class is its base, the offset into the class,
     -- refinement level and whether it is Null (True) or NotNull (False).
     -- BotPTR can be either Null or NotNull, which can be modeled using a symbolic value SBool
-    JPointer MemIndex PtrRefinement ObjectStatus (Maybe SBool)
-  | -- | Represent null pointers
-    NullPtr
+    -- | New memory values
+    Base String
+  | Offset Int64 SValue
+  | Load SValue
   deriving (Show, Eq)
+
+showptr :: SValue -> String
+showptr (Base className) = className
+showptr (Offset offset ptr) = showptr ptr <> "_" <> show offset
+showptr (Load ptr) = "$" <> showptr ptr <> "$"
+showptr val = error $ "showptr: non-ptr " <> show val
+
+checkptr :: SValue -> Bool
+checkptr (Base _) = True
+checkptr (Offset _ ptr) = checkptr ptr
+checkptr (Load ptr) = checkptr ptr
+checkptr _ = False
 
 instance Read SValue where
   readsPrec _ input =
@@ -295,9 +335,6 @@ instance Read SValue where
       ("JLong" : jlong : rest) -> [(JLong (literal (read jlong :: Int64)), unwords rest)]
       ("JFloat" : jfloat : rest) -> [(JFloat (literal (read jfloat :: Float)), unwords rest)]
       ("JDouble" : jdouble : rest) -> [(JDouble (literal (read jdouble :: Double)), unwords rest)]
-      ("JPointer" : memIndex : ptrRef : objStatus : rest) ->
-        [(JPointer (read memIndex :: MemIndex) (read ptrRef :: PtrRefinement) (read objStatus :: ObjectStatus) Nothing, unwords rest)]
-      ("NullPtr" : rest) -> [(NullPtr, unwords rest)]
       _ -> error "invalid svalue read"
 
 instance EqSymbolic SValue where
@@ -307,14 +344,6 @@ instance EqSymbolic SValue where
       (JLong v1, JLong v2) -> v1 .== v2
       (JFloat v1, JFloat v2) -> v1 .== v2
       (JDouble v1, JDouble v2) -> v1 .== v2
-      (JPointer memIdx1 ptrRef1 objStat1 x, JPointer memIdx2 ptrRef2 objStat2 y) ->
-        fromBool (memIdx1 == memIdx2 && ptrRefEq ptrRef1 ptrRef2 && objStat1 == objStat2)
-          .&& x .== y
-      -- NOTE: The boolean in a JPointer tells us whether it is a nullptr or not
-      (JPointer _ _ _ x, NullPtr) ->
-        x .== Just (fromBool True)
-      (NullPtr, JPointer _ _ _ x) ->
-        x .== Just (fromBool True)
       (_, _) -> sFalse
 
   -- NOTE: Important to also implement (.===) to get equality between NaNs
@@ -325,13 +354,6 @@ instance EqSymbolic SValue where
       (JLong v1, JLong v2) -> v1 .=== v2
       (JFloat v1, JFloat v2) -> v1 .=== v2
       (JDouble v1, JDouble v2) -> v1 .=== v2
-      (JPointer memIdx1 ptrRef1 objStat1 x, JPointer memIdx2 ptrRef2 objStat2 y) ->
-        fromBool (memIdx1 == memIdx2 && ptrRefEq ptrRef1 ptrRef2 && objStat1 == objStat2)
-          .&& x .=== y
-      (JPointer _ _ _ x, NullPtr) ->
-        x .=== Nothing
-      (NullPtr, JPointer _ _ _ x) ->
-        x .=== Nothing
       (_, _) -> sFalse
 
 instance Mergeable SValue where
@@ -340,8 +362,6 @@ instance Mergeable SValue where
     (JLong x, JLong y) -> JLong $ symbolicMerge force test x y
     (JFloat x, JFloat y) -> JFloat $ symbolicMerge force test x y
     (JDouble x, JDouble y) -> JDouble $ symbolicMerge force test x y
-    (JPointer memidx ref objstatus x, JPointer _ _ _ y) ->
-      JPointer memidx ref objstatus $ symbolicMerge force test x y
     (x, y) -> error $ "Cannot merge different SValue types: " <> show x <> " and " <> show y
 
 instance OrdSymbolic SValue where
@@ -381,5 +401,4 @@ data Memory
   deriving (Eq, Show)
 
 readAddress :: Node -> SValue
-readAddress (AddP m _ _ _) = m
-readAddress n = error $ "Store node got address from node other than AddP: " <> show n
+readAddress n = error $ "TODO"

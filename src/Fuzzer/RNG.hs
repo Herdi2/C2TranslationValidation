@@ -46,8 +46,8 @@ randR (a, b) =
 -- | Sample a random value from a weighted list.  The total weight of all
 -- elements must not be 0.
 -- Taken from: https://hackage.haskell.org/package/MonadRandom-0.1.3/docs/src/Control-Monad-Random.html#fromList
-weighted :: (RNG :> es) => [(a, Rational)] -> Eff es a
-weighted [] = error "Internal error: fromList called with empty list"
+weighted :: (NonDet :> es, RNG :> es) => [(a, Rational)] -> Eff es a
+weighted [] = empty
 weighted [(x, _)] = return x
 weighted xs = do
   -- TODO: Better error message if weights sum to 0.
@@ -72,5 +72,5 @@ weightedM xs = do
 
 -- return $ fst . head $ dropWhile (\(_, q) -> q < p) cs
 
-choose :: (RNG :> es) => [a] -> Eff es a
+choose :: (NonDet :> es, RNG :> es) => [a] -> Eff es a
 choose = weighted . fmap (,1)
