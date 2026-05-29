@@ -2,13 +2,15 @@ class Back2BackStore1 {
   public static void main(String[] args) {
     Back2BackStore1 b2b = new Back2BackStore1();
     System.out.println(b2b.correct(10));
-    System.out.println(b2b.incorrect(10));
+    System.out.println(b2b.back2back());
+    System.out.println(b2b.back3back());
+    System.out.println(b2b.trickyStore(10));
   }
 
   class A {int x;}
   A f1 = new A();
   A f2 = new A();
-  int f3;
+  A f3 = new A();
   int f4;
 
   // NOTE: To not get folded up immediately, need to use -XX:+DelayMem
@@ -23,7 +25,7 @@ class Back2BackStore1 {
     return f1.x;
   }
 
-  int incorrect(int x) {
+  int back2back() {
     // StoreNode::Ideal
     // Back-to-back store done incorrectly here, due to assuming
     // the addresses are the same!
@@ -33,6 +35,35 @@ class Back2BackStore1 {
     f1.x = 10;
     f2.x = 20;
     return f1.x;
+  }
+
+  int back3back() {
+    // StoreNode::Ideal
+    // Back-to-back store done incorrectly here, due to assuming
+    // the addresses are the same!
+    // NOTE: Cannot be implemented in the compiler, since
+    // back-to-back stores to addresses have more than one outcnt(),
+    // and changing that criteria crashes the compiler.
+    int res = 0;
+    f = 10;
+    if (f != 10) {
+      res += f;
+      f = 20;
+    }
+    res += f;
+    return res;
+  }
+
+  int f = 0;
+  int trickyStore(int x) {
+    int storeVal = 20;
+    if (x % 1000003 == 0) {
+        storeVal = 10;
+    }
+    f = storeVal;
+    int read = f;
+    f = 20;
+    return read + f;
   }
 
 }

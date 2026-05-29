@@ -6,6 +6,9 @@ import Options.Applicative
 data GlobalOpts
   = GlobalOpts
   { globalJavaBin :: FilePath,
+    globalWuBugs :: Bool,
+    globalMemBugs :: Int,
+    globalCtrlBugs :: Int,
     globalCommand :: Command
   }
 
@@ -24,8 +27,7 @@ data VerifyOpts = VerifyOpts
   }
 
 data CompareOpts = CompareOpts
-  { compareBefore :: FilePath,
-    compareAfter :: FilePath,
+  { compareXML :: FilePath,
     compareIteration :: Int
   }
 
@@ -70,8 +72,7 @@ verifyOpts =
 compareOpts :: Parser CompareOpts
 compareOpts =
   CompareOpts
-    <$> argument str (metavar "<FILE>" <> help "Internal representation of SoN IR graph")
-    <*> argument str (metavar "<FILE>" <> help "Internal representation of SoN IR graph")
+    <$> argument str (metavar "<FILE>" <> help "XML file with graphs")
     <*> ( option
             auto
             ( long "iter"
@@ -156,4 +157,29 @@ globalParser =
           <> showDefault
           <> help "Path to the Java binary to use"
       )
+    <*> ( flag
+            False
+            True
+            ( long "ReintroduceBugs"
+                <> help "Choose to reintroduce the olds bugs used in Wu's verification."
+            )
+        )
+    <*> ( option
+            auto
+            ( long "MemoryBugs"
+                <> short 'm'
+                <> metavar "<INT>"
+                <> value 0
+                <> help "Memory bug to introduce [20, 30]. Default is 0."
+            )
+        )
+    <*> ( option
+            auto
+            ( long "ControlBugs"
+                <> short 'c'
+                <> metavar "<INT>"
+                <> value 0
+                <> help "Control bug to introduce [10, 20, 21]. Default is 0."
+            )
+        )
     <*> commandParser

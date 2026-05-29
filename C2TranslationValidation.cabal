@@ -30,6 +30,7 @@ library
       Fuzzer.GenUtils
       Fuzzer.Grammar
       Fuzzer.RNG
+      Fuzzer.WeightDB
       ThesisGraphs
       Utils
       Verifier.ErrorHandler

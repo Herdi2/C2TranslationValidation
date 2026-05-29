@@ -4,7 +4,7 @@ public class LShift {
     System.out.println(x);
   }
 
-  static long method(long i) {
-    return (i + i) << 63;
+  static long method(long x) {
+    return (x + x) << 63;
   }
 }

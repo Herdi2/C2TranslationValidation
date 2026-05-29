@@ -78,27 +78,33 @@ compareOutput javaFile methodName =
 
 -- | Given XML content representing the C2 IR, parses the "After Parsing" and "Before Matching"
 -- graphs into internal graph representations.
-parseGraphs :: String -> Either CustomError (Graph, Graph)
+parseGraphs :: String -> ErrorM (Graph, Graph)
 parseGraphs xmlContent =
   do
-    beforeGraph <- parseGraph "After Parsing" xmlContent
-    before <- buildGraph Nothing beforeGraph
-    afterGraph <- parseGraph "Before Matching" xmlContent
-    after <- buildGraph (Just $ methodType before) afterGraph
+    (beforeGraph, afterGraph) <-
+      case (parseGraph "After Parsing" xmlContent, parseGraph "Before Matching" xmlContent) of
+        (Right x, Right y) -> return (x, y)
+        (Left x, _) -> throwError x
+        (_, Left y) -> throwError y
+    before <-
+      case buildGraph Nothing beforeGraph of
+        Right x -> return x
+        Left x -> throwError x
+    after <-
+      case buildGraph (Just $ methodType before) afterGraph of
+        Right x -> return x
+        Left x -> throwError x
     return (before, after)
 
 -- | Verifies the given XML file
 verifyXML :: SMTConfig -> String -> ErrorM SatResult
 verifyXML smtConfig xmlContent =
-  case (parseGraphs xmlContent) of
-    Left err -> throwError err
-    -- Right (before, after) | before == after -> throwError $ verificationError "The graphs are equal!"
-    Right (before, after) ->
-      do
-        result <- (liftIO $ runVerification smtConfig before after)
-        case result of
-          Left (VerifyException err) -> throwError err
-          Right res -> return res
+  do
+    (before, after) <- parseGraphs xmlContent
+    result <- (liftIO $ runVerification smtConfig before after)
+    case result of
+      Left (VerifyException err) -> throwError err
+      Right res -> return res
 
 -- | Given a path to a Java file, e.g. /hello/this/path/Klass.java
 -- returns the Java class name and path: (/hello/this/path, Klass)
@@ -119,14 +125,31 @@ extractClassName fullPath =
 -- | Given a Java program, the method within to be compiled, and an output path
 -- NOTE: Right now -Xcomp is not used to trigger speculative optimizations.
 -- However, that might change (possible add cmd flag)
-compileJavaProgram :: FilePath -> String -> String -> Bool -> ErrorM String
-compileJavaProgram javaBin javaFile methodName deleteXML =
+compileJavaProgram ::
+  FilePath ->
+  String ->
+  String ->
+  Bool ->
+  -- | Control Bugs
+  Int ->
+  -- | Memory Bugs
+  Int ->
+  -- | Reintroduce Wu's old bugs
+  Bool ->
+  ErrorM String
+compileJavaProgram javaBin javaFile methodName deleteXML ctrlBugs memBugs reintroduceBugs =
   do
     let javaClass = dropExtension (takeFileName javaFile)
         compileCommands =
-          [ -- Make sure compilation finishes before execution
+          [ "-XX:ControlBugs=" <> show ctrlBugs,
+            "-XX:MemoryBugs=" <> show memBugs,
+            -- Reintroduce bugs used by Wu (NOTE: Custom JDK flag)
+            "-XX:" <> (if reintroduceBugs then "+" else "-") <> "ReintroduceBugs",
+            -- Make sure compilation finishes before execution
             "-Xcomp",
             "-Xbatch", -- Makes sure compilation finishes
+            -- Delays memory operations to trigger more bugs between our two graphs
+            "-XX:+DelayMem",
             -- Compile with C2 only
             "-XX:-TieredCompilation", -- C2 only
             -- Compile only `javaClass::method`
@@ -139,8 +162,6 @@ compileJavaProgram javaBin javaFile methodName deleteXML =
             "-XX:+DelayArithmeticOpts",
             -- Print numeral values instead of "minint/maxint" (NOTE: Custom JDK flag)
             "-XX:+PrintRealMinMax",
-            -- Reintroduce bugs used by Wu (NOTE: Custom JDK flag)
-            -- "-XX:+ReintroduceBugs",
             -- Minimal graph-level needed to get the correct graphs
             "-XX:PrintIdealGraphLevel=1",
             -- Output XML file into "<javaClass>.xml"

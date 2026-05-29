@@ -22,6 +22,7 @@ import Effectful.State.Static.Local
 import Fuzzer.GenUtils
 import Fuzzer.Grammar
 import Fuzzer.RNG
+import Fuzzer.WeightDB
 
 -- | We keep track of declared variables through their types,
 -- to be able to pick them when possible/needed during program generation.
@@ -34,9 +35,10 @@ type GenEffects =
      Reader (Maybe JType), -- Keeps track of current type when generating expressions
      State VarScope, -- Keeps track of declared variables, can then be used in generation
      State Integer, -- Used for fresh identifiers
-     ExprDepth,
-     StmtDepth,
-     Reader [LValue],
+     ExprDepth, -- Fuel for expression depth, to not nest towards infinity
+     StmtDepth, -- Fuel for stmt depth, to not nest towards infinity
+     Reader [LValue], -- Accessable fields, used for memory operations
+     Reader WeightDB,
      NonDet -- Allows for generators to fail, which allows a generator to back track and try another one
    ]
 
@@ -52,6 +54,7 @@ runGen :: Word64 -> Gen a -> Either CallStack a
 runGen seed =
   runPureEff
     . runNonDet OnEmptyRollback
+    . runReader weights
     . runReader []
     . LR.runReader @"StmtFuel" maxStmtDepth
     . LR.runReader @"ExprFuel" maxExprDepth
@@ -86,7 +89,7 @@ getVars jtyp =
     return $ join $ M.findWithDefault [] jtyp <$> scopes
 
 -- | Get all fields of a given type in the current scope.
-getFields :: (Reader [LValue] :> es) => JType -> Eff es [LValue]
+getFields :: (Reader [LValue] :> es) => JType -> Eff es [String]
 getFields jtype =
   do
     fields <- ask
@@ -95,14 +98,24 @@ getFields jtype =
     go [] = []
     go (field : rest) =
       case field of
-        JVar jtyp varName | jtyp == jtype -> JField jtyp varName "this" : go rest
-        f@(JField jtyp _ _) | jtyp == jtype -> f : go rest
+        JVar jtyp varName | jtyp == jtype -> "this." <> varName : go rest
+        JField jtyp varName objName | jtyp == jtype -> objName <> "." <> varName : go rest
         JObject (JClass _ fields) objName ->
           go
             ( ((\(fieldName, jtyp) -> JField jtyp fieldName objName) <$> fields)
                 ++ rest
             )
         _ -> go rest
+
+allFields :: (Reader [LValue] :> es) => Eff es [(String, JType)]
+allFields = go [JInt, JLong, JFloat, JDouble]
+  where
+    go [] = return []
+    go (t : typs) =
+      do
+        rest <- go typs
+        vars <- getFields t
+        return $ ((,t) <$> vars) ++ rest
 
 -- | Get the type of the expression we are currently generating.
 -- NOTE: Partial function.
@@ -180,9 +193,9 @@ genFields =
     fieldC <- randR fieldCount
     sequence $
       replicate fieldC $
-        weightedM
-          [ (genObject classes, 0.4),
-            (genField primitives, 0.6)
+        weightedDB
+          [ (genObject classes, ObjectWeight),
+            (genField primitives, FieldWeight)
           ]
   where
     genObject classes =
@@ -235,8 +248,9 @@ mkReturn :: Gen JExpr
 mkReturn =
   do
     vars <- allVars
+    fields <- allFields
     retType <- getType
-    go vars retType
+    go (vars <> fields) retType
   where
     go [] _ = return $ JConst JDouble (DoubleLit 0)
     go [(varName, varType)] retType =
@@ -257,12 +271,21 @@ mkReturn =
 stmt :: Gen JStmt
 stmt =
   putExprFuel maxExprDepth $
-    weightedM
-      [ (declare, 0.5),
-        (assign, 0.3),
-        (ifElseStmt, 0.1),
-        (ifStmt, 0.1)
+    weightedDB
+      [ (declare, DeclareWeight),
+        (assign, AssignWeight),
+        -- NOTE: Lessen declarations in if-else bodies, since they cannot
+        -- be reached outside of scope, and thus are useless for VC.
+        (blockWeightModification $ ifElseStmt, IfElseWeight),
+        (blockWeightModification $ ifStmt, IfWeight)
       ]
+
+-- | When generating a block, any declaration within this block
+-- risks becoming useless, since they cannot be used outside of it.
+-- To remedy this, lower weight of declaration and increase assignment,
+-- to instead let blocks more often modify variables in outer scopes.
+blockWeightModification :: (Reader WeightDB :> es) => Eff es a -> Eff es a
+blockWeightModification = modifyWeight (/ 3) DeclareWeight . modifyWeight (* 2) AssignWeight
 
 ifStmt :: Gen JStmt
 ifStmt =
@@ -291,10 +314,10 @@ blockStmt =
 boolExpr :: Gen JExpr
 boolExpr =
   guardType JBool
-    >> weightedM
-      [ (logicalConst, 0.5),
-        (logicalExpr, 0.3),
-        (compExpr, 0.2)
+    >> weightedDB
+      [ (logicalConst, LogicalConstWeight),
+        (logicalExpr, LogicalExprWeight),
+        (compExpr, LogicalCompWeight)
       ]
 
 -- | Generates a boolean constant True or False.
@@ -331,11 +354,11 @@ compExpr =
 -- | Weighted choise of arithmetic types (Int, Long, Float, Double)
 genArithmeticType :: Gen JType
 genArithmeticType =
-  weighted
-    [ (JInt, 0.40),
-      (JLong, 0.35),
-      (JFloat, 0.15),
-      (JDouble, 0.1)
+  weightedDB
+    [ (return JInt, IntWeight),
+      (return JLong, LongWeight),
+      (return JFloat, FloatWeight),
+      (return JDouble, DoubleWeight)
     ]
 
 declare :: Gen JStmt
@@ -351,51 +374,38 @@ assign :: Gen JStmt
 assign =
   do
     vars <- allVars
+    fields <- allFields
     when (null vars) empty
-    (varName, varType) <- choose vars
+    (varName, varType) <-
+      weightedM
+        [ (choose vars, 0.9),
+          (choose fields, 0.1)
+        ]
     varExpr <- withType varType expr
     return $ JAssign varName varExpr
 
 expr :: Gen JExpr
 expr =
-  weightedM
-    [ (var, 0.10),
-      (memExpr, 0.05),
-      (constExpr, 0.40),
-      (arithmeticExpr, 0.30)
+  weightedDB
+    [ (var, VarWeight),
+      (memExpr, MemVarWeight),
+      (constExpr, ConstExprWeight),
+      (binaryExpr, BinaryExprWeight)
     ]
 
 var :: Gen JExpr
 var =
   do
     jtype <- getType
-    chooseVar <-
-      do
-        vars <- getVars jtype
-        choose vars
-    chosenField <-
-      do
-        fields <- getFields jtype
-        field <- choose fields
-        case field of
-          JField _ fieldName objName -> return $ objName <> "." <> fieldName
-          _ -> empty
-    chosenVar <-
-      weighted
-        [ (chooseVar, 0.9),
-          (chosenField, 0.1)
-        ]
-    return $ JVariable jtype chosenVar
+    vars <- getVars jtype
+    JVariable jtype <$> choose vars
 
 memExpr :: Gen JExpr
 memExpr =
   do
     jtyp <- getType
     fields <- getFields jtyp
-    chosenField <- choose fields
-    case chosenField of
-      JField _ fieldName objName ->
-        return $ JVariable jtyp (objName <> "." <> fieldName)
+    JVariable jtyp <$> choose fields
 
 -- | Generates a constant expression
 -- NOTE: Reader env has to contain a type for the constant to be generated
@@ -431,8 +441,8 @@ constExpr =
       Just JBool -> empty -- constExpr does not generate booleans
       Nothing -> error "constExpr: Tried to generate a constant without specified type"
 
-arithmeticExpr :: Gen JExpr
-arithmeticExpr =
+binaryExpr :: Gen JExpr
+binaryExpr =
   withExprFuel $
     do
       bop <- binOp

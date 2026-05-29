@@ -12,9 +12,9 @@ class IfEquality1 {
     // Our tools finds a bug when x = 1.
     // ????? The generated XML does not contain this bug btw
     if (x > 0) {
-      res += 1;
+      x += 1;
       if (x > 1) {
-        res += 10;
+        x += 10;
       }
     }
 

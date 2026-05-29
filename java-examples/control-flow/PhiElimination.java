@@ -3,6 +3,8 @@ class PhiElimination {
     PhiElimination p = new PhiElimination();
     System.out.println(p.correct(10));
     System.out.println(p.incorrect(10));
+    System.out.println(p.method(10));
+    System.out.println(p.method2(10));
   }
   
   int correct(int n) {
@@ -39,5 +41,24 @@ class PhiElimination {
     return res;
   }
 
+  int method(int x) {
+      if (x > 1) {
+          return 1;
+      } else if (x < 1) {
+          return -1;
+      } else {
+          return 0; // Line 7
+      }
+  }
+
+  int method2(int x) {
+      if (x > 1) {
+          return 1;
+      } else if (x <= 1) {
+          return -1;
+      } else {
+          return 0; // Line 7
+      }
+  }
 
 }

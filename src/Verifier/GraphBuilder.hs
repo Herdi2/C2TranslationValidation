@@ -210,6 +210,9 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
     -- Right shifting
     "RShiftI" -> arithmeticNode "RShiftI" RShiftI nodeId rEdges
     "RShiftL" -> arithmeticNode "RShiftL" RShiftL nodeId rEdges
+    -- Right shifting
+    "URShiftI" -> arithmeticNode "URShiftI" URShiftI nodeId rEdges
+    "URShiftL" -> arithmeticNode "URShiftL" URShiftL nodeId rEdges
     -- Conversions
     "ConvD2F" -> convNode ConvD2F nodeId rEdges
     "ConvD2I" -> convNode ConvD2I nodeId rEdges
@@ -223,6 +226,7 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
     "ConvL2D" -> convNode ConvL2D nodeId rEdges
     "ConvL2F" -> convNode ConvL2F nodeId rEdges
     "ConvL2I" -> convNode ConvL2I nodeId rEdges
+    "Conv2B" -> convNode Conv2B nodeId rEdges
     -- Cast nodes
     "CastII" ->
       let matchType typ
@@ -286,8 +290,15 @@ buildNode (RawGraph rNodes rEdges) (RawNode (read -> nodeId) nodeName nodeProps)
             Just other -> Unsupported $ "Bool: Unrecognised dump_spec: " <> other
             Nothing -> Unsupported "Bool: Missing dump_spec"
     "Phi" ->
-      case (findNodePred nodeId rEdges) of
-        (regionId : preds) | length preds > 1 -> Parsed (nodeId, Phi regionId preds)
+      case (findNodePred nodeId rEdges, M.lookup "category" nodeProps) of
+        (regionId : preds, Just category)
+          | length preds > 1 ->
+              -- \| Partial phis may occur, where some inputs are TOP
+              let removedTop = filter (/= 1) preds
+                  nType nodecategory
+                    | nodecategory == "memory" = MemoryNode
+                    | nodecategory == "data" = MemoryNode
+               in Parsed (nodeId, Phi (nType category) regionId removedTop)
         preds -> Unsupported $ "Phi: Phi node got less than two predecessors"
     "CMoveI" -> arithmeticNode "CMoveI" CMoveI nodeId rEdges
     "CMoveL" -> arithmeticNode "CMoveL" CMoveL nodeId rEdges
@@ -379,7 +390,9 @@ storeNode ::
 storeNode Nothing _ _ _ = Unsupported "Store node: No attribute named \"dump_spec\". Needed to determine slice."
 storeNode (Just attr) constr nodeId rEdges =
   case findNodePred nodeId rEdges of
-    [_ctrl, mem, addr, val] ->
+    -- \| A store node may have more than one ctrl it depends on.
+    -- These are appended onto the normal predecessors
+    (_ctrl : mem : addr : val : _ctrls) ->
       case findMemIdx attr of
         Just slice -> Parsed (nodeId, constr slice mem addr val)
         Nothing -> Unsupported $ "Store node: Could not find mem idx from props: " <> show attr

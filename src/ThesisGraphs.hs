@@ -31,7 +31,7 @@ controlIfSubsuming =
           (32, Bool Le 24),
           (38, ConI 1),
           (39, ConI 2),
-          (18, Phi 14 [23, 38, 39]),
+          (18, Phi DataNode 14 [23, 38, 39]),
           -- Control flow
           (5, ParmCtrl 5),
           (26, If 26 25),
@@ -62,7 +62,7 @@ controlIfSubsuming =
           (25, Bool Lt 24),
           (38, ConI 1),
           (39, ConI 2),
-          (18, Phi 14 [38, 39]),
+          (18, Phi DataNode 14 [38, 39]),
           -- Control flow
           (5, ParmCtrl 5),
           (26, If 26 25),

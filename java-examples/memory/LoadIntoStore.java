@@ -3,6 +3,7 @@ class LoadIntoStore {
     LoadIntoStore lis = new LoadIntoStore();
     System.out.println(lis.correct(10));
     System.out.println(lis.incorrect(10));
+    System.out.println(lis.loadintostore(10));
   }
 
   class A {int a;}
@@ -22,9 +23,20 @@ class LoadIntoStore {
     // Loading the same value into the same store, e.g. x = x is useless.
     // Bug however, if the addresses do not match, in this case f2.a = f1.a
     // MemoryBugs=20
-    f2.a = 10;
-    f2.a = f1.a;
-    return f2.a + x;
+    if (x == -1)
+      f2.a = f1.a;
+    return f2.a;
+  }
+
+  int a;
+  int b;
+  int loadintostore(int x) {
+    // Loading the same value into the same store, e.g. x = x is useless.
+    // Bug however, if the addresses do not match, in this case f2.a = f1.a
+    // MemoryBugs=20
+    if (x == -1)
+      a = b;
+    return a;
   }
 
 }

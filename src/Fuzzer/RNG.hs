@@ -70,7 +70,5 @@ weightedM xs = do
     (lesser, ((gen, _weight) : rest)) ->
       gen <|> weightedM (lesser ++ rest)
 
--- return $ fst . head $ dropWhile (\(_, q) -> q < p) cs
-
 choose :: (NonDet :> es, RNG :> es) => [a] -> Eff es a
 choose = weighted . fmap (,1)

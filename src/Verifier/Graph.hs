@@ -101,6 +101,9 @@ data Node
   | -- | Right shifting
     RShiftI NodeId NodeId
   | RShiftL NodeId NodeId
+  | -- | Unsigned Right Shifting
+    URShiftI NodeId NodeId
+  | URShiftL NodeId NodeId
   | -- | Conversion between int, long, float, double
     ConvD2F NodeId
   | ConvD2I NodeId
@@ -114,6 +117,8 @@ data Node
   | ConvL2D NodeId
   | ConvL2F NodeId
   | ConvL2I NodeId
+  | -- Special conversion, casts 0 -> JInt 0, Z\{0} -> JInt 1
+    Conv2B NodeId
   | -- Cast nodes, semantically equivalent to constant nodes
     CastII SValue
   | -- | Comparisons
@@ -137,6 +142,7 @@ data Node
     ParmCtrl NodeId
   | -- | Phi with id and predecessor ids
     Phi
+      NodeType -- Since Phi nodes may be part of memory or data
       NodeId
       [NodeId]
   | -- | Region node with list of predecessors
@@ -375,30 +381,126 @@ instance OrdSymbolic SValue where
 
 {- MEMORY REPRESENTATION -}
 
--- | Refinement level of pointers
-data PtrRefinement = InstPtr | Ptr | ExceptionPtr deriving (Show, Read, Eq)
-
-ptrRefEq :: PtrRefinement -> PtrRefinement -> Bool
-ptrRefEq p1 p2 = p1 == p2
-
 -- | Status of the object pointer to, either Null, NotNull or BotPTR (unknown if null or not)
 data ObjectStatus = Null | NotNull | BotPTR deriving (Show, Read, Eq)
 
 -- | Models the memory lattice, which is Bot (Whole memory) or a slice (one field/memory address)
 data MemLattice = Bot | Slice Integer deriving (Show, Read, Eq)
 
--- | In our assumptions about the memory subgraph, we have three different types of memory we read from:
--- 1. A slice, which is what we assume every store node creates
--- 2. The memory parameter - initial unknown memory of the method, which we do not know the values of.
--- 3. A MergeMem node, which contains slices and a representation of the Bot memory.
--- Note that, due to our assumption that Store nodes cannot create Bot, the Bot memory of the
--- MergeMem node *has* to be provided by the memory parameter
-data Memory
-  = -- Pointer value, value
-    MemSlice SValue SValue
-  | MemParm
-  | MemMerge Memory [Memory]
-  deriving (Eq, Show)
+data NodeType
+  = DataNode
+  | ControlNode
+  | MemoryNode
+  | IgnoredType
+  deriving (Eq, Show, Read)
 
-readAddress :: Node -> SValue
-readAddress n = error $ "TODO"
+nodeTypesCount :: Graph -> (Integer, Integer, Integer)
+nodeTypesCount graph =
+  let nodes = map (nodeType . snd) . M.toList . nodeInfo $ graph
+   in go (0, 0, 0) nodes
+  where
+    go res [] = res
+    go res@(dataCount, ctrlCount, memCount) (x : xs) =
+      case x of
+        DataNode -> go (dataCount + 1, ctrlCount, memCount) xs
+        ControlNode -> go (dataCount, ctrlCount + 1, memCount) xs
+        MemoryNode -> go (dataCount, ctrlCount, memCount + 1) xs
+        IgnoredType -> go res xs
+
+nodeType :: Node -> NodeType
+nodeType (ParmI {}) = DataNode
+nodeType (ParmL {}) = DataNode
+nodeType (ParmF {}) = DataNode
+nodeType (ParmD {}) = DataNode
+nodeType (ParmMemPtr {}) = DataNode
+nodeType (ParmMem {}) = MemoryNode
+nodeType (ConI {}) = DataNode
+nodeType (ConL {}) = DataNode
+nodeType (ConF {}) = DataNode
+nodeType (ConD {}) = DataNode
+nodeType (ConP {}) = DataNode
+nodeType (AddI {}) = DataNode
+nodeType (AddL {}) = DataNode
+nodeType (AddF {}) = DataNode
+nodeType (AddD {}) = DataNode
+nodeType (SubI {}) = DataNode
+nodeType (SubL {}) = DataNode
+nodeType (SubF {}) = DataNode
+nodeType (SubD {}) = DataNode
+nodeType (MulI {}) = DataNode
+nodeType (MulL {}) = DataNode
+nodeType (MulF {}) = DataNode
+nodeType (MulD {}) = DataNode
+nodeType (MulHiL {}) = DataNode
+nodeType (DivI {}) = DataNode
+nodeType (DivL {}) = DataNode
+nodeType (DivF {}) = DataNode
+nodeType (DivD {}) = DataNode
+nodeType (AndI {}) = DataNode
+nodeType (AndL {}) = DataNode
+nodeType (XorI {}) = DataNode
+nodeType (XorL {}) = DataNode
+nodeType (OrI {}) = DataNode
+nodeType (OrL {}) = DataNode
+nodeType (LShiftI {}) = DataNode
+nodeType (LShiftL {}) = DataNode
+nodeType (RShiftI {}) = DataNode
+nodeType (RShiftL {}) = DataNode
+nodeType (URShiftI {}) = DataNode
+nodeType (URShiftL {}) = DataNode
+nodeType (ConvD2F {}) = DataNode
+nodeType (ConvD2I {}) = DataNode
+nodeType (ConvD2L {}) = DataNode
+nodeType (ConvF2D {}) = DataNode
+nodeType (ConvF2I {}) = DataNode
+nodeType (ConvF2L {}) = DataNode
+nodeType (ConvI2D {}) = DataNode
+nodeType (ConvI2F {}) = DataNode
+nodeType (ConvI2L {}) = DataNode
+nodeType (ConvL2D {}) = DataNode
+nodeType (ConvL2F {}) = DataNode
+nodeType (ConvL2I {}) = DataNode
+nodeType (Conv2B {}) = DataNode
+nodeType (CastII {}) = DataNode
+nodeType (CmpI {}) = DataNode
+nodeType (CmpL {}) = DataNode
+nodeType (CmpF {}) = DataNode
+nodeType (CmpD {}) = DataNode
+nodeType (CmpP {}) = DataNode
+nodeType (CmpU {}) = DataNode
+nodeType (CmpUL {}) = DataNode
+nodeType (CMoveI {}) = DataNode
+nodeType (CMoveL {}) = DataNode
+nodeType (CMoveF {}) = DataNode
+nodeType (CMoveD {}) = DataNode
+nodeType (Binary {}) = DataNode
+nodeType (Bool {}) = DataNode
+nodeType (ParmCtrl {}) = ControlNode
+nodeType (Phi ntyp _ _) = ntyp
+nodeType (Region {}) = ControlNode
+nodeType (If {}) = ControlNode
+nodeType (IfTrue {}) = ControlNode
+nodeType (IfFalse {}) = ControlNode
+nodeType (Return {}) = ControlNode
+nodeType (Rethrow {}) = ControlNode
+nodeType (CallStatic {}) = ControlNode
+nodeType (StoreI {}) = MemoryNode
+nodeType (StoreL {}) = MemoryNode
+nodeType (StoreF {}) = MemoryNode
+nodeType (StoreD {}) = MemoryNode
+nodeType (StoreP {}) = MemoryNode
+nodeType (LoadI {}) = DataNode
+nodeType (LoadL {}) = DataNode
+nodeType (LoadF {}) = DataNode
+nodeType (LoadD {}) = DataNode
+nodeType (LoadP {}) = DataNode
+nodeType (MergeMem {}) = IgnoredType
+nodeType (AddP {}) = DataNode
+nodeType (CastPP {}) = DataNode
+
+countFlops :: Graph -> Integer
+countFlops graph =
+  let nodes = map (nodeType . snd) . M.toList . nodeInfo $ graph
+   in go 0 nodes
+  where
+    go = undefined

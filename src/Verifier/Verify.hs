@@ -345,6 +345,13 @@ evalDataNode graph@(nodeInfo -> nodes) (RShiftI n1 n2) =
     v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
     v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JInt (v1 `sShiftRight` (literal 0x1f .&. v2))
+evalDataNode graph@(nodeInfo -> nodes) (URShiftI n1 n2) =
+  -- NOTE: URShift has special semantics in the JVM
+  -- int: n1 >> (0x1f & n2)
+  do
+    v1 <- getInt <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
+    return $ JInt $ sFromIntegral $ (sFromIntegral v1 :: SWord32) `sShiftRight` (literal 0x1f .&. v2)
 evalDataNode graph@(nodeInfo -> nodes) (RShiftL n1 n2) =
   -- NOTE: RShift has special semantics in the JVM
   -- long: n1 >> (0x3f & n2)
@@ -352,6 +359,13 @@ evalDataNode graph@(nodeInfo -> nodes) (RShiftL n1 n2) =
     v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
     v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
     return $ JLong (v1 `sShiftRight` (literal 0x3f .&. v2))
+evalDataNode graph@(nodeInfo -> nodes) (URShiftL n1 n2) =
+  -- NOTE: RShift has special semantics in the JVM
+  -- long: n1 >> (0x3f & n2)
+  do
+    v1 <- getLong <$> evalDataNode graph (nodes !!! n1)
+    v2 <- getInt <$> evalDataNode graph (nodes !!! n2)
+    return $ JLong $ sFromIntegral $ (sFromIntegral v1 :: SWord64) `sShiftRight` (literal 0x3f .&. v2)
 -- NOTE: The compare semantics are:
 -- Cmp n1 n2
 -- n1 == n2 -> 0
@@ -418,7 +432,7 @@ evalDataNode graph (CMoveI n1 n2) = handleCMove graph n1 n2
 evalDataNode graph (CMoveL n1 n2) = handleCMove graph n1 n2
 evalDataNode graph (CMoveF n1 n2) = handleCMove graph n1 n2
 evalDataNode graph (CMoveD n1 n2) = handleCMove graph n1 n2
-evalDataNode graph (Phi rid preds) =
+evalDataNode graph (Phi _ rid preds) =
   -- The phi node's value depends on the corresponding region node
   let dataIdx = (regionPredecessor graph) !!! rid
       chosenDataNode = (nodeInfo graph) !!! (preds !! fromIntegral dataIdx)
@@ -485,6 +499,10 @@ evalDataNode graph@(nodeInfo -> nodes) (ConvL2I nid) =
   where
     dropUpper32 :: SInt64 -> SInt32
     dropUpper32 = fromSized . (bvExtract (Proxy @31) (Proxy @0) :: SInt 64 -> SInt 32) . toSized
+evalDataNode graph@(nodeInfo -> nodes) (Conv2B nid) =
+  do
+    v <- getInt <$> evalDataNode graph (nodes !!! nid)
+    return $ JInt $ ite (v .== 0) 0 1
 evalDataNode graph (LoadI _ memId addrId) = handleLoad graph JINT memId addrId
 evalDataNode graph (LoadL _ memId addrId) = handleLoad graph JLONG memId addrId
 evalDataNode graph (LoadF _ memId addrId) = handleLoad graph JFLOAT memId addrId
@@ -570,7 +588,7 @@ evalMemoryNode graph@(nodeInfo -> nodes) address jtype memId =
           return . JFloat . (_floatMem graph) . literal $ showptr address
         JDOUBLE ->
           return . JDouble . (_doubleMem graph) . literal $ showptr address
-    Phi regionId preds ->
+    Phi _ regionId preds ->
       -- Phi nodes may be used by the memory subgraph as well.
       -- The phi node's value depends on the corresponding region node
       let memIdx = (regionPredecessor graph) !!! regionId

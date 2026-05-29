@@ -2,14 +2,13 @@ class CmpUControl {
   public static void main(String[] args) {
     CmpUControl c = new CmpUControl();
       try {
-        System.out.println(c.method(false));
+        System.out.println(c.method(false, 1));
       } catch (Exception e) {
         System.out.println(e.toString());
       }
   }
 
-  int one = 128082026;
-  int method(boolean flag) {
+  int method(boolean flag, int x) {
       int minimum, maximum;
       if (flag) {
           minimum = 0;
@@ -30,7 +29,7 @@ class CmpUControl {
       // INT_MIN + 1    >=u -1                  + 1
       // INT_MIN + 1    >=u 0
       // => true
-      if (one < minimum || one > maximum) {
+      if (x < minimum || x > maximum) {
           throw new RuntimeException();
       }
       return 0;
