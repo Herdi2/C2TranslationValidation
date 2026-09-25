@@ -1,2 +1,0 @@
-time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time,data-nodes,ctrl-nodes,mem-nodes
-2026-05-26 06:30:18.854551937 UTC,/home/herdi/work/C2TranslationValidation/java-examples/memory/LoadIntoStore.java,0,Sat,"Right Satisfiable. Model:\n  parm11 = -1 :: Int32\n\n  intMem :: String -> Int32\n  intMem \"LoadIntoStore_16\" = 0\n  intMem _                  = -1",0.023499443s,0.059124141s,15,8,4

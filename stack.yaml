@@ -17,8 +17,7 @@
 #
 # snapshot: ./custom-snapshot.yaml
 # snapshot: https://example.com/snapshots/2024-01-01.yaml
-snapshot:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/24/28.yaml
+snapshot: lts-24.28
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -65,7 +64,7 @@ extra-deps:
 #
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
-extra-path:
-- /home/herdi/.nix-profile/bin
-nix:
-  enable: true
+# extra-path:
+# - /home/herdi/.nix-profile/bin
+# nix:
+#   enable: true

@@ -1,2 +1,0 @@
-time-stamp,java-file,seed,smt-result,error-message,smt-time,total-time,data-nodes,ctrl-nodes,mem-nodes
-2026-05-26 06:30:03.573986541 UTC,/home/herdi/work/C2TranslationValidation/java-examples/memory/LoadIntoStore.java,0,Unsat,,0.014379525s,0.066292188s,22,12,6
