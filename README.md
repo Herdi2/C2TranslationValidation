@@ -4,6 +4,8 @@ It applies translation validation to the intermediate representation
 of the C2 compiler, which is the optimizing Just-in-Time compiler for 
 the HotSpot Java Virtual Machine (JVM).
 
+(NOTE: For my thesis work commit 42e8dfed04fd6b5befd0ea1dd8cc12d7ae543ae4 was used)
+
 ## Setup
 This project is written in Haskell and uses the Stack build tool.
 Furthermore, it requires a debug build of the JVM.
