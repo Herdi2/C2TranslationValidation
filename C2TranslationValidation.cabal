@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.39.1.
+-- This file has been generated from package.yaml by hpack version 0.39.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -69,7 +69,7 @@ library
     , xml >=1.3.14
   default-language: Haskell2010
 
-executable C2TranslationValidation-exe
+executable c2tv
   main-is: Main.hs
   other-modules:
       Paths_C2TranslationValidation
@@ -100,7 +100,7 @@ executable C2TranslationValidation-exe
     , xml >=1.3.14
   default-language: Haskell2010
 
-test-suite C2TranslationValidation-test
+test-suite c2tv-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:

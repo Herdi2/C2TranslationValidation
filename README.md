@@ -1,14 +1,45 @@
 # C2TranslationValidation
-This is the translation validation tool for my Master's thesis.
+This is the translation validation tool C2tv, used in my Master's thesis.
+It applies translation validation to the intermediate representation
+of the C2 compiler, which is the optimizing Just-in-Time compiler for 
+the HotSpot Java Virtual Machine (JVM).
 
-# Verified bugs
-Bugs from `optimizations.md` in `jdk-thesis` that I've checked, and can be found:
-## Control
-* Bug 1: Tested and Found
-* Bug 2: Canonicalization cannot be tested?
-* Bug 3: Tested and Found*, exists in current JDK!
-* Bug 4: 
+## Setup
+This project is written in Haskell and uses the Stack build tool.
+Furthermore, it requires a debug build of the JVM.
+Make sure the following dependencies are installed:
+1. `stack`, can be installed through [GHCup](https://www.haskell.org/ghcup/)
+2. A debug build of the [JVM](https://github.com/Herdi2/jdk-thesis)
+3. `z3`, which is the backend SMT solver found [here](https://github.com/z3prover/z3)
 
-[2026-05-02 00:57:38.816896318 UTC] Test257.java 1212786622372634694 Sat "Right Satisfiable. Model:\n  parm10 =          -6832 :: Int32\
-n  parm11 = -3659312162729 :: Int64\n  parm13 =     4.33279e27 :: Float" 22.241839179s 22.284969234s
+To run the comparison between C2tv and Wu's tool, you need to install it as well from [here](https://github.com/TerenceNg03/c2-translation-validation).
+
+For more setup details, see the [nix folder](./nix/) in the source root for dependencies.
+
+## Usage
+To run C2tv, either use `stack run` or install the executable to `/usr/bin/` 
+using `stack install`.
+After installing, invoke `c2tv --help` to see all possible commands:
+
+```
+Usage: c2tv [-j|--java <FILE>] [--ReintroduceBugs] [-m|--MemoryBugs <INT>] 
+            [-c|--ControlBugs <INT>] COMMAND
+
+Available options:
+  -j,--java <FILE>         Path to the Java binary to use (default: "java")
+  --ReintroduceBugs        Choose to reintroduce the olds bugs used in Wu's
+                           verification.
+  -m,--MemoryBugs <INT>    Memory bug to introduce [20, 30]. Default is 0.
+  -c,--ControlBugs <INT>   Control bug to introduce [10, 20, 21]. Default is 0.
+  -h,--help                Show this help text
+
+Available commands:
+  verify                   Verify Java file(s)
+  compare                  Compares if the two given graphs are semantically
+                           equivalent
+  fuzz                     Run the fuzzer
+  campaign                 Run the campaign
+  ast                      Print the internal AST
+```
+
 
